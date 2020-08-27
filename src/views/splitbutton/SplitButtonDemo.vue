@@ -8,16 +8,19 @@
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Basic</h3>
-            <SplitButton label="Save" icon="pi pi-plus" @click="save" :model="items"></SplitButton>
+            <div class="card">
+                <h5>Basic</h5>
+                <SplitButton label="Save" icon="pi pi-plus" @click="save" :model="items"></SplitButton>
 
-            <h3>Severities</h3>
-            <SplitButton label="Save" icon="pi pi-plus" :model="items"></SplitButton>
-            <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-secondary"></SplitButton>
-            <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-success"></SplitButton>
-            <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-info"></SplitButton>
-            <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-warning"></SplitButton>
-            <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-danger"></SplitButton>
+                <h5>Severities</h5>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-secondary"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-success"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-info"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-warning"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-help"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-danger"></SplitButton>
+            </div>
         </div>
 
         <SplitButtonDoc/>
@@ -32,34 +35,34 @@ export default {
         return {
             items: [
                 {
-                    label: 'Update', 
-                    icon: 'pi pi-refresh', 
+                    label: 'Update',
+                    icon: 'pi pi-refresh',
                     command: () => {
                         this.$toast.add({severity:'success', summary:'Updated', detail:'Data Updated', life: 3000});
                     }
                 },
                 {
-                    label: 'Delete', 
+                    label: 'Delete',
                     icon: 'pi pi-times',
                     command: () => {
                         this.$toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000});
                     }
                 },
                 {
-                    label: 'Vue Website', 
+                    label: 'Vue Website',
                     icon: 'pi pi-external-link',
                     command: () => {
                         window.location.href = 'https://vuejs.org/'
                     }
                 },
-                {   label: 'Upload', 
-                    icon: 'pi pi-upload', 
+                {   label: 'Upload',
+                    icon: 'pi pi-upload',
                     command: () => {
                         window.location.hash = "/fileupload"
                     }
                 }
             ]
-        } 
+        }
     },
     methods: {
         save() {
@@ -75,6 +78,6 @@ export default {
 
 <style lang="scss" scoped>
 .p-splitbutton {
-    margin-right: .5em;
+    margin-right: .5rem;
 }
 </style>

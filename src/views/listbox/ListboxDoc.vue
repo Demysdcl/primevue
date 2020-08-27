@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Listbox from 'primevue/listbox';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Listbox requires a value to bind and a collection of arbitrary objects along with the <i>optionLabel</i> property to specify the label property of the option.</p>
 <CodeHighlight>
 &lt;Listbox v-model="selectedCity" :options="cities" optionLabel="name" /&gt;
@@ -28,7 +28,7 @@ data() {
 }
 </CodeHighlight>
 
-				<h3>Selection</h3>
+				<h5>Selection</h5>
 				<p>Listbox allows selection of either single or multiple items. In single case, model should be a single object reference whereas in multiple case should be an array. Multiple items can either be selected
 					using metaKey or toggled individually depending on the value of <i>metaKeySelection</i> property value which is true by default. On touch enabled
 					devices metaKeySelection is turned off automatically.</p>
@@ -36,29 +36,29 @@ data() {
 &lt;Listbox v-model="selectedCity" :options="cities" optionLabel="name" :multiple="true"/&gt;
 </CodeHighlight>
 
-				<h3>Custom Content</h3>
+				<h5>Custom Content</h5>
 				<p>Label of an option is used as the display text of an item by default, for custom content support define an <i>option</i> template that gets the option instance as a parameter.</p>
 <CodeHighlight>
 <template v-pre>
 &lt;Listbox v-model="selectedCars" :options="cars" :multiple="true" :filter="true" optionLabel="brand" listStyle="max-height:250px" style="width:15em"&gt;
 	&lt;template #option="slotProps"&gt;
-		&lt;div class="p-clearfix"&gt;
-			&lt;img :alt="slotProps.option.brand" :src="'demo/images/car/' + slotProps.option.brand + '.png'" style="display:inline-block;margin:5px 0 0 5px;width:48px" /&gt;
-			&lt;span style="float:right;margin:1.25em .5em 0 0"&gt;{{slotProps.option.brand}}&lt;/span&gt;
+		&lt;div&gt;
+			&lt;img :alt="slotProps.option.brand" :src="'demo/images/car/' + slotProps.option.brand + '.png'" /&gt;
+			&lt;span&gt;{{slotProps.option.brand}}&lt;/span&gt;
 		&lt;/div&gt;
 	&lt;/template&gt;
 &lt;/Listbox&gt;
 </template>
 </CodeHighlight>
 
-				<h3>Filter</h3>
+				<h5>Filter</h5>
 				<p>Filtering allows searching items in the list using an input field at the header. In order to use filtering, enable <i>filter</i> property.</p>
 <CodeHighlight>
 &lt;Listbox v-model="selectedCity" :options="cities" optionLabel="name" :filter="true"/&gt;
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -116,7 +116,7 @@ data() {
                                 <td>dataKey</td>
                                 <td>string</td>
                                 <td>false</td>
-                                <td>A property to uniquely match the value in options for better performance.</td>
+                                <td>A property to uniquely identify an option.</td>
                             </tr>
                             <tr>
                                 <td>multiple</td>
@@ -137,11 +137,23 @@ data() {
                                 <td>false</td>
                                 <td>When specified, displays a filter input at header.</td>
                             </tr>
+                            <tr>
+                                <td>filterPlaceholder</td>
+                                <td>string</td>
+                                <td>null</td>
+                                <td>Placeholder text to show when filter input is empty.</td>
+                            </tr>
+                            <tr>
+                                <td>filterLocale</td>
+                                <td>string</td>
+                                <td>undefined</td>
+                                <td>Locale to use in filtering. The default locale is the host environment's current locale.</td>
+                            </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -163,11 +175,17 @@ data() {
                                 <td>value: New value</td>
                                 <td>Callback to invoke on value change.</td>
                             </tr>
+                            <tr>
+                                <td>filter</td>
+                                <td>event.originalEvent: Original event <br />
+                                    event.value: Filter value </td>
+                                <td>Callback to invoke on filter input.</td>
+                            </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -202,7 +220,7 @@ data() {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -212,15 +230,15 @@ data() {
 				</a>
 <CodeHighlight>
 <template v-pre>
-&lt;h3&gt;Single&lt;/h3&gt;
-&lt;Listbox v-model="selectedCity" :options="cities" optionLabel="name" /&gt;
+&lt;h5&gt;Single&lt;/h5&gt;
+&lt;Listbox v-model="selectedCity" :options="cities" optionLabel="name" style="width:15rem" /&gt;
 
-&lt;h3&gt;Advanced with Templating, Filtering and Multiple Selection&lt;/h3&gt;
-&lt;Listbox v-model="selectedCars" :options="cars" :multiple="true" :filter="true" optionLabel="brand" listStyle="max-height:250px" style="width:15em"&gt;
+&lt;h5&gt;Advanced with Templating, Filtering and Multiple Selection&lt;/h5&gt;
+&lt;Listbox v-model="selectedCountries" :options="countries" :multiple="true" :filter="true" optionLabel="name" listStyle="max-height:250px" style="width:15rem"&gt;
     &lt;template #option="slotProps"&gt;
-        &lt;div class="p-clearfix"&gt;
-            &lt;img :alt="slotProps.option.brand" :src="'demo/images/car/' + slotProps.option.brand + '.png'" style="display:inline-block;margin:5px 0 0 5px;width:48px" /&gt;
-            &lt;span style="float:right;margin:1.25em .5em 0 0"&gt;{{slotProps.option.brand}}&lt;/span&gt;
+        &lt;div class="country-item"&gt;
+            &lt;img src="../../assets/images/flag_placeholder.png" :class="'flag flag-' + slotProps.option.code.toLowerCase()" /&gt;
+            &lt;div&gt;{{slotProps.option.name}}&lt;/div&gt;
         &lt;/div&gt;
     &lt;/template&gt;
 &lt;/Listbox&gt;
@@ -229,30 +247,31 @@ data() {
 
 <CodeHighlight lang="javascript">
 export default {
-	data() {
-		return {
-			selectedCity: null,
-			selectedCars: null,
-			cities: [
-				{name: 'New York', code: 'NY'},
-				{name: 'Rome', code: 'RM'},
-				{name: 'London', code: 'LDN'},
-				{name: 'Istanbul', code: 'IST'},
-				{name: 'Paris', code: 'PRS'}
-			],
-			cars: [
-				{brand: 'Audi', value: 'Audi'},
-				{brand: 'BMW', value: 'BMW'},
-				{brand: 'Fiat', value: 'Fiat'},
-				{brand: 'Honda', value: 'Honda'},
-				{brand: 'Jaguar', value: 'Jaguar'},
-				{brand: 'Mercedes', value: 'Mercedes'},
-				{brand: 'Renault', value: 'Renault'},
-				{brand: 'Volkswagen', value: 'Volkswagen'},
-				{brand: 'Volvo', value: 'Volvo'}
-			]
-		}
-	}
+    data() {
+        return {
+            selectedCity: null,
+            selectedCountries: null,
+            cities: [
+                {name: 'New York', code: 'NY'},
+                {name: 'Rome', code: 'RM'},
+                {name: 'London', code: 'LDN'},
+                {name: 'Istanbul', code: 'IST'},
+                {name: 'Paris', code: 'PRS'}
+            ],
+            countries: [
+                {name: 'Australia', code: 'AU'},
+                {name: 'Brazil', code: 'BR'},
+                {name: 'China', code: 'CN'},
+                {name: 'Egypt', code: 'EG'},
+                {name: 'France', code: 'FR'},
+                {name: 'Germany', code: 'DE'},
+                {name: 'India', code: 'IN'},
+                {name: 'Japan', code: 'JP'},
+                {name: 'Spain', code: 'ES'},
+                {name: 'United States', code: 'US'}
+            ]
+        }
+    }
 }
 </CodeHighlight>
 			</TabPanel>

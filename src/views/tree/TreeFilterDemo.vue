@@ -1,20 +1,20 @@
 <template>
     <div>
-        <TreeSubMenu />
-
         <div class="content-section introduction">
             <div class="feature-intro">
-                <h1>Tree - Filter</h1>
+                <h1>Tree <span>Filter</span></h1>
                 <p>Filtering updates the node based on the constraints.</p>
             </div>
         </div>
 
         <div class="content-section implementation">
-            <h3>Lenient Filter</h3>
-            <Tree :value="nodes" :filter="true" filterMode="lenient"></Tree>
+            <div class="card">
+                <h5>Lenient Filter</h5>
+                <Tree :value="nodes" :filter="true" filterMode="lenient"></Tree>
 
-            <h3>Strict Filter</h3>
-            <Tree :value="nodes" :filter="true" filterMode="strict"></Tree>          
+                <h5>Strict Filter</h5>
+                <Tree :value="nodes" :filter="true" filterMode="strict"></Tree>
+            </div>
         </div>
 
         <div class="content-section documentation">
@@ -26,7 +26,7 @@
 &lt;Tree :value="nodes" :filter="true" filterMode="lenient"&gt;&lt;/Tree&gt;
 
 &lt;h3&gt;Strict Filter&lt;/h3&gt;
-&lt;Tree :value="nodes" :filter="true" filterMode="strict"&gt;&lt;/Tree&gt;    
+&lt;Tree :value="nodes" :filter="true" filterMode="strict"&gt;&lt;/Tree&gt;
 </template>
 </CodeHighlight>
 
@@ -77,7 +77,6 @@ export default {
 
 <script>
 import NodeService from '../../service/NodeService';
-import TreeSubMenu from './TreeSubMenu';
 
 export default {
     data() {
@@ -112,15 +111,12 @@ export default {
                 }
             }
         }
-    },
-    components: {
-        'TreeSubMenu': TreeSubMenu
     }
 }
 </script>
 
 <style scoped>
 button {
-    margin-right: .5em;
+    margin-right: .5rem;
 }
 </style>

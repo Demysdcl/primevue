@@ -8,13 +8,13 @@
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Basic</h3>
-            <InputSwitch v-model="checked1" />
-            <p style="font-weight: bold">{{checked1}}</p>
+            <div class="card">
+                <h5>Basic</h5>
+                <InputSwitch v-model="checked1" />
 
-            <h3>Preselection</h3>
-            <InputSwitch v-model="checked2" />
-            <p style="font-weight: bold">{{checked2}}</p>
+                <h5>Preselection</h5>
+                <InputSwitch v-model="checked2" />
+            </div>
         </div>
 
         <InputSwitchDoc/>

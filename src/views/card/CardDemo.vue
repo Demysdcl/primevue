@@ -8,13 +8,13 @@
         </div>
 
         <div class="content-section implementation">
-            <Card style="width: 25em; margin-bottom: 2em">
+            <Card style="width: 25rem; margin-bottom: 2em">
                 <template slot="title">
                     Simple Card
                 </template>
                 <template slot="content">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-                    quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
+                    quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!</p>
                 </template>
             </Card>
 
@@ -25,13 +25,16 @@
                 <template slot="title">
                     Advanced Card
                 </template>
+                <template slot="subtitle">
+                    Card subtitle
+                </template>
                 <template slot="content">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-                    quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
+                    quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!</p>
                 </template>
                 <template slot="footer">
-                    <Button icon="pi pi-check" label="Save" class="p-button-raised" />
-                    <Button icon="pi pi-times" label="Cancel" class="p-button-raised p-button-secondary" style="margin-left: .5em" />
+                    <Button icon="pi pi-check" label="Save" />
+                    <Button icon="pi pi-times" label="Cancel" class="p-button-secondary" style="margin-left: .5em" />
                 </template>
             </Card>
         </div>
@@ -49,3 +52,10 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+p {
+    line-height: 1.5;
+    margin: 0;
+}
+</style>

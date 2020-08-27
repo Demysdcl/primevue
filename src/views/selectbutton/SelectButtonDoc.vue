@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import SelectButton from 'primevue/selectbutton';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>SelectButton requires a value to bind and a collection of arbitrary objects along with the <i>optionLabel</i> property to specify the label property of the option.</p>
 <CodeHighlight>
 &lt;SelectButton v-model="selectedCity" :options="cities" optionLabel="name" /&gt;
@@ -28,29 +28,29 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Multiple</h3>
+				<h5>Multiple</h5>
 				<p>SelectButton allows selecting only one item by default and setting <i>multiple</i> option enables choosing more than one item. In multiple case, model property should be an array.</p>
 <CodeHighlight>
 &lt;SelectButton v-model="selectedCity" :options="cities" optionLabel="brand" :multiple="true" /&gt;
 </CodeHighlight>
 
-				<h3>Templating</h3>
+				<h5>Templating</h5>
 				<p>Label of an option is used as the display text of an item by default, for custom content support define an <i>option</i> template that gets the option instance as a parameter.</p>
 <CodeHighlight>
 <template v-pre>
 &lt;SelectButton v-model="selectedCar" :options="cars" optionLabel="brand"&gt;
 	&lt;template #option="slotProps"&gt;
-		&lt;div style="text-align: center; padding: 1em; width: 125px"&gt;
-			&lt;img :alt="slotProps.option.brand" :src="'demo/images/car/' + slotProps.option.brand + '.png'" style="width:48px" /&gt;
-			&lt;div style="margin-top: 1em"&gt;{{slotProps.option.brand}}&lt;/div&gt;
-		&lt;/div&gt;
+        &lt;div class="car-option"&gt;
+            &lt;img :alt="slotProps.option.brand" :src="'demo/images/car/' + slotProps.option.brand + '.png'" /&gt;
+            &lt;div&gt;{{slotProps.option.brand}}&lt;/div&gt;
+        &lt;/div&gt;
 	&lt;/template&gt;
 &lt;/SelectButton&gt;
 </template>
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -108,13 +108,19 @@ export default {
                                 <td>dataKey</td>
                                 <td>string</td>
                                 <td>null</td>
-                                <td>A property to uniquely match the value in options for better performance.</td>
+                                <td>A property to uniquely identify an option.</td>
+                            </tr>
+                            <tr>
+                                <td>ariaLabelledBy</td>
+                                <td>string</td>
+                                <td>null</td>
+                                <td>Establishes relationships between the component and label(s) where its value should be one or more element IDs.</td>
                             </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -144,7 +150,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -154,49 +160,41 @@ export default {
 				</a>
 <CodeHighlight>
 <template v-pre>
-&lt;h3&gt;Single&lt;/h3&gt;
-&lt;SelectButton v-model="selectedCity" :options="cities" optionLabel="name" /&gt;
-&lt;p&gt;Selected City: &lt;span style="font-weight: bold"&gt;{{selectedCity}}&lt;/span&gt;&lt;/p&gt;
+&lt;h5&gt;Single Selection&lt;/h5&gt;
+&lt;SelectButton v-model="value1" :options="options" /&gt;
 
-&lt;h3&gt;Multiple&lt;/h3&gt;
-&lt;SelectButton v-model="selectedCars" :options="cars" optionLabel="brand" :multiple="true" /&gt;
-&lt;p&gt;Selected Cars: &lt;span style="font-weight: bold"&gt;{{selectedCars}}&lt;/span&gt;&lt;/p&gt;
+&lt;h5&gt;Multiple Selection&lt;/h5&gt;
+&lt;SelectButton v-model="value2" :options="paymentOptions" optionLabel="name" multiple /&gt;
 
-&lt;h3&gt;Custom Content&lt;/h3&gt;
-&lt;SelectButton v-model="selectedCar" :options="cars" optionLabel="brand"&gt;
+&lt;h5&gt;Custom Content&lt;/h5&gt;
+&lt;SelectButton v-model="value3" :options="justifyOptions" dataKey="value"&gt;
     &lt;template #option="slotProps"&gt;
-        &lt;div style="text-align: center; padding: 1em; width: 125px"&gt;
-            &lt;img :alt="slotProps.option.brand" :src="'demo/images/car/' + slotProps.option.brand + '.png'" style="width:48px" /&gt;
-            &lt;div style="margin-top: 1em"&gt;{{slotProps.option.brand}}&lt;/div&gt;
-        &lt;/div&gt;
+        &lt;i :class="slotProps.option.icon"&gt;&lt;/i&gt;
     &lt;/template&gt;
 &lt;/SelectButton&gt;
-&lt;p&gt;Selected Car: &lt;span style="font-weight: bold"&gt;{{selectedCar}}&lt;/span&gt;&lt;/p&gt;
 </template>
 </CodeHighlight>
 
 <CodeHighlight lang="javascript">
 export default {
-	data() {
-		return {
-			selectedCity: null,
-			selectedCar: null,
-			selectedCars: null,
-			cities: [
-				{name: 'London', code: 'LND'},
-				{name: 'Paris', code: 'PRS'},
-				{name: 'Rome', code: 'RM'}
-			],
-			cars: [
-				{brand: 'Audi', key: 'A'},
-				{brand: 'BMW', key: 'B'},
-				{brand: 'Mercedes', key: 'M'}
-			]
-		}
-	},
-	created() {
-		this.selectedCar = this.cars[1];
-	}
+    data() {
+        return {
+            value1: 'Off',
+            value2: null,
+            value3: null,
+            options: ['Off', 'On'],
+            paymentOptions: [
+                {name: 'Option 1', value: 1},
+                {name: 'Option 2', value: 2},
+                {name: 'Option 3', value: 3}
+            ],
+            justifyOptions: [
+                {icon: 'pi pi-align-left', value: 'left'},
+                {icon: 'pi pi-align-right', value: 'Right'},
+                {icon: 'pi pi-align-center', value: 'Center'},
+                {icon: 'pi pi-align-justify', value: 'Justify'}]
+        }
+    }
 }
 </CodeHighlight>
 			</TabPanel>

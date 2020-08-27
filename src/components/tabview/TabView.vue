@@ -1,17 +1,52 @@
+<template>
+    <div class="p-tabview p-component">
+        <ul ref="nav" class="p-tabview-nav" role="tablist">
+            <li role="presentation" v-for="(tab, i) of tabs" :key="tab.header || i" :class="[{'p-highlight': (tab.d_active), 'p-disabled': tab.disabled}]">
+                <a role="tab" class="p-tabview-nav-link" @click="onTabClick($event, tab)" @keydown="onTabKeydown($event, tab)" :tabindex="tab.disabled ? null : '0'" :aria-selected="tab.d_active" v-ripple>
+                    <span class="p-tabview-title" v-if="tab.header">{{tab.header}}</span>
+                    <TabPanelHeaderSlot :tab="tab" v-if="tab.$scopedSlots.header" />
+                </a>
+            </li>
+            <li ref="inkbar" class="p-tabview-ink-bar"></li>
+        </ul>
+        <div class="p-tabview-panels">
+            <slot></slot>
+        </div>
+    </div>
+</template>
+
 <script>
+import DomHandler from '../utils/DomHandler';
+import Ripple from '../ripple/Ripple';
+
+const TabPanelHeaderSlot = {
+    functional: true,
+    props: {
+        tab: {
+            type: null,
+            default: null
+        }
+    },
+    render(createElement, context) {
+        return [context.props.tab.$scopedSlots['header']()];
+    }
+};
+
 export default {
     data() {
         return {
-            tabs: []
+            d_children: []
         };
     },
     mounted() {
-        this.tabs = this.$children;
-        
-        let activeTab = this.findActiveTab();
+        this.d_children = this.$children;
+    },
+    updated() {
+        let activeTab = this.tabs[this.findActiveTabIndex()];
         if (!activeTab && this.tabs.length) {
             this.tabs[0].d_active = true;
         }
+        this.updateInkBar();
     },
     methods: {
         onTabClick(event, tab) {
@@ -22,205 +57,81 @@ export default {
                     originalEvent: event,
                     tab: tab
                 });
-            }           
+            }
         },
         activateTab(tab) {
             for (let i = 0; i < this.tabs.length; i++) {
                 let active = this.tabs[i] === tab;
                 this.tabs[i].d_active = active;
                 this.tabs[i].$emit('update:active', active);
-            } 
+            }
+
+            this.updateInkBar();
         },
         onTabKeydown(event, tab) {
             if (event.which === 13) {
                 this.onTabClick(event, tab);
             }
         },
-        findActiveTab() {
-            let activeTab;
+        findActiveTabIndex() {
             for (let i = 0; i < this.tabs.length; i++) {
                 let tab = this.tabs[i];
                 if (tab.d_active) {
-                    activeTab = tab;
-                    break;
+                    return i;
                 }
             }
 
-            return activeTab;
+            return null;
+        },
+        updateInkBar() {
+            let tabHeader = this.$refs.nav.children[this.findActiveTabIndex()];
+            this.$refs.inkbar.style.width = DomHandler.getWidth(tabHeader) + 'px';
+            this.$refs.inkbar.style.left =  DomHandler.getOffset(tabHeader).left - DomHandler.getOffset(this.$refs.nav).left + 'px';
         }
     },
-    render() {
-        return (
-            <div class="p-tabview p-component p-tabview-top">
-                <ul class="p-tabview-nav p-reset" role="tablist">
-                    {
-                        this.tabs.map(tab => {
-                            return (
-                                <li role="presentation" key={tab.header} class={['p-unselectable-text', {'p-highlight': (tab.d_active), 'p-disabled': tab.disabled}]}>
-                                     <a role="tab" on-click={event => this.onTabClick(event, tab)} on-keydown={event => this.onTabKeydown(event, tab)} tabindex={tab.disabled ? null : '0'}>
-                                        {tab.header && <span class="p-tabview-title">{tab.header}</span>}
-                                        {tab.$slots.header}
-                                    </a>
-                                </li>
-                            );
-                        })
-                    }
-                </ul>
-                <div class="p-tabview-panels">
-                    {this.$slots.default}
-                </div>
-            </div>
-        );
+    computed: {
+        tabs() {
+            return this.d_children.filter(child => child.$vnode.tag.indexOf('tabpanel') !== -1);
+        }
+    },
+    components: {
+        'TabPanelHeaderSlot': TabPanelHeaderSlot
+    },
+    directives: {
+        'ripple': Ripple
     }
 }
 </script>
 
 <style>
-.p-tabview {
-    padding: .25em; 
-}
-
-.p-tabview .p-tabview-nav { 
+.p-tabview-nav {
+    display: flex;
     margin: 0;
+    padding: 0;
+    list-style-type: none;
+    flex-wrap: wrap;
 }
 
-.p-tabview .p-tabview-nav:after { 
-    content: "";
-    display: table;
-    clear: both;
+.p-tabview-nav-link {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    position: relative;
+    text-decoration: none;
+    overflow: hidden;
 }
 
-.p-tabview .p-tabview-nav li { 
-    list-style: none; 
-    float: left; 
-    position: relative; 
-    margin: 0 .125em 1px 0;  
-    padding: 0; 
-    white-space: nowrap; 
+.p-tabview-ink-bar {
+    display: none;
+    z-index: 1;
 }
 
-.p-tabview .p-tabview-nav li a { 
-    float: left; 
-    padding: .5em 1em; 
-    text-decoration: none; 
+.p-tabview-nav-link:focus {
+    z-index: 1;
 }
 
-.p-tabview .p-tabview-nav li.p-tabview-selected a, 
-.p-tabview .p-tabview-nav li.p-disabled a, 
-.p-tabview .p-tabview-nav li.p-state-processing a { 
-    cursor: text; 
-}
-
-.p-tabview .p-tabview-nav li a, 
-.p-tabview.p-tabview-collapsible .p-tabview-nav li.p-tabview-selected a { 
-    cursor: pointer; 
-}
-
-.p-tabview .p-tabview-panel { 
-    border-width: 0; 
-    padding: 1em; 
-    background: none; 
-}
-
-.p-tabview .p-tabview-nav li { 
-    display: block; 
-}
-
-.p-tabview .p-tabview-nav li .p-tabview-left-icon,
-.p-tabview .p-tabview-nav li .p-tabview-right-icon,
-.p-tabview .p-tabview-nav li .p-tabview-title {
-    vertical-align: middle;
-}
-
-.p-tabview .p-tabview-nav li .p-tabview-left-icon {
-    margin-right: .25em;
-    vertical-align: middle;
-}
-
-.p-tabview .p-tabview-nav li .p-tabview-right-icon {
-    margin-left: .25em;
-    vertical-align: middle;
-}
-
-.p-tabview .p-tabview-nav li .p-tabview-close { 
-    margin: 0.5em 0.3em 0 0; 
-    cursor: pointer; 
-}
-
-/* per orientation settings */
-/* top and bottom */
-.p-tabview.p-tabview-top > .p-tabview-nav li { 
-    border-bottom: 0;
-    top: 1px; 
-}
-
-.p-tabview.p-tabview-top > .p-tabview-nav { 
-    padding: .2em .2em 0; 
-}
-
-.p-tabview.p-tabview-bottom > .p-tabview-nav { 
-    padding: 0 .2em .2em; 
-}
-
-.p-tabview.p-tabview-bottom > .p-tabview-nav li { 
-    border-top: 0;
-}
-
-/* left and right*/
-.p-tabview-left:after,
-.p-tabview-right:after {
-    clear:both;
-    content: ".";
-    display: block;
-    height: 0;
-    visibility: hidden;
-}
-
-.p-tabview-left > .p-tabview-nav {
-    float:left;
-    width: 25%;
-    height: 300px;
-    background-image: none;
-    padding-top: 1px;
-}
-
-.p-tabview-left > .p-tabview-panels {
-    float:right;
-    width: 75%;
-}
-
-.p-tabview.p-tabview-left > .p-tabview-nav li,
-.p-tabview.p-tabview-right > .p-tabview-nav li{
-    display: block;
-    float: right;
-    white-space: normal;
-    width: 99%;
-}
-
-.p-tabview.p-tabview-left > .p-tabview-nav li {
-    margin: 0 0 1px 0;
-    border-right:0 none;
-}
-
-.p-tabview.p-tabview-right > .p-tabview-nav {
-    float:right;
-    width: 25%;
-    height: 300px;
-    background-image: none;
-    padding-top: 1px;
-}
-
-.p-tabview.p-tabview-right > .p-tabview-panels {
-    float:left;
-    width: 75%;
-}
-
-.p-tabview.p-tabview-right > .p-tabview-nav li {
-    margin: 0 0 1px 0;
-    border-left:0 none;
-}
-/* RTL */
-.p-rtl .p-tabview .p-tabview-nav li {
-    float: right;
+.p-tabview-title {
+    line-height: 1;
 }
 </style>

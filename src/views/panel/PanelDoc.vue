@@ -2,23 +2,23 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Panel from 'primevue/panel';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Panel is a container component that accepts content as its children.</p>
 <CodeHighlight>
-&lt;Panel header="Godfather I"&gt;
-	The story begins as Don Vito Corleone, the head of a New York Mafia family, oversees his daughter's wedding.
-	His beloved son Michael has just come home from the war, but does not intend to become part of his father's business.
-	Through Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family,
-	kind and benevolent to those who give respect, but given to ruthless violence whenever anything stands against the good of the family.
+&lt;Panel header="Header"&gt;
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+    cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 &lt;/Panel&gt;
 </CodeHighlight>
 
-                <h3>Custom Header</h3>
+                <h5>Custom Header</h5>
                 <p>Header of the panel is either defined with the <i>header</i> property or the header template.</p>
 <CodeHighlight>
 &lt;Panel&gt;
@@ -29,14 +29,14 @@ import Panel from 'primevue/panel';
 &lt;/Panel&gt;
 </CodeHighlight>
 
-				<h3>Toggleable</h3>
+				<h5>Toggleable</h5>
 				<p>Content of the panel can be expanded and collapsed using <i>toggleable</i> option.</p>
 <CodeHighlight>
-&lt;Panel header="Godfather I" :toggleable="true"&gt;
-	The story begins as Don Vito Corleone, the head of a New York Mafia family, oversees his daughter's wedding.
-	His beloved son Michael has just come home from the war, but does not intend to become part of his father's business.
-	Through Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family,
-	kind and benevolent to those who give respect, but given to ruthless violence whenever anything stands against the good of the family.
+&lt;Panel header="Header" :toggleable="true"&gt;
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+    cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 &lt;/Panel&gt;
 </CodeHighlight>
 
@@ -56,8 +56,23 @@ import Panel from 'primevue/panel';
 &lt;/Panel&gt;
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+                <h5>Custom Icons</h5>
+                <p>Additional icons can be placed at the header section of the panel using the special <i>icons</i> slot. For a unified look, it is suggest to add <i>.p-panel-header-icon</i>
+                class to your icons.</p>
+<CodeHighlight>
+&lt;h5&gt;Advanced&lt;/h5&gt;
+&lt;Panel header="Header"&gt;
+    &lt;template #icons&gt;
+        &lt;button class="p-panel-header-icon p-link" @click="toggle"&gt;
+            &lt;span class="pi pi-cog"&gt;&lt;/span&gt;
+        &lt;/button&gt;
+        &lt;Menu id="config_menu" ref="menu" :model="items" :popup="true" /&gt;
+    &lt;/template&gt;
+&lt;/Panel&gt;
+</CodeHighlight>
+
+				<h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -91,7 +106,7 @@ import Panel from 'primevue/panel';
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -113,7 +128,7 @@ import Panel from 'primevue/panel';
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -129,7 +144,7 @@ import Panel from 'primevue/panel';
                                 <td>Container element.</td>
                             </tr>
                             <tr>
-                                <td>p-panel-titlebar</td>
+                                <td>p-panel-header</td>
                                 <td>Header section.</td>
                             </tr>
                             <tr>
@@ -137,7 +152,11 @@ import Panel from 'primevue/panel';
                                 <td>Title text of panel.</td>
                             </tr>
                             <tr>
-                                <td>p-panel-titlebar-toggler</td>
+                                <td>p-panel-header-icon</td>
+                                <td>Action icons inside header.</td>
+                            </tr>
+                            <tr>
+                                <td>p-panel-toggler</td>
                                 <td>Toggle icon.</td>
                             </tr>
                             <tr>
@@ -148,7 +167,7 @@ import Panel from 'primevue/panel';
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -156,24 +175,80 @@ import Panel from 'primevue/panel';
 				<a href="https://github.com/primefaces/primevue/tree/master/src/views/panel" class="btn-viewsource" target="_blank" rel="noopener noreferrer">
 					<span>View on GitHub</span>
 				</a>
+
 <CodeHighlight>
 <template v-pre>
-&lt;h3&gt;Regular&lt;/h3&gt;
-&lt;Panel header="Godfather I"&gt;
-    The story begins as Don Vito Corleone, the head of a New York Mafia family, oversees his daughter's wedding.
-    His beloved son Michael has just come home from the war, but does not intend to become part of his father's business.
-    Through Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family,
-    kind and benevolent to those who give respect, but given to ruthless violence whenever anything stands against the good of the family.
+&lt;h5&gt;Regular&lt;/h5&gt;
+&lt;Panel header="Header"&gt;
+    &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
 &lt;/Panel&gt;
 
-&lt;h3&gt;Toggleable&lt;/h3&gt;
-&lt;Panel header="Godfather I" :toggleable="true"&gt;
-    The story begins as Don Vito Corleone, the head of a New York Mafia family, oversees his daughter's wedding.
-    His beloved son Michael has just come home from the war, but does not intend to become part of his father's business.
-    Through Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family,
-    kind and benevolent to those who give respect, but given to ruthless violence whenever anything stands against the good of the family.
+&lt;h5&gt;Advanced&lt;/h5&gt;
+&lt;Panel header="Header" :toggleable="true"&gt;
+    &lt;template #icons&gt;
+        &lt;button class="p-panel-header-icon p-link" @click="toggle"&gt;
+            &lt;span class="pi pi-cog"&gt;&lt;/span&gt;
+        &lt;/button&gt;
+        &lt;Menu id="config_menu" ref="menu" :model="items" :popup="true" /&gt;
+    &lt;/template&gt;
+    &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
 &lt;/Panel&gt;
 </template>
+</CodeHighlight>
+
+<CodeHighlight lang="js">
+export default {
+    data() {
+        return {
+            items: [
+                {
+                    label: 'Options',
+                    items: [{
+                        label: 'Update',
+                        icon: 'pi pi-refresh',
+                        command: () => {
+                            this.$toast.add({severity:'success', summary:'Updated', detail:'Data Updated', life: 3000});
+                        }
+                    },
+                    {
+                        label: 'Delete',
+                        icon: 'pi pi-times',
+                        command: () => {
+                            this.$toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000});
+                        }
+                    }
+                ]},
+                {
+                    label: 'Navigate',
+                    items: [{
+                        label: 'Vue Website',
+                        icon: 'pi pi-external-link',
+                        url: 'https://vuejs.org/'
+                    },
+                    {
+                        label: 'Router',
+                        icon: 'pi pi-upload',
+                        to: '/fileupload'
+                    }
+                ]}
+            ]
+        }
+    },
+    methods: {
+        toggle(event) {
+            this.$refs.menu.toggle(event);
+        },
+        save() {
+            this.$toast.add({severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000});
+        }
+    }
+}
 </CodeHighlight>
 			</TabPanel>
 		</TabView>

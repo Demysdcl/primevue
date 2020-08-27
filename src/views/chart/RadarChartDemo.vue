@@ -8,7 +8,9 @@
         </div>
 
         <div class="content-section implementation">
-            <Chart type="radar" :data="chartData" />
+            <div class="card">
+                <Chart type="radar" :data="chartData" :options="chartOptions" />
+            </div>
         </div>
 
         <RadarChartDoc/>
@@ -17,8 +19,20 @@
 
 <script>
 import RadarChartDoc from './RadarChartDoc';
+import EventBus from '@/EventBus';
 
 export default {
+    mounted() {
+        EventBus.$on('change-theme', event => {
+            if (event.dark)
+                this.chartOptions = this.getDarkTheme();
+            else
+                this.chartOptions = this.getLightTheme();
+        });
+    },
+    beforeDestroy() {
+        EventBus.$off('change-theme');
+    },
     data() {
         return {
             chartData: {
@@ -45,7 +59,47 @@ export default {
                         data: [28, 48, 40, 19, 96, 27, 100]
                     }
                 ]
-            }
+            },
+            chartOptions: this.isDarkTheme() ? this.getDarkTheme(): this.getLightTheme()
+        }
+    },
+    methods: {
+        isDarkTheme() {
+            return this.$appState.darkTheme === true;
+        },
+        getLightTheme() {
+            return {
+                legend: {
+                    labels: {
+                        fontColor: '#495057'
+                    }
+                },
+                scale: {
+                    pointLabels: {
+                        fontColor: '#495057'
+                    },
+                    gridLines: {
+                        color: '#ebedef'
+                    }
+                }
+            };
+        },
+        getDarkTheme() {
+            return {
+                legend: {
+                    labels: {
+                        fontColor: '#ebedef'
+                    }
+                },
+                scale: {
+                    pointLabels: {
+                        fontColor: '#ebedef'
+                    },
+                    gridLines: {
+                        color: 'rgba(255,255,255,0.2)'
+                    }
+                }
+            };
         }
     },
     components: {

@@ -2,7 +2,7 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-                <h3>ToastService</h3>
+                <h5>ToastService</h5>
                 <p>Toast messages are dynamically created using a <i>ToastService</i> that needs to be installed globally before the application
                     instance is created.</p>
 <CodeHighlight lang="javascript">
@@ -16,12 +16,12 @@ new Vue({
 }).$mount('#app');
 </CodeHighlight>
 
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Toast from 'primevue/toast';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
                 <p>Ideal location of a Toast is the main application template so that it can be used by any component within the application.</p>
 
 				<p>A single message is represented by the Message interface in PrimeVue that defines various properties such as severity,
@@ -30,7 +30,7 @@ import Toast from 'primevue/toast';
 this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order submitted', life: 3000});
 </CodeHighlight>
 
-				<h3>Message API</h3>
+				<h5>Message API</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -82,7 +82,7 @@ this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order s
 					</table>
 				</div>
 
-                <h3>MessageService API</h3>
+                <h5>MessageService API</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -113,7 +113,7 @@ this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order s
 					</table>
 				</div>
 
-				<h3>Severities</h3>
+				<h5>Severities</h5>
 				<p>There are four possible values for the severity of a message. Info is the default.</p>
 
 				<ul>
@@ -123,22 +123,26 @@ this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order s
 					<li>error</li>
 				</ul>
 
-				<h3>Position</h3>
-				<p>There are four positions available for the toast container defined by the <i>position</i> property that defaults to "topright". Other
-					valid values are "topleft", "bottomleft" and "bottomright"
+				<h5>Position</h5>
+				<p>There are four positions available for the toast container defined by the <i>position</i> property that defaults to "top-right". Other
+					valid values are "top-left", "top-center", "bottom-left", "botton-center", "bottom-right" and "center".
 				</p>
 <CodeHighlight>
 &lt;Toast /&gt;
-&lt;Toast position="topleft" /&gt;
-&lt;Toast position="bottomleft" /&gt;
-&lt;Toast position="bottomright" /&gt;
+&lt;Toast position="top-left" /&gt;
+&lt;Toast position="top-center" /&gt;
+&lt;Toast position="top-right" /&gt;
+&lt;Toast position="center" /&gt;
+&lt;Toast position="bottom-left" /&gt;
+&lt;Toast position="bottom-center" /&gt;
+&lt;Toast position="bottom-right" /&gt;
 </CodeHighlight>
 
-                <h3>Groups</h3>
+                <h5>Groups</h5>
                 <p>A message can be targeted to a specific Toast component if their group properties match. Messages without a group
                     are forwarded to the default Toast component that does not have a group defined.
                 </p>
-				
+
 <CodeHighlight>
 &lt;Toast /&gt;
 &lt;Toast position="mykey" /&gt;
@@ -149,13 +153,13 @@ this.$toast.add({severity:'success', summary: 'Default Message'});
 this.$toast.add({severity:'success', summary: 'Specific Message', group: 'mykey'});
 </CodeHighlight>
 
-				<h3>Clearing Messages</h3>
+				<h5>Clearing Messages</h5>
 				<p><i>removeGroup(group)</i> clears the messages for a specific Toast whereas <i>removeAllGroups()</i> method clears all messages.</p>
 <CodeHighlight lang="js">
 this.$toast.removeAllGroups();
 </CodeHighlight>
 
-				<h3>Properties</h3>
+				<h5>Properties</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -176,8 +180,8 @@ this.$toast.removeAllGroups();
                             <tr>
                                 <td>position</td>
                                 <td>string</td>
-                                <td>topright</td>
-                                <td>Position of the toast in viewport, valid values are "topright", "topleft", "bottomleft" and "bottomright".</td>
+                                <td>top-right</td>
+                                <td>Position of the toast in viewport.</td>
                             </tr>
                             <tr>
                                 <td>autoZIndex</td>
@@ -195,7 +199,7 @@ this.$toast.removeAllGroups();
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -211,34 +215,34 @@ this.$toast.removeAllGroups();
                                 <td>Main container element.</td>
                             </tr>
                             <tr>
-                                <td>p-toast-container</td>
+                                <td>p-toast-message</td>
                                 <td>Container of a message item.</td>
-                            </tr>
-                            <tr>
-                                <td>p-toast-item</td>
-                                <td>Message element.</td>
                             </tr>
                             <tr>
                                 <td>p-toast-icon-close</td>
                                 <td>Close icon of a message.</td>
                             </tr>
                             <tr>
-                                <td>p-toast-image</td>
+                                <td>p-toast-icon</td>
                                 <td>Severity icon.</td>
                             </tr>
                             <tr>
-                                <td>p-toast-message</td>
+                                <td>p-toast-message-content</td>
                                 <td>Container of message texts.</td>
                             </tr>
                             <tr>
-                                <td>p-toast-title</td>
+                                <td>p-toast-summary</td>
                                 <td>Summary of the message.</td>
+                            </tr>
+                            <tr>
+                                <td>p-toast-detail</td>
+                                <td>Detail of the message.</td>
                             </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -248,46 +252,22 @@ this.$toast.removeAllGroups();
 				</a>
 <CodeHighlight>
 <template v-pre>
-&lt;h3&gt;Severities&lt;/h3&gt;
-&lt;div class="p-grid"&gt;
-    &lt;div class="p-col-12 p-md-3"&gt;
-        &lt;Button label="Success" class="p-button-success" @click="showSuccess" /&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12 p-md-3"&gt;
-        &lt;Button label="Info" class="p-button-info" @click="showInfo" /&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12 p-md-3"&gt;
-        &lt;Button label="Warn" class="p-button-warning" @click="showWarn" /&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12 p-md-3"&gt;
-        &lt;Button label="Error" class="p-button-danger" @click="showError" /&gt;
-    &lt;/div&gt;
-&lt;/div&gt;
+&lt;h5&gt;Severities&lt;/h5&gt;
+&lt;Button label="Success" class="p-button-success" @click="showSuccess" /&gt;
+&lt;Button label="Info" class="p-button-info" @click="showInfo" /&gt;
+&lt;Button label="Warn" class="p-button-warning" @click="showWarn" /&gt;
+&lt;Button label="Error" class="p-button-danger" @click="showError" /&gt;
 
-&lt;h3&gt;Positions&lt;/h3&gt;
-&lt;div class="p-grid"&gt;
-    &lt;div class="p-col-12 p-md-4"&gt;
-        &lt;Button label="Top Left" @click="showTopLeft" /&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12 p-md-4"&gt;
-        &lt;Button label="Bottom Left" class="p-button-warning" @click="showBottomLeft" /&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12 p-md-4"&gt;
-        &lt;Button label="Bottom Right" class="p-button-success" @click="showBottomRight" /&gt;
-    &lt;/div&gt;
-&lt;/div&gt;
+&lt;h5&gt;Positions&lt;/h5&gt;
+&lt;Button label="Top Left" class="p-mr-2" @click="showTopLeft" /&gt;
+&lt;Button label="Bottom Left" class="p-button-warning" @click="showBottomLeft" /&gt;
+&lt;Button label="Bottom Right" class="p-button-success" @click="showBottomRight" /&gt;
 
-&lt;h3&gt;Options&lt;/h3&gt;
-&lt;div class="p-grid"&gt;
-    &lt;div class="p-col-12 p-md-6"&gt;
-        &lt;Button @click="showMultiple" label="Multiple" class="p-button-warning" /&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12 p-md-6"&gt;
-        &lt;Button @click="showSticky" label="Sticky" /&gt;
-    &lt;/div&gt;
-&lt;/div&gt;
+&lt;h5&gt;Options&lt;/h5&gt;
+&lt;Button @click="showMultiple" label="Multiple" class="p-button-warning" /&gt;
+&lt;Button @click="showSticky" label="Sticky" /&gt;
 
-&lt;h3&gt;Remove All&lt;/h3&gt;
+&lt;h5&gt;Remove All&lt;/h5&gt;
 &lt;Button @click="clear" label="Clear" /&gt;
 </template>
 </CodeHighlight>
@@ -301,37 +281,37 @@ export default {
 	},
 	methods: {
 		showSuccess() {
-			this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order submitted', life: 3000});
-		},
-		showInfo() {
-			this.$toast.add({severity:'info', summary: 'Info Message', detail:'PrimeVue rocks', life: 3000});
-		},
-		showWarn() {
-			this.$toast.add({severity:'warn', summary: 'Warn Message', detail:'There are unsaved changes', life: 3000});
-		},
-		showError() {
-			this.$toast.add({severity:'error', summary: 'Error Message', detail:'Validation failed', life: 3000});
-		},
-		showTopLeft() {
-			this.$toast.add({severity: 'info', summary: 'Info ', detail: 'You need to close Me', group: 'tl', life: 3000});
-		},
-		showBottomLeft() {
-			this.$toast.add({severity:'warn', summary: 'Warn Message', detail:'There are unsaved changes', group: 'bl', life: 3000});
-		},
-		showBottomRight() {
-			this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order submitted', group: 'br', life: 3000});
-		},
-		showSticky() {
-			this.$toast.add({severity: 'info', summary: 'Sticky Message', detail: 'You need to close Me'});
-		},
-		showMultiple() {
-			this.$toast.add({severity:'info', summary:'Message 1', detail:'PrimeVue rocks', life: 3000});
-			this.$toast.add({severity:'info', summary:'Message 1', detail:'PrimeVue rocks', life: 3000});
-			this.$toast.add({severity:'info', summary:'Message 1', detail:'PrimeVue rocks', life: 3000});
-		},
-		clear() {
-			this.$toast.removeAllGroups();
-		}
+            this.$toast.add({severity:'success', summary: 'Success Message', detail:'Message Content', life: 3000});
+        },
+        showInfo() {
+            this.$toast.add({severity:'info', summary: 'Info Message', detail:'Message Content', life: 3000});
+        },
+        showWarn() {
+            this.$toast.add({severity:'warn', summary: 'Warn Message', detail:'Message Content', life: 3000});
+        },
+        showError() {
+            this.$toast.add({severity:'error', summary: 'Error Message', detail:'Message Content', life: 3000});
+        },
+        showTopLeft() {
+            this.$toast.add({severity: 'info', summary: 'Info Message', detail: 'Message Content', group: 'tl', life: 3000});
+        },
+        showBottomLeft() {
+            this.$toast.add({severity:'warn', summary: 'Warn Message', detail:'Message Content', group: 'bl', life: 3000});
+        },
+        showBottomRight() {
+            this.$toast.add({severity:'success', summary: 'Success Message', detail:'Message Content', group: 'br', life: 3000});
+        },
+        showSticky() {
+            this.$toast.add({severity: 'info', summary: 'Sticky Message', detail: 'Message Content'});
+        },
+        showMultiple() {
+            this.$toast.add({severity:'info', summary:'Message 1', detail:'Message 1 Content', life: 3000});
+            this.$toast.add({severity:'info', summary:'Message 2', detail:'Message 2 Content', life: 3000});
+            this.$toast.add({severity:'info', summary:'Message 3', detail:'Message 3 Content', life: 3000});
+        },
+        clear() {
+            this.$toast.removeAllGroups();
+        }
 	}
 }
 </CodeHighlight>

@@ -5,10 +5,13 @@
                 <h1>Password</h1>
                 <p>Password displays strength indicator for password fields.</p>
             </div>
+            <AppInputStyleSwitch />
         </div>
 
         <div class="content-section implementation">
-            <Password v-model="value" />
+            <div class="card">
+                <Password v-model="value" />
+            </div>
         </div>
 
         <PasswordDoc/>

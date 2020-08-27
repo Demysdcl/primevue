@@ -5,11 +5,16 @@
                 <h1>TriStateCheckbox</h1>
                 <p>TriStateCheckbox is used to select either "true", "false" or "null" as the value.</p>
             </div>
+            <AppInputStyleSwitch />
         </div>
 
         <div class="content-section implementation">
-            <TriStateCheckbox v-model="value" />
-            <p>Value: <span style="font-weight: bold">{{value == null ? 'null' : value}}</span></p>
+            <div class="card">
+                <div class="p-field-checkbox p-m-0">
+                    <TriStateCheckbox v-model="value" />
+                    <label>{{value == null ? 'null' : value}}</label>
+                </div>
+            </div>
         </div>
 
         <TriStateCheckboxDoc/>

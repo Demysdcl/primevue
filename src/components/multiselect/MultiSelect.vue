@@ -1,44 +1,45 @@
 <template>
     <div ref="container" :class="containerClass" @click="onClick">
         <div class="p-hidden-accessible">
-            <input ref="focusInput" type="text" role="listbox" readonly :disabled="disabled" @focus="onFocus" @blur="onBlur" @keydown="onKeyDown" :tabindex="tabindex"/>
+            <input ref="focusInput" type="text" role="listbox" :id="inputId" readonly :disabled="disabled" @focus="onFocus" @blur="onBlur" @keydown="onKeyDown" :tabindex="tabindex"
+                aria-haspopup="listbox" :aria-expanded="overlayVisible" :aria-labelledby="ariaLabelledBy"/>
         </div>
         <div class="p-multiselect-label-container">
-            <label :class="labelClass">
-                <slot name="value" :value="value">
+            <div :class="labelClass">
+                <slot name="value" :value="value" :placeholder="placeholder">
                     {{label}}
                 </slot>
-            </label>
+            </div>
         </div>
         <div class="p-multiselect-trigger">
-            <span class="p-multiselect-trigger-icon pi pi-chevron-down p-c"></span>
+            <span class="p-multiselect-trigger-icon pi pi-chevron-down"></span>
         </div>
-        <transition name="p-input-overlay" @enter="onOverlayEnter" @leave="onOverlayLeave">
-            <div ref="overlay" class="p-multiselect-panel" v-if="overlayVisible">
+        <transition name="p-connected-overlay" @enter="onOverlayEnter" @leave="onOverlayLeave">
+            <div ref="overlay" class="p-multiselect-panel p-component" v-if="overlayVisible">
                 <div class="p-multiselect-header">
-                    <div class="p-checkbox p-component" @click="onToggleAll">
+                    <div class="p-checkbox p-component" @click="onToggleAll" role="checkbox" :aria-checked="allSelected">
                         <div class="p-hidden-accessible">
                             <input type="checkbox" readonly @focus="onHeaderCheckboxFocus" @blur="onHeaderCheckboxBlur">
                         </div>
-                        <div :class="['p-checkbox-box p-component', {'p-highlight': allSelected, 'p-focus': headerCheckboxFocused}]">
-                            <span :class="['p-checkbox-icon p-c', {'pi pi-check': allSelected}]"></span>
+                        <div :class="['p-checkbox-box', {'p-highlight': allSelected, 'p-focus': headerCheckboxFocused}]" role="checkbox" :aria-checked="allSelected">
+                            <span :class="['p-checkbox-icon', {'pi pi-check': allSelected}]"></span>
                         </div>
                     </div>
-                    <div class="p-multiselect-filter-container">
-                        <input type="text" v-model="filterValue" class="p-multiselect-filter p-component p-inputtext p-component" :placeholder="filterPlaceholder">
+                    <div v-if="filter" class="p-multiselect-filter-container">
+                        <input type="text" v-model="filterValue" class="p-multiselect-filter p-inputtext p-component" :placeholder="filterPlaceholder" @input="onFilterChange">
                         <span class="p-multiselect-filter-icon pi pi-search"></span>
                     </div>
-                    <button class="p-multiselect-close p-link" @click="onCloseClick">
+                    <button class="p-multiselect-close p-link" @click="onCloseClick" type="button" v-ripple>
                         <span class="p-multiselect-close-icon pi pi-times" />
                     </button>
                 </div>
                 <div ref="itemsWrapper" class="p-multiselect-items-wrapper" :style="{'max-height': scrollHeight}">
-                    <ul class="p-multiselect-items p-multiselect-list p-component">
-                        <li v-for="(option, i) of visibleOptions" :class="['p-multiselect-item', {'p-highlight': isSelected(option), 'p-disabled': isOptionDisabled(option)}]"
-                            :aria-label="getOptionLabel(option)" :key="getOptionLabel(option)" @click="onOptionSelect($event, option)" @keydown="onOptionKeyDown($event, option)" :tabindex="tabindex||'0'">
+                    <ul class="p-multiselect-items p-component" role="listbox" aria-multiselectable="true">
+                        <li v-for="(option, i) of visibleOptions" :class="['p-multiselect-item', {'p-highlight': isSelected(option), 'p-disabled': isOptionDisabled(option)}]" role="option" :aria-selected="isSelected(option)"
+                            :aria-label="getOptionLabel(option)" :key="getOptionRenderKey(option)" @click="onOptionSelect($event, option)" @keydown="onOptionKeyDown($event, option)" :tabindex="tabindex||'0'" v-ripple>
                             <div class="p-checkbox p-component">
-                                <div :class="['p-checkbox-box p-component', {'p-highlight': isSelected(option)}]">
-                                    <span :class="['p-checkbox-icon p-c', {'pi pi-check': isSelected(option)}]"></span>
+                                <div :class="['p-checkbox-box', {'p-highlight': isSelected(option)}]">
+                                    <span :class="['p-checkbox-icon', {'pi pi-check': isSelected(option)}]"></span>
                                 </div>
                             </div>
                             <slot name="option" :option="option" :index="i">
@@ -55,6 +56,7 @@
 <script>
 import ObjectUtils from '../utils/ObjectUtils';
 import DomHandler from '../utils/DomHandler';
+import Ripple from '../ripple/Ripple';
 
 export default {
     props: {
@@ -70,9 +72,16 @@ export default {
 		placeholder: String,
 		disabled: Boolean,
 		filter: Boolean,
-		tabindex: String,
+        tabindex: String,
+        inputId: String,
         dataKey: null,
-        filterPlaceholder: String
+        filterPlaceholder: String,
+        filterLocale: String,
+        ariaLabelledBy: null,
+        appendTo: {
+            type: String,
+            default: null
+        }
     },
     data() {
         return {
@@ -84,6 +93,7 @@ export default {
     },
     outsideClickListener: null,
     beforeDestroy() {
+        this.restoreAppend();
         this.unbindOutsideClickListener();
     },
     updated() {
@@ -93,10 +103,13 @@ export default {
     },
     methods: {
         getOptionLabel(option) {
-            return ObjectUtils.resolveFieldData(option, this.optionLabel);
+            return this.optionLabel ? ObjectUtils.resolveFieldData(option, this.optionLabel) : option;
         },
         getOptionValue(option) {
             return this.optionValue ? ObjectUtils.resolveFieldData(option, this.optionValue) : option;
+        },
+        getOptionRenderKey(option) {
+            return this.dataKey ? ObjectUtils.resolveFieldData(option, this.dataKey) : this.getOptionLabel(option);
         },
         isOptionDisabled(option) {
             return this.optionDisabled ? ObjectUtils.resolveFieldData(option, this.optionDisabled) : false;
@@ -107,7 +120,7 @@ export default {
 
             if (this.value) {
                 for (let val of this.value) {
-                    if (ObjectUtils.equals(val, optionValue, this.dataKey)) {
+                    if (ObjectUtils.equals(val, optionValue, this.equalityKey)) {
                         selected = true;
                         break;
                     }
@@ -115,6 +128,14 @@ export default {
             }
 
             return selected;
+        },
+        show() {
+            this.$emit('before-show');
+            this.overlayVisible = true;
+        },
+        hide() {
+            this.$emit('before-hide');
+            this.overlayVisible = false;
         },
         onFocus() {
             this.focused = true;
@@ -129,27 +150,31 @@ export default {
             this.headerCheckboxFocused = false;
         },
         onClick() {
-            if (!this.$refs.overlay || !this.$refs.overlay.contains(event.target)) {
-                this.overlayVisible = !this.overlayVisible;
+            if (!this.disabled && (!this.$refs.overlay || !this.$refs.overlay.contains(event.target))) {
+                if (this.overlayVisible)
+                    this.hide();
+                else
+                    this.show();
+
                 this.$refs.focusInput.focus();
             }
         },
         onCloseClick() {
-            this.overlayVisible = false;
+            this.hide();
         },
         onKeyDown(event) {
             switch(event.which) {
                 //down
                 case 40:
                     if (this.visibleOptions && !this.overlayVisible && event.altKey) {
-                        this.overlayVisible = true;
-                    } 
+                        this.show();
+                    }
                 break;
 
                 //space
                 case 32:
                     if (!this.overlayVisible) {
-                        this.overlayVisible = true;
+                        this.show();
                         event.preventDefault();
                     }
                 break;
@@ -158,14 +183,14 @@ export default {
                 case 13:
                 case 27:
                     if (this.overlayVisible) {
-                        this.overlayVisible = false;
+                        this.hide();
                         event.preventDefault();
                     }
                 break;
 
                 //tab
                 case 9:
-                    this.overlayVisible = false;
+                    this.hide();
                 break;
 
                 default:
@@ -181,7 +206,7 @@ export default {
             let value = null;
 
             if (selected)
-                value = this.value.filter(val => !ObjectUtils.equals(val, this.getOptionValue(option), this.dataKey));
+                value = this.value.filter(val => !ObjectUtils.equals(val, this.getOptionValue(option), this.equalityKey));
             else
                 value = [...this.value || [], this.getOptionValue(option)];
 
@@ -190,7 +215,7 @@ export default {
         },
         onOptionKeyDown(event, option) {
             let listItem = event.target;
-        
+
             switch(event.which) {
                 //down
                 case 40:
@@ -198,20 +223,20 @@ export default {
                     if (nextItem) {
                         nextItem.focus();
                     }
-                    
+
                     event.preventDefault();
                 break;
-                
+
                 //up
                 case 38:
                     var prevItem = this.findPrevItem(listItem);
                     if (prevItem) {
                         prevItem.focus();
                     }
-                    
+
                     event.preventDefault();
                 break;
-                
+
                 //enter
                 case 13:
                     this.onOptionSelect(event, option);
@@ -232,27 +257,37 @@ export default {
         },
         findPrevItem(item) {
             let prevItem = item.previousElementSibling;
-            
+
             if (prevItem)
                 return DomHandler.hasClass(prevItem, 'p-disabled') ? this.findPrevItem(prevItem) : prevItem;
             else
                 return null;
         },
         onOverlayEnter() {
+            this.$refs.overlay.style.zIndex = String(DomHandler.generateZIndex());
+            this.appendContainer();
             this.alignOverlay();
             this.bindOutsideClickListener();
+            this.$emit('show');
         },
         onOverlayLeave() {
             this.unbindOutsideClickListener();
+            this.$emit('hide');
         },
         alignOverlay() {
-            DomHandler.relativePosition(this.$refs.overlay, this.$refs.container);
+            if (this.appendTo) {
+                DomHandler.absolutePosition(this.$refs.overlay, this.$refs.container);
+                this.$refs.overlay.style.minWidth = DomHandler.getOuterWidth(this.$refs.container) + 'px';
+            }
+            else {
+                DomHandler.relativePosition(this.$refs.overlay, this.$refs.container);
+            }
         },
         bindOutsideClickListener() {
             if (!this.outsideClickListener) {
                 this.outsideClickListener = (event) => {
                     if (this.overlayVisible && this.isOutsideClicked(event)) {
-                        this.overlayVisible = false;
+                        this.hide();
                     }
                 };
                 document.addEventListener('click', this.outsideClickListener);
@@ -274,7 +309,7 @@ export default {
                 for (let option of this.options) {
                     let optionValue = this.getOptionValue(option);
 
-                    if(ObjectUtils.equals(optionValue, val, this.dataKey)) {
+                    if(ObjectUtils.equals(optionValue, val, this.equalityKey)) {
                         label = this.getOptionLabel(option);
                         break;
                     }
@@ -284,34 +319,55 @@ export default {
             return label;
         },
         onToggleAll(event) {
-            const value = this.allSelected ? [] : this.visibleOptions;
+            const value = this.allSelected ? [] : this.visibleOptions  && this.visibleOptions.map(option => this.getOptionValue(option));
 
             this.$emit('input', value);
             this.$emit('change', {originalEvent: event, value: value});
+        },
+        appendContainer() {
+            if (this.appendTo) {
+                if (this.appendTo === 'body')
+                    document.body.appendChild(this.$refs.overlay);
+                else
+                    document.getElementById(this.appendTo).appendChild(this.$refs.overlay);
+            }
+        },
+        restoreAppend() {
+            if (this.$refs.overlay && this.appendTo) {
+                if (this.appendTo === 'body')
+                    document.body.removeChild(this.$refs.overlay);
+                else
+                    document.getElementById(this.appendTo).removeChild(this.$refs.overlay);
+            }
+        },
+        onFilterChange(event) {
+            this.$emit('filter', {originalEvent: event, value: event.target.value});
         }
     },
     computed: {
         visibleOptions() {
             if (this.filterValue && this.filterValue.trim().length > 0)
-                return this.options.filter(option => this.getOptionLabel(option).toLowerCase().indexOf(this.filterValue.toLowerCase()) > -1);
+                return this.options.filter(option => this.getOptionLabel(option).toLocaleLowerCase(this.filterLocale).indexOf(this.filterValue.toLocaleLowerCase(this.filterLocale)) > -1);
             else
                 return this.options;
         },
         containerClass() {
             return [
-                'p-multiselect p-component p-unselectable-text',
+                'p-multiselect p-component',
                 {
                     'p-disabled': this.disabled,
-                    'p-focus': this.focused
+                    'p-focus': this.focused,
+                    'p-inputwrapper-filled': this.value && this.value.length,
+                    'p-inputwrapper-focus': this.focused
                 }
             ];
         },
         labelClass() {
             return [
-                'p-multiselect-label', 
+                'p-multiselect-label',
                 {
-                    'p-placeholder': this.label == null && this.placeholder, 
-                    'p-multiselect-label-empty': !this.placeholder
+                    'p-placeholder': this.label === this.placeholder,
+                    'p-multiselect-label-empty': !this.$scopedSlots['value'] && !this.placeholder && (!this.value || this.value.length === 0)
                 }
             ];
         },
@@ -322,7 +378,7 @@ export default {
                 label = '';
                 for(let i = 0; i < this.value.length; i++) {
                     if(i !== 0) {
-                        label += ',';
+                        label += ', ';
                     }
 
                     label += this.getLabelByValue(this.value[i]);
@@ -337,63 +393,59 @@ export default {
         allSelected() {
             if (this.filterValue && this.filterValue.trim().length > 0) {
                 let allSelected = true;
-                for (let option of this.visibleOptions) {
-                    if (!this.isSelected(option)) {
-                        allSelected = false;
-                        break;
-                    }
+				if(this.visibleOptions.length > 0) {
+					for (let option of this.visibleOptions) {
+						if (!this.isSelected(option)) {
+							allSelected = false;
+							break;
+						}
+					}
                 }
+                else
+                    allSelected = false;
                 return allSelected;
             }
             else {
                 return this.value && this.options && (this.value.length > 0 && this.value.length === this.options.length);
-            }                
+            }
+        },
+        equalityKey() {
+            return this.optionValue ? null : this.dataKey;
         }
+    },
+    directives: {
+        'ripple': Ripple
     }
 }
 </script>
 
 <style>
 .p-multiselect {
-    display: inline-block;
+    display: inline-flex;
+    cursor: pointer;
     position: relative;
-    width: auto;
-    cursor: pointer;
+    user-select: none;
 }
 
-.p-multiselect .p-multiselect-trigger {
-    border-right: none;
-    border-top: none;
-    border-bottom: none;
-    cursor: pointer;
-    width: 1.5em;
-    height: 100%;
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 0 .25em;
+.p-multiselect-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-.p-multiselect .p-multiselect-trigger .p-multiselect-trigger-icon {
-    top: 50%;
-    left: 50%;
-    margin-top: -.5em;
-    margin-left: -.5em;
-    position: absolute;
-}
-
-.p-multiselect .p-multiselect-label-container {
+.p-multiselect-label-container {
     overflow: hidden;
+    flex: 1 1 auto;
+    cursor: pointer;
 }
 
-.p-multiselect .p-multiselect-label  {
+.p-multiselect-label  {
     display: block;
-    padding: .25em 2em .25em .25em;
-    width: auto;
-    border: none;
+    white-space: nowrap;
     cursor: pointer;
-    text-overflow: ellipsis;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .p-multiselect-label-empty {
@@ -401,109 +453,65 @@ export default {
     visibility: hidden;
 }
 
-.p-multiselect.p-disabled .p-multiselect-trigger,
-.p-multiselect.p-disabled .p-multiselect-label {
-    cursor: auto;
-}
-
-.p-multiselect-panel {
-    padding: 0.2em;
-    position: absolute;
-    min-width: 10em;
-    z-index: 2;
-}
-
 .p-multiselect .p-multiselect-panel {
     min-width: 100%;
 }
 
-.p-multiselect-panel .p-multiselect-items-wrapper {
-    overflow: auto;
-    position: relative;
-    padding: 0.2em 0;
+.p-multiselect-panel {
+    position: absolute;
 }
 
-.p-multiselect-panel .p-multiselect-list {
-    border: 0 none;
+.p-multiselect-items-wrapper {
+    overflow: auto;
+}
+
+.p-multiselect-items {
     margin: 0;
+    padding: 0;
     list-style-type: none;
 }
 
-.p-multiselect-panel .p-multiselect-item {
-    border: 0 none;
+.p-multiselect-item {
     cursor: pointer;
+    display: flex;
+    align-items: center;
     font-weight: normal;
-    margin: 1px 0;
-    padding: .125em .25em;
-    text-align: left;
     white-space: nowrap;
-    display: block;
     position: relative;
-}
-
-.p-multiselect-panel .p-multiselect-item .p-checkbox {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.p-multiselect-panel .p-multiselect-item > span {
-    display: inline-block;
-    vertical-align: middle;
+    overflow: hidden;
 }
 
 .p-multiselect-header {
-    margin-bottom: 0.3em;
-    padding: .25em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.p-multiselect-filter-container {
     position: relative;
-    text-align: left;
+    flex: 1 1 auto;
 }
 
-.p-multiselect-header .p-checkbox {
-    display: inline-block;
-    vertical-align: middle;
-    cursor:pointer;
-}
-
-.p-multiselect-header .p-multiselect-filter-container {
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
-    width: 65%;
-}
-
-.p-multiselect-header .p-multiselect-filter-container .p-multiselect-filter-icon {
+.p-multiselect-filter-icon {
     position: absolute;
-    top: .25em;
-    left: .125em;
+    top: 50%;
+    margin-top: -.5rem;
 }
-            
-.p-multiselect-header .p-inputtext {
-    padding: .125em .125em .125em 1.25em;
+
+.p-multiselect-filter-container .p-inputtext {
     width: 100%;
 }
 
-.p-multiselect-header .p-multiselect-close {
-    position: absolute;
-    right: .375em;
-    top: .375em;
-    display: block;
-    border: 0 none;
-}
-
-.p-multiselect-header a.p-multiselect-all,
-.p-multiselect-header a.p-multiselect-none {
-    float:left;
-    margin-right: 10px;
-    display: block;
-}
-
-.p-multiselect-header .p-multiselect-close.p-state-hover {
-    padding:0px;
+.p-multiselect-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
 }
 
 .p-fluid .p-multiselect {
-    width: 100%;
-    box-sizing: border-box;
+    display: flex;
 }
-
 </style>

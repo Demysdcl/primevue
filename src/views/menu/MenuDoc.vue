@@ -2,12 +2,15 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Menu from 'primevue/menu';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+                <h5>MenuModel</h5>
+                <p>Menu uses the common MenuModel API to define the items, visit <router-link to="/menumodel">MenuModel API</router-link> for details.</p>
+
+				<h5>Getting Started</h5>
 				<p>Menu requires a collection of menuitems as its model.</p>
 <CodeHighlight>
 &lt;Menu :model="items" /&gt;
@@ -35,53 +38,52 @@ export default {
 				{
 					label: 'Vue Website',
 					icon: 'pi pi-external-link',
-					command: () => {
-						window.location.href = 'https://vuejs.org/'
-					}
+					url: 'https://vuejs.org/'
 				},
 				{
-					label: 'Upload',
-					icon: 'pi pi-upload',
-					command: () => {
-						window.location.hash = "/fileupload"
-					}
-				}
+                    label: 'Router',
+                    icon: 'pi pi-upload',
+                    to: '/fileupload'
+                }
 			]
 		}
 	}
 }
 </CodeHighlight>
 
-                <h3>MenuModel</h3>
-                <p>Menu uses the common MenuModel API to define the items, visit <router-link to="/theming">MenuModel API</router-link> for details.</p>
-
-                <h3>SubMenus</h3>
+                <h5>SubMenus</h5>
                 <p>Menu supports one level of nesting via subitems of an item.</p>
 <CodeHighlight lang="js">
-let items: [
+const items: [
     {
         label: 'Options',
-        items: [{label: 'New', icon: 'pi pi-fw pi-plus',command:()=>{ window.location.hash="/fileupload"; }},
-                {label: 'Delete', icon: 'pi pi-fw pi-trash', url: 'http://primetek.com.tr'}]
-    }, 
+        items: [{label: 'New', icon: 'pi pi-fw pi-plus', command:() => {} },
+                {label: 'Delete', icon: 'pi pi-fw pi-trash', url: 'https://www.primetek.com.tr'}]
+    },
     {
         label: 'Account',
-        items: [{label: 'Options', icon: 'pi pi-fw pi-cog',command:()=>{ window.location.hash="/"; }},
-                {label: 'Sign Out', icon: 'pi pi-fw pi-power-off'} ]
+        items: [{label: 'Options', icon: 'pi pi-fw pi-cog', to: '/options'},
+                {label: 'Sign Out', icon: 'pi pi-fw pi-power-off', to: '/logout'} ]
     }
-]
+];
 </CodeHighlight>
 
-                <h3>Popup Mode</h3>
+                <h5>Popup Mode</h5>
                 <p>Menu is inline by default whereas popup mode is supported by enabling popup property and calling toggle method with an event of the target.</p>
 
 <CodeHighlight>
 &lt;Button type="button" label="Toggle" @click="toggle" /&gt;
 &lt;Menu ref="menu" :model="items" :popup="true" /&gt;
 </CodeHighlight>
-                
-                <h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+
+<CodeHighlight lang="js">
+toggle(event) {
+    this.$refs.menu.toggle(event);
+}
+</CodeHighlight>
+
+                <h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -92,7 +94,7 @@ let items: [
                                 <th>Description</th>
                             </tr>
 						</thead>
-						<tbody>   
+						<tbody>
                             <tr>
                                 <td>model</td>
                                 <td>array</td>
@@ -109,7 +111,7 @@ let items: [
                                 <td>appendTo</td>
                                 <td>string</td>
                                 <td>null</td>
-                                <td>DOM element instance where the dialog should be mounted.</td>
+                                <td>Id of the element or "body" for document where the overlay should be appended to.</td>
                             </tr>
                             <tr>
                                 <td>baseZIndex</td>
@@ -127,7 +129,7 @@ let items: [
 					</table>
 				</div>
 
-				<h3>Methods</h3>
+				<h5>Methods</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -141,7 +143,7 @@ let items: [
                             <tr>
                                 <td>toggle</td>
                                 <td>event: Browser event</td>
-                                <td>Toggles the visiblity of the overlay.</td>
+                                <td>Toggles the visibility of the overlay.</td>
                             </tr>
                             <tr>
                                 <td>show</td>
@@ -158,7 +160,7 @@ let items: [
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -169,31 +171,31 @@ let items: [
                             </tr>
 						</thead>
 						<tbody>
-						<tr>
-                            <td>p-menu</td>
-                            <td>Container element.</td>
-                        </tr>
-                        <tr>
-                            <td>p-menu-list</td>
-                            <td>List element.</td>
-                        </tr>
-                        <tr>
-                            <td>p-menuitem</td>
-                            <td>Menuitem element.</td>
-                        </tr>
-                        <tr>
-                            <td>p-menuitem-text</td>
-                            <td>Label of a menuitem.</td>
-                        </tr>
-                        <tr>
-                            <td>p-menuitem-icon</td>
-                            <td>Icon of a menuitem.</td>
-                        </tr>
+                            <tr>
+                                <td>p-menu</td>
+                                <td>Container element.</td>
+                            </tr>
+                            <tr>
+                                <td>p-menu-list</td>
+                                <td>List element.</td>
+                            </tr>
+                            <tr>
+                                <td>p-menuitem</td>
+                                <td>Menuitem element.</td>
+                            </tr>
+                            <tr>
+                                <td>p-menuitem-text</td>
+                                <td>Label of a menuitem.</td>
+                            </tr>
+                            <tr>
+                                <td>p-menuitem-icon</td>
+                                <td>Icon of a menuitem.</td>
+                            </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -207,8 +209,8 @@ let items: [
 &lt;Menu :model="items" /&gt;
 
 &lt;h3&gt;Overlay&lt;/h3&gt;
-&lt;Button type="button" label="Toggle" @click="toggle" /&gt;
-&lt;Menu ref="menu" :model="items" :popup="true" /&gt;
+&lt;Button type="button" label="Toggle" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" /&gt;
+&lt;Menu id="overlay_menu" ref="menu" :model="items" :popup="true" /&gt;
 </template>
 </CodeHighlight>
 
@@ -220,14 +222,14 @@ export default {
                 {
                     label: 'Options',
                     items: [{
-                        label: 'Update', 
-                        icon: 'pi pi-refresh', 
+                        label: 'Update',
+                        icon: 'pi pi-refresh',
                         command: () => {
                             this.$toast.add({severity:'success', summary:'Updated', detail:'Data Updated', life: 3000});
                         }
                     },
                     {
-                        label: 'Delete', 
+                        label: 'Delete',
                         icon: 'pi pi-times',
                         command: () => {
                             this.$toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000});
@@ -237,22 +239,18 @@ export default {
                 {
                     label: 'Navigate',
                     items: [{
-                        label: 'Vue Website', 
+                        label: 'Vue Website',
                         icon: 'pi pi-external-link',
-                        command: () => {
-                            window.location.href = 'https://vuejs.org/'
-                        }
+                        url: 'https://vuejs.org/'
                     },
-                    {   
-                        label: 'Upload', 
-                        icon: 'pi pi-upload', 
-                        command: () => {
-                            window.location.hash = "/fileupload"
-                        }
+                    {
+                        label: 'Router',
+                        icon: 'pi pi-upload',
+                        to: '/fileupload'
                     }
                 ]}
             ]
-        } 
+        }
     },
     methods: {
         toggle(event) {

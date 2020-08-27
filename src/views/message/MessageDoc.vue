@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Message from 'primevue/message';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Message component requires a content to display.</p>
 <CodeHighlight>
 &lt;Message&gt;Welcome to PrimeVue&lt;/Message&gt;
@@ -33,7 +33,7 @@ data() {
 }
 </CodeHighlight>
 
-				<h3>Severities</h3>
+				<h5>Severities</h5>
 				<p>There are four possible values for the severity of a message. Default one is "info".</p>
 
 				<ul>
@@ -43,32 +43,32 @@ data() {
 					<li>error</li>
 				</ul>
 
-				<h3>Closable</h3>
+				<h5>Closable</h5>
 				<p>Messages are closable by default resulting in a close icon being displayed on top right corner. In order to disable closable messages, set <i>closable</i> to false.</p>
 <CodeHighlight>
 &lt;Message severity="success" :closable="false"&gt;Order Submitted&lt;/Message&gt;
 </CodeHighlight>
 
-				<h3>Sticky</h3>
-				<p>Messages are sticky by default, if you require them to be cleared automatically, disable <i>sticky</i> property and optionally configure the <i>life</i> property to specify how long the message 
+				<h5>Sticky</h5>
+				<p>Messages are sticky by default, if you require them to be cleared automatically, disable <i>sticky</i> property and optionally configure the <i>life</i> property to specify how long the message
                 should be displayed which is 3000 ms by default.</p>
 <CodeHighlight>
 &lt;Message severity="warn" :life="5000" :sticky="false"&gt;This message will hide in 5 seconds.&lt;/Message&gt;
 </CodeHighlight>
 
-				<h3>ValidationMessage Component</h3>
+				<h5>Inline Message Component</h5>
 <CodeHighlight lang="javascript">
-import Message from 'primevue/message';
+import InlineMessage from 'primevue/inlinemessage';
 </CodeHighlight>
 
-				<p>ValidationMessage component is useful in cases where a single message needs to be displayed related to an element such as forms. It has one property, <i>severity</i> of the message.</p>
+				<p>InlineMessage component is useful in cases where a single message needs to be displayed related to an element such as forms. It has one property, <i>severity</i> of the message.</p>
 <CodeHighlight>
-&lt;InputText placeholder="Username" class="p-error" /&gt;
-&lt;ValidationMessage&gt;Field is required&lt;/ValidationMessage&gt;
+&lt;InputText placeholder="Username" class="p-invalid" /&gt;
+&lt;InlineMessage&gt;Field is required&lt;/InlineMessage&gt;
 </CodeHighlight>
 
 
-				<h3>Properties of Message</h3>
+				<h5>Properties of Message</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -108,7 +108,7 @@ import Message from 'primevue/message';
 					</table>
 				</div>
 
-                <h3>Properties of ValidationMessage</h3>
+                <h5>Properties of ValidationMessage</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -130,9 +130,9 @@ import Message from 'primevue/message';
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
-				
+
                 <strong>Message</strong>
                 <div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -179,7 +179,7 @@ import Message from 'primevue/message';
 					</table>
 				</div>
 
-                <strong>ValidationMessage</strong>
+                <strong>InlineMessage</strong>
                 <div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -190,38 +190,38 @@ import Message from 'primevue/message';
 						</thead>
 						<tbody>
                             <tr>
-                                <td>p-message</td>
+                                <td>p-inline-message</td>
                                 <td>Container element.</td>
                             </tr>
                             <tr>
-                                <td>p-message-info</td>
+                                <td>p-inline-message-info</td>
                                 <td>Container element when displaying info messages.</td>
                             </tr>
                             <tr>
-                                <td>p-message-warn</td>
+                                <td>p-inline-message-warn</td>
                                 <td>Container element when displaying warning messages.</td>
                             </tr>
                             <tr>
-                                <td>p-message-error</td>
+                                <td>p-inline-message-error</td>
                                 <td>Container element when displaying error messages.</td>
                             </tr>
                             <tr>
-                                <td>p-message-success</td>
+                                <td>p-inline-message-success</td>
                                 <td>Container element when displaying success messages.</td>
                             </tr>
                             <tr>
-                                <td>p-message-icon</td>
+                                <td>p-inline-message-icon</td>
                                 <td>Severity icon.</td>
                             </tr>
                            <tr>
-                                <td>p-message-text</td>
+                                <td>p-inline-message-text</td>
                                 <td>Content of a message.</td>
                             </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -231,33 +231,32 @@ import Message from 'primevue/message';
 				</a>
 <CodeHighlight>
 <template v-pre>
-&lt;h3&gt;Severities&lt;/h3&gt;
-&lt;Message severity="success"&gt;Order Submitted&lt;/Message&gt;
-&lt;Message severity="info"&gt;PrimeVue Rocks&lt;/Message&gt;
-&lt;Message severity="warn"&gt;There are unsaved changes&lt;/Message&gt;
-&lt;Message severity="error"&gt;Validation Failed&lt;/Message&gt;
+&lt;h5&gt;Severities&lt;/h5&gt;
+&lt;Message severity="success"&gt;Success Message Content&lt;/Message&gt;
+&lt;Message severity="info"&gt;Info Message Content&lt;/Message&gt;
+&lt;Message severity="warn"&gt;Warning Message Content&lt;/Message&gt;
+&lt;Message severity="error"&gt;Error Message Content&lt;/Message&gt;
 
-&lt;h3&gt;Dynamic&lt;/h3&gt;
+&lt;h5&gt;Dynamic&lt;/h5&gt;
 &lt;Button label="Show" @click="addMessages()" /&gt;
 &lt;Button label="Clear" @click="removeMessages()" class="p-button-secondary"/&gt;
-
 &lt;transition-group name="p-messages" tag="div"&gt;
     &lt;Message v-for="msg of messages" :severity="msg.severity" :key="msg.content"&gt;{{msg.content}}&lt;/Message&gt;
 &lt;/transition-group&gt;
 
-&lt;h3&gt;Auto Dismiss&lt;/h3&gt;
+&lt;h5&gt;Auto Dismiss&lt;/h5&gt;
 &lt;Message severity="warn" :life="10000" :sticky="false"&gt;This message will hide in 10 seconds.&lt;/Message&gt;
 
-&lt;h3&gt;Validation Message&lt;/h3&gt;
-&lt;div class="p-grid"&gt;
-    &lt;div class="p-col-12"&gt;
-        &lt;InputText placeholder="Username" class="p-error" /&gt;
-        &lt;ValidationMessage&gt;Field is required&lt;/ValidationMessage&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12"&gt;
-        &lt;InputText placeholder="Email" class="p-error" :closable="false" /&gt;
-        &lt;ValidationMessage /&gt;
-    &lt;/div&gt;
+&lt;h5&gt;Validation Message&lt;/h5&gt;
+&lt;div class="p-formgroup-inline" style="margin-bottom:.5rem"&gt;
+    &lt;Label for="username" class="p-sr-only"&gt;Username&lt;/Label&gt;
+    &lt;InputText id="username" placeholder="Username" class="p-invalid" /&gt;
+    &lt;InlineMessage&gt;Username is required&lt;/InlineMessage&gt;
+&lt;/div&gt;
+&lt;div class="p-formgroup-inline"&gt;
+    &lt;Label for="email" class="p-sr-only"&gt;email&lt;/Label&gt;
+    &lt;InputText id="email" placeholder="Email" class="p-invalid" /&gt;
+    &lt;InlineMessage /&gt;
 &lt;/div&gt;
 </template>
 </CodeHighlight>
@@ -287,11 +286,11 @@ export default {
 
 <CodeHighlight lang="css">
 button.p-button {
-	margin-right: .5em;
+	margin-right: .5rem;
 }
 
 .p-inputtext {
-	margin-right: .25em;
+	margin-right: .25rem;
 }
 </CodeHighlight>
 			</TabPanel>

@@ -1,10 +1,10 @@
 <template>
-   <div class="p-checkbox p-component" @click="onClick($event)">
+   <div :class="containerClass" @click="onClick($event)">
        <div class="p-hidden-accessible">
            <input ref="input" type="checkbox" :checked="checked" :value="value" v-bind="$attrs" @focus="onFocus($event)" @blur="onBlur($event)">
         </div>
-        <div ref="box" :class="['p-checkbox-box p-component', {'p-highlight': checked, 'p-disabled': $attrs.disabled, 'p-focus': focused}]">
-            <span :class="['p-checkbox-icon p-c', {'pi pi-check': checked}]"></span>
+        <div ref="box" :class="['p-checkbox-box', {'p-highlight': checked, 'p-disabled': $attrs.disabled, 'p-focus': focused}]" role="checkbox" :aria-checked="checked">
+            <span :class="['p-checkbox-icon', {'pi pi-check': checked}]"></span>
         </div>
     </div>
 </template>
@@ -15,9 +15,9 @@ import ObjectUtils from '../utils/ObjectUtils';
 export default {
     inheritAttrs: false,
     props: {
-         value: null,
-         modelValue: null,
-         binary: Boolean
+        value: null,
+        modelValue: null,
+        binary: Boolean
     },
     model: {
         prop: 'modelValue',
@@ -32,7 +32,7 @@ export default {
         onClick(event) {
             if (!this.$attrs.disabled) {
                 let newModelValue;
-                
+
                 if (this.binary) {
                     newModelValue = !this.modelValue;
                 }
@@ -40,7 +40,7 @@ export default {
                     if (this.checked)
                         newModelValue = this.modelValue.filter(val => !ObjectUtils.equals(val, this.value));
                     else
-                        newModelValue = this.modelValue ? [...this.modelValue, this.value] : [this.value]; 
+                        newModelValue = this.modelValue ? [...this.modelValue, this.value] : [this.value];
                 }
 
                 this.$emit('click', event);
@@ -61,6 +61,9 @@ export default {
     computed: {
         checked() {
             return this.binary ? this.modelValue : ObjectUtils.contains(this.value, this.modelValue);
+        },
+        containerClass() {
+            return ['p-checkbox p-component', {'p-checkbox-checked': this.checked, 'p-checkbox-disabled': this.$attrs.disabled, 'p-checkbox-focused': this.focused}];
         }
     }
 }

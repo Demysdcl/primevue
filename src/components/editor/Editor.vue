@@ -15,17 +15,17 @@
                     </select>
                 </span>
                 <span class="ql-formats">
-                    <button class="ql-bold"></button>
-                    <button class="ql-italic"></button>
-                    <button class="ql-underline"></button>
+                    <button class="ql-bold" type="button"></button>
+                    <button class="ql-italic" type="button"></button>
+                    <button class="ql-underline" type="button"></button>
                 </span>
                 <span class="ql-formats">
                     <select class="ql-color"></select>
                     <select class="ql-background"></select>
                 </span>
                 <span class="ql-formats">
-                    <button class="ql-list" value="ordered"></button>
-                    <button class="ql-list" value="bullet"></button>
+                    <button class="ql-list" value="ordered" type="button"></button>
+                    <button class="ql-list" value="bullet" type="button"></button>
                     <select class="ql-align">
                         <option defaultValue></option>
                         <option value="center"></option>
@@ -34,12 +34,12 @@
                     </select>
                 </span>
                 <span class="ql-formats">
-                    <button class="ql-link"></button>
-                    <button class="ql-image"></button>
-                    <button class="ql-code-block"></button>
+                    <button class="ql-link" type="button"></button>
+                    <button class="ql-image" type="button"></button>
+                    <button class="ql-code-block" type="button"></button>
                 </span>
                 <span class="ql-formats">
-                    <button class="ql-clean"></button>
+                    <button class="ql-clean" type="button"></button>
                 </span>
             </slot>
         </div>
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import * as Quill from "quill";
+import Quill from "quill";
 
 export default {
     props: {
@@ -71,27 +71,31 @@ export default {
             modules: {
                 toolbar: this.$refs.toolbarElement
             },
-            readOnly: this.readOnly,
+            readOnly: this.readonly,
             theme: 'snow',
-            formats: this.formats
-        });
-
-        this.quill.on('text-change', (delta, source) => {
-            let html = this.$refs.editorElement.children[0].innerHTML;
-            if (html === '<p><br></p>') {
-                html = '';
-            }
-
-            this.$emit('input', html);
-            this.$emit('text-change', {
-                htmlValue: html,
-                textValue: this.quill.getText(),
-                delta: delta,
-                source: source
-            });
+            formats: this.formats,
+            placeholder: this.placeholder
         });
 
         this.renderValue(this.value);
+
+        this.quill.on('text-change', (delta, oldContents, source) => {
+            if (source === 'user') {
+                let html = this.$refs.editorElement.children[0].innerHTML;
+                let text = this.quill.getText().trim();
+                if (html === '<p><br></p>') {
+                    html = '';
+                }
+
+                this.$emit('input', html);
+                this.$emit('text-change', {
+                    htmlValue: html,
+                    textValue: text,
+                    delta: delta,
+                    source: source
+                });
+            }
+        });
     },
     methods: {
         renderValue(value) {
@@ -174,7 +178,7 @@ export default {
 }
 .ql-editor ol,
 .ql-editor ul {
-  padding-left: 1.5em;
+  padding-left: 1.5rem;
 }
 .ql-editor ol > li,
 .ql-editor ul > li {
@@ -206,24 +210,24 @@ export default {
 .ql-editor li::before {
   display: inline-block;
   white-space: nowrap;
-  width: 1.2em;
+  width: 1.2rem;
 }
 .ql-editor li:not(.ql-direction-rtl)::before {
-  margin-left: -1.5em;
-  margin-right: 0.3em;
+  margin-left: -1.5rem;
+  margin-right: 0.3rem;
   text-align: right;
 }
 .ql-editor li.ql-direction-rtl::before {
-  margin-left: 0.3em;
-  margin-right: -1.5em;
+  margin-left: 0.3rem;
+  margin-right: -1.5rem;
 }
 .ql-editor ol li:not(.ql-direction-rtl),
 .ql-editor ul li:not(.ql-direction-rtl) {
-  padding-left: 1.5em;
+  padding-left: 1.5rem;
 }
 .ql-editor ol li.ql-direction-rtl,
 .ql-editor ul li.ql-direction-rtl {
-  padding-right: 1.5em;
+  padding-right: 1.5rem;
 }
 .ql-editor ol li {
   counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
@@ -311,112 +315,112 @@ export default {
   content: counter(list-9, decimal) '. ';
 }
 .ql-editor .ql-indent-1:not(.ql-direction-rtl) {
-  padding-left: 3em;
+  padding-left: 3rem;
 }
 .ql-editor li.ql-indent-1:not(.ql-direction-rtl) {
-  padding-left: 4.5em;
+  padding-left: 4.5rem;
 }
 .ql-editor .ql-indent-1.ql-direction-rtl.ql-align-right {
-  padding-right: 3em;
+  padding-right: 3rem;
 }
 .ql-editor li.ql-indent-1.ql-direction-rtl.ql-align-right {
-  padding-right: 4.5em;
+  padding-right: 4.5rem;
 }
 .ql-editor .ql-indent-2:not(.ql-direction-rtl) {
-  padding-left: 6em;
+  padding-left: 6rem;
 }
 .ql-editor li.ql-indent-2:not(.ql-direction-rtl) {
-  padding-left: 7.5em;
+  padding-left: 7.5rem;
 }
 .ql-editor .ql-indent-2.ql-direction-rtl.ql-align-right {
-  padding-right: 6em;
+  padding-right: 6rem;
 }
 .ql-editor li.ql-indent-2.ql-direction-rtl.ql-align-right {
-  padding-right: 7.5em;
+  padding-right: 7.5rem;
 }
 .ql-editor .ql-indent-3:not(.ql-direction-rtl) {
-  padding-left: 9em;
+  padding-left: 9rem;
 }
 .ql-editor li.ql-indent-3:not(.ql-direction-rtl) {
-  padding-left: 10.5em;
+  padding-left: 10.5rem;
 }
 .ql-editor .ql-indent-3.ql-direction-rtl.ql-align-right {
-  padding-right: 9em;
+  padding-right: 9rem;
 }
 .ql-editor li.ql-indent-3.ql-direction-rtl.ql-align-right {
-  padding-right: 10.5em;
+  padding-right: 10.5rem;
 }
 .ql-editor .ql-indent-4:not(.ql-direction-rtl) {
-  padding-left: 12em;
+  padding-left: 12rem;
 }
 .ql-editor li.ql-indent-4:not(.ql-direction-rtl) {
-  padding-left: 13.5em;
+  padding-left: 13.5rem;
 }
 .ql-editor .ql-indent-4.ql-direction-rtl.ql-align-right {
-  padding-right: 12em;
+  padding-right: 12rem;
 }
 .ql-editor li.ql-indent-4.ql-direction-rtl.ql-align-right {
-  padding-right: 13.5em;
+  padding-right: 13.5rem;
 }
 .ql-editor .ql-indent-5:not(.ql-direction-rtl) {
-  padding-left: 15em;
+  padding-left: 15rem;
 }
 .ql-editor li.ql-indent-5:not(.ql-direction-rtl) {
-  padding-left: 16.5em;
+  padding-left: 16.5rem;
 }
 .ql-editor .ql-indent-5.ql-direction-rtl.ql-align-right {
-  padding-right: 15em;
+  padding-right: 15rem;
 }
 .ql-editor li.ql-indent-5.ql-direction-rtl.ql-align-right {
-  padding-right: 16.5em;
+  padding-right: 16.5rem;
 }
 .ql-editor .ql-indent-6:not(.ql-direction-rtl) {
-  padding-left: 18em;
+  padding-left: 18rem;
 }
 .ql-editor li.ql-indent-6:not(.ql-direction-rtl) {
-  padding-left: 19.5em;
+  padding-left: 19.5rem;
 }
 .ql-editor .ql-indent-6.ql-direction-rtl.ql-align-right {
-  padding-right: 18em;
+  padding-right: 18rem;
 }
 .ql-editor li.ql-indent-6.ql-direction-rtl.ql-align-right {
-  padding-right: 19.5em;
+  padding-right: 19.5rem;
 }
 .ql-editor .ql-indent-7:not(.ql-direction-rtl) {
-  padding-left: 21em;
+  padding-left: 21rem;
 }
 .ql-editor li.ql-indent-7:not(.ql-direction-rtl) {
-  padding-left: 22.5em;
+  padding-left: 22.5rem;
 }
 .ql-editor .ql-indent-7.ql-direction-rtl.ql-align-right {
-  padding-right: 21em;
+  padding-right: 21rem;
 }
 .ql-editor li.ql-indent-7.ql-direction-rtl.ql-align-right {
-  padding-right: 22.5em;
+  padding-right: 22.5rem;
 }
 .ql-editor .ql-indent-8:not(.ql-direction-rtl) {
-  padding-left: 24em;
+  padding-left: 24rem;
 }
 .ql-editor li.ql-indent-8:not(.ql-direction-rtl) {
-  padding-left: 25.5em;
+  padding-left: 25.5rem;
 }
 .ql-editor .ql-indent-8.ql-direction-rtl.ql-align-right {
-  padding-right: 24em;
+  padding-right: 24rem;
 }
 .ql-editor li.ql-indent-8.ql-direction-rtl.ql-align-right {
-  padding-right: 25.5em;
+  padding-right: 25.5rem;
 }
 .ql-editor .ql-indent-9:not(.ql-direction-rtl) {
-  padding-left: 27em;
+  padding-left: 27rem;
 }
 .ql-editor li.ql-indent-9:not(.ql-direction-rtl) {
-  padding-left: 28.5em;
+  padding-left: 28.5rem;
 }
 .ql-editor .ql-indent-9.ql-direction-rtl.ql-align-right {
-  padding-right: 27em;
+  padding-right: 27rem;
 }
 .ql-editor li.ql-indent-9.ql-direction-rtl.ql-align-right {
-  padding-right: 28.5em;
+  padding-right: 28.5rem;
 }
 .ql-editor .ql-video {
   display: block;
@@ -477,13 +481,13 @@ export default {
   font-family: Monaco, Courier New, monospace;
 }
 .ql-editor .ql-size-small {
-  font-size: 0.75em;
+  font-size: 0.75rem;
 }
 .ql-editor .ql-size-large {
-  font-size: 1.5em;
+  font-size: 1.5rem;
 }
 .ql-editor .ql-size-huge {
-  font-size: 2.5em;
+  font-size: 2.5rem;
 }
 .ql-editor .ql-direction-rtl {
   direction: rtl;
@@ -704,22 +708,22 @@ export default {
   display: none;
 }
 .ql-snow .ql-editor h1 {
-  font-size: 2em;
+  font-size: 2rem;
 }
 .ql-snow .ql-editor h2 {
-  font-size: 1.5em;
+  font-size: 1.5rem;
 }
 .ql-snow .ql-editor h3 {
-  font-size: 1.17em;
+  font-size: 1.17rem;
 }
 .ql-snow .ql-editor h4 {
-  font-size: 1em;
+  font-size: 1rem;
 }
 .ql-snow .ql-editor h5 {
-  font-size: 0.83em;
+  font-size: 0.83rem;
 }
 .ql-snow .ql-editor h6 {
-  font-size: 0.67em;
+  font-size: 0.67rem;
 }
 .ql-snow .ql-editor a {
   text-decoration: underline;
@@ -885,22 +889,22 @@ export default {
   content: 'Heading 6';
 }
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
-  font-size: 2em;
+  font-size: 2rem;
 }
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
-  font-size: 1.5em;
+  font-size: 1.5rem;
 }
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
-  font-size: 1.17em;
+  font-size: 1.17rem;
 }
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
-  font-size: 1em;
+  font-size: 1rem;
 }
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="5"]::before {
-  font-size: 0.83em;
+  font-size: 0.83rem;
 }
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="6"]::before {
-  font-size: 0.67em;
+  font-size: 0.67rem;
 }
 .ql-snow .ql-picker.ql-font {
   width: 108px;

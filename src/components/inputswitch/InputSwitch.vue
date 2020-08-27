@@ -1,8 +1,8 @@
 <template>
     <div :class="containerClass" @click="onClick($event)">
         <div class="p-hidden-accessible">
-            <input ref="input" type="checkbox" :id="inputId" :name="name" :checked="value" :disabled="disabled" 
-                @focus="onFocus($event)" @blur="onBlur($event)" @keydown.enter.prevent="onClick($event)">
+            <input ref="input" type="checkbox" :id="inputId" :name="name" :checked="value" :disabled="disabled"
+                @focus="onFocus($event)" @blur="onBlur($event)" @keydown.enter.prevent="onClick($event)" role="switch" :aria-checked="value" :aria-labelledby="ariaLabelledBy">
         </div>
         <span class="p-inputswitch-slider"></span>
     </div>
@@ -14,7 +14,8 @@ export default {
         value: Boolean,
         inputId: String,
         name: String,
-        disabled: Boolean
+        disabled: Boolean,
+        ariaLabelledBy: null
     },
     data() {
         return {
@@ -45,7 +46,8 @@ export default {
                 'p-inputswitch p-component',
                 {
                     'p-inputswitch-checked': this.value,
-                    'p-inputswitch-focus': this.focused
+					'p-disabled': this.disabled,
+                    'p-focus': this.focused
                 }
             ];
         }
@@ -57,8 +59,6 @@ export default {
 .p-inputswitch {
     position: relative;
     display: inline-block;
-    width: 3em;
-    height: 1.75em;
 }
 
 .p-inputswitch-slider {
@@ -68,26 +68,11 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    -webkit-transition: .3s;
-    transition: .3s;
-    border-radius: 30px;
 }
 
 .p-inputswitch-slider:before {
     position: absolute;
     content: "";
-    height: 1.250em;
-    width: 1.250em;
-    left: .25em;
-    bottom: .25em;
-    border-radius: 50%;
-    -webkit-transition: .3s;
-    transition: .3s;
-}
-
-.p-inputswitch-checked .p-inputswitch-slider:before {
-    -webkit-transform: translateX(1.250em);
-    -ms-transform: translateX(1.250em);
-    transform: translateX(1.250em);
+    top: 50%;
 }
 </style>

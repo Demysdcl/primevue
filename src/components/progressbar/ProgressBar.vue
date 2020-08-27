@@ -1,7 +1,9 @@
 <template>
-    <div role="progressbar" :class="containerClass" :aria-valuemin="0" :aria-valuenow="value" :aria-valuemax="100">
+    <div role="progressbar" :class="containerClass" aria-valuemin="0" :aria-valuenow="value" aria-valuemax="100">
         <div v-if="determinate" class="p-progressbar-value p-progressbar-value-animate" :style="progressStyle"></div>
-        <div v-if="determinate && value" class="p-progressbar-label">{{value + '%'}}</div>
+        <div v-if="determinate && value && showValue" class="p-progressbar-label">
+            <slot>{{value + '%'}}</slot>
+        </div>
         <div v-if="indeterminate" class="p-progressbar-indeterminate-container">
             <div class="p-progressbar-value p-progressbar-value-animate"></div>
         </div>
@@ -33,7 +35,7 @@ export default {
         },
         progressStyle() {
             return {
-                width: this.value + '%', 
+                width: this.value + '%',
                 display: 'block'
             };
         },
@@ -48,9 +50,7 @@ export default {
 </script>
 
 <style>
-.p-progressbar { 
-    height: 1.2em; 
-    text-align: left; 
+.p-progressbar {
     position: relative;
     overflow: hidden;
 }
@@ -64,9 +64,6 @@ export default {
 }
 
 .p-progressbar-determinate .p-progressbar-value-animate {
-    -webkit-transition: width 1s ease-in-out;
-    -moz-transition: width 1s ease-in-out;
-    -o-transition: width 1s ease-in-out;
     transition: width 1s ease-in-out;
 }
 
@@ -76,14 +73,6 @@ export default {
     width: 100%;
     position: absolute;
     font-weight: bold;
-}
-
-.p-progressbar-indeterminate {
-    height: .5em;
-}
-
-.p-progressbar-indeterminate .p-progressbar-value {
-    border: 0 none;
 }
 
 .p-progressbar-indeterminate .p-progressbar-value::before {
@@ -111,7 +100,7 @@ export default {
     -webkit-animation-delay: 1.15s;
             animation-delay: 1.15s;
 }
-    
+
 @-webkit-keyframes p-progressbar-indeterminate-anim {
   0% {
     left: -35%;
@@ -121,7 +110,7 @@ export default {
     right: -90%; }
   100% {
     left: 100%;
-    right: -90%; } 
+    right: -90%; }
 }
 @keyframes p-progressbar-indeterminate-anim {
   0% {
@@ -132,7 +121,7 @@ export default {
     right: -90%; }
   100% {
     left: 100%;
-    right: -90%; } 
+    right: -90%; }
 }
 
 @-webkit-keyframes p-progressbar-indeterminate-anim-short {
@@ -144,7 +133,7 @@ export default {
     right: -8%; }
   100% {
     left: 107%;
-    right: -8%; } 
+    right: -8%; }
 }
 @keyframes p-progressbar-indeterminate-anim-short {
   0% {
@@ -155,6 +144,6 @@ export default {
     right: -8%; }
   100% {
     left: 107%;
-    right: -8%; } 
+    right: -8%; }
 }
 </style>

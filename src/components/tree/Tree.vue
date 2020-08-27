@@ -1,18 +1,17 @@
 <template>
     <div :class="containerClass">
         <template v-if="loading">
-            <div class="p-tree-loading-mask p-component-overlay"></div>
-            <div class="p-tree-loading-content">
+            <div class="p-tree-loading-overlay p-component-overlay">
                 <i :class="loadingIconClass" />
             </div>
         </template>
         <div class="p-tree-filter-container" v-if="filter">
             <input type="text" autocomplete="off" class="p-tree-filter p-inputtext p-component" :placeholder="filterPlaceholder"
                 @keydown="onFilterKeydown" v-model="filterValue" />
-                <span class="p-tree-filter-icon pi pi-search"></span>
+            <span class="p-tree-filter-icon pi pi-search"></span>
         </div>
         <ul class="p-tree-container" role="tree">
-            <TreeNode v-for="node of valueToRender" :key="node.key" :node="node" :templates="$scopedSlots" 
+            <TreeNode v-for="node of valueToRender" :key="node.key" :node="node" :templates="$scopedSlots"
                 :expandedKeys="d_expandedKeys" @node-toggle="onNodeToggle" @node-click="onNodeClick"
                 :selectionMode="selectionMode" :selectionKeys="selectionKeys" @checkbox-change="onCheckboxChange"></TreeNode>
         </ul>
@@ -68,6 +67,10 @@ export default {
         filterPlaceholder: {
             type: String,
             default: null
+        },
+        filterLocale: {
+            type: String,
+            default: undefined
         }
     },
     data() {
@@ -92,7 +95,7 @@ export default {
             else {
                 this.d_expandedKeys[key] = true;
                 this.$emit('node-expand', node);
-            }                
+            }
 
             this.d_expandedKeys = {...this.d_expandedKeys};
             this.$emit('update:expandedKeys', this.d_expandedKeys);
@@ -117,9 +120,9 @@ export default {
             const originalEvent = event.originalEvent;
             const node = event.node;
             const metaKey = (originalEvent.metaKey||originalEvent.ctrlKey);
-            const selected = this.selected;
+            const selected = this.isNodeSelected(node);
             let _selectionKeys;
-        
+
             if (selected && metaKey) {
                 if (this.isSingleSelectionMode()) {
                     _selectionKeys = {};
@@ -147,9 +150,9 @@ export default {
         },
         handleSelectionWithoutMetaKey(event) {
             const node = event.node;
-            const selected = this.isSelected(node);
+            const selected = this.isNodeSelected(node);
             let _selectionKeys;
-            
+
             if (this.isSingleSelectionMode()) {
                 if (selected) {
                     _selectionKeys = {};
@@ -171,7 +174,7 @@ export default {
                 else {
                     _selectionKeys = this.selectionKeys ? {...this.selectionKeys} : {};
                     _selectionKeys[node.key] = true;
-                    
+
                     this.$emit('node-select', node);
                 }
             }
@@ -184,7 +187,7 @@ export default {
         isMultipleSelectionMode() {
             return this.selectionMode === 'multiple';
         },
-        isSelected(node) {
+        isNodeSelected(node) {
             return (this.selectionMode && this.selectionKeys) ? this.selectionKeys[node.key] === true : false;
         },
         isChecked(node) {
@@ -212,7 +215,7 @@ export default {
                         }
                     }
                 }
-                
+
                 if (matched) {
                     return true;
                 }
@@ -221,7 +224,7 @@ export default {
         isFilterMatched(node, {searchFields, filterText, strict}) {
             let matched = false;
             for(let field of searchFields) {
-                let fieldValue = String(ObjectUtils.resolveFieldData(node, field)).toLowerCase();
+                let fieldValue = String(ObjectUtils.resolveFieldData(node, field)).toLocaleLowerCase(this.filterLocale);
                 if(fieldValue.indexOf(filterText) > -1) {
                     matched = true;
                 }
@@ -247,19 +250,19 @@ export default {
         filteredValue() {
             let filteredNodes = [];
             const searchFields = this.filterBy.split(',');
-            const filterText = this.filterValue.trim().toLowerCase();
+            const filterText = this.filterValue.trim().toLocaleLowerCase(this.filterLocale);
             const strict = this.filterMode === 'strict';
 
             for (let node of this.value) {
                 let _node = {...node};
                 let paramsWithoutNode = {searchFields, filterText, strict};
-                
+
                 if ((strict && (this.findFilteredNodes(_node, paramsWithoutNode) || this.isFilterMatched(_node, paramsWithoutNode))) ||
                     (!strict && (this.isFilterMatched(_node, paramsWithoutNode) || this.findFilteredNodes(_node, paramsWithoutNode)))) {
                     filteredNodes.push(_node);
                 }
             }
-            
+
             return filteredNodes;
         },
         valueToRender() {
@@ -276,135 +279,69 @@ export default {
 </script>
 
 <style>
-.p-tree {
-    width: 24em;
-}
-
-.p-tree .p-treenode-selectable.p-treenode-content {
-    cursor: pointer;
-}
-
-.p-tree .p-tree-container {
-    height: 100%;
+.p-tree-container {
     margin: 0;
+    padding: 0;
+    list-style-type: none;
     overflow: auto;
-    padding: .25em;
-    white-space: nowrap;
 }
 
-.p-tree .p-treenode-children {
+.p-treenode-children {
     margin: 0;
-    padding: 0 0 0 1em;
-}
-
-.p-tree .p-treenode {
-    background-attachment: scroll;
-    background-color: transparent;
-    background-image: none;
-    background-position: 0 0;
-    background-repeat: repeat-y;
-    list-style: none outside none;
-    margin: 0;
-    padding: .125em 0 0 0;
-}
-
-.p-tree .p-treenode-droppoint {
-    height: 4px;
+    padding: 0;
     list-style-type: none;
 }
 
-.p-tree .p-treenode-droppoint-active {
-    border: 0 none;
-}
-
-.p-tree .p-tree-toggler {
+.p-treenode-selectable {
     cursor: pointer;
-    display: inline-block;
-    vertical-align: middle;
+    user-select: none;
 }
 
-.p-tree .p-tree-toggler .p-tree-toggler-icon {
-    vertical-align: middle;
+.p-tree-toggler {
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
 }
 
-.p-tree .p-treenode-icon {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.p-tree .p-treenode-label {
-    display: inline-block;
-    padding: 0 .25em;
-    vertical-align: middle;
-}
-
-.p-tree .p-treenode.p-treenode-leaf > .p-treenode-content > .p-tree-toggler {
+.p-treenode-leaf > .p-treenode-content .p-tree-toggler {
     visibility: hidden;
 }
 
-.p-tree .p-checkbox-box {
-    cursor: pointer;
+.p-treenode-content {
+    display: flex;
+    align-items: center;
 }
 
-.p-tree .p-checkbox {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.p-tree .p-checkbox .p-checkbox-icon {
-    margin-left: 1px;
-}
-
-.p-tree .p-tree-filter {
+.p-tree-filter {
     width: 100%;
-    box-sizing: border-box;
-    padding-right: 1.5em;
 }
 
-.p-tree .p-tree-filter-container {
+.p-tree-filter-container {
     position: relative;
-    margin: 0;
-    padding: 0.4em;
-    display: inline-block;
+    display: block;
     width: 100%;
 }
 
-.p-tree .p-tree-filter-container .p-tree-filter-icon {
+.p-tree-filter-icon {
     position: absolute;
-    top: .8em;
-    right: 1em;
-}
-
-/** Fluid **/
-.p-fluid .p-tree {
-    width: 100%;
-}
-
-/** Loading **/
-.p-tree.p-tree-loading {
-    position: relative;
-    min-height: 4em;
-}
-
-.p-tree .p-tree-loading-mask {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=10)";
-    opacity: 0.1;
-    z-index: 1;
-}
-
-.p-tree .p-tree-loading-content {
-    position: absolute;
-    left: 50%;
     top: 50%;
-    z-index: 2;
-    margin-top: -1em;
-    margin-left: -1em;
+    margin-top: -.5rem;
 }
 
-.p-tree .p-tree-loading-content .p-tree-loading-icon {
-    font-size: 2em;
-} 
+.p-tree-loading {
+    position: relative;
+    min-height: 4rem;
+}
+
+.p-tree .p-tree-loading-overlay {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>

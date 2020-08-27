@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import SplitButton from 'primevue/splitbutton';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>SplitButton has a default command button and a collection of additional options defined by the <i>model</i> property.</p>
 <CodeHighlight lang="js">
 export default {
@@ -52,10 +52,10 @@ export default {
 &lt;SplitButton label="Save" icon="pi pi-plus" :model="items"&gt;&lt;/SplitButton&gt;
 </CodeHighlight>
 
-                <h3>MenuModel</h3>
-                <p>SplitButton uses the common MenuModel API to define the items, visit <router-link to="/theming">MenuModel API</router-link> for details.
+                <h5>MenuModel</h5>
+                <p>SplitButton uses the common MenuModel API to define the items, visit <router-link to="/menumodel">MenuModel API</router-link> for details.
 
-				<h3>Severity</h3>
+				<h5>Severity</h5>
 				<p>Different color options are available as severity levels.</p>
 
 				<ul>
@@ -63,6 +63,7 @@ export default {
 					<li>.p-button-success</li>
 					<li>.p-button-info</li>
 					<li>.p-button-warning</li>
+					<li>.p-button-help</li>
 					<li>.p-button-danger</li>
 				</ul>
 
@@ -72,10 +73,11 @@ export default {
 &lt;SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-success"&gt;&lt;/SplitButton&gt;
 &lt;SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-info"&gt;&lt;/SplitButton&gt;
 &lt;SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-warning"&gt;&lt;/SplitButton&gt;
+&lt;SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-help"&gt;&lt;/SplitButton&gt;
 &lt;SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-danger"&gt;&lt;/SplitButton&gt;
 </CodeHighlight>
 
-				<h3>Properties</h3>
+				<h5>Properties</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -129,11 +131,17 @@ export default {
                                 <td>0</td>
                                 <td>Base zIndex value to use in layering.</td>
                             </tr>
+                            <tr>
+                                <td>appendTo</td>
+                                <td>string</td>
+                                <td>null</td>
+                                <td>Id of the element or "body" for document where the overlay should be appended to.</td>
+                            </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -153,7 +161,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -180,7 +188,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -199,6 +207,7 @@ export default {
 &lt;SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-success"&gt;&lt;/SplitButton&gt;
 &lt;SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-info"&gt;&lt;/SplitButton&gt;
 &lt;SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-warning"&gt;&lt;/SplitButton&gt;
+&lt;SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-help"&gt;&lt;/SplitButton&gt;
 &lt;SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-danger"&gt;&lt;/SplitButton&gt;
 </template>
 </CodeHighlight>
@@ -249,7 +258,7 @@ export default {
 
 <CodeHighlight lang="css">
 .p-splitbutton {
-	margin-right: .5em;
+	margin-right: .5rem;
 }
 </CodeHighlight>
 			</TabPanel>

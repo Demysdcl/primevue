@@ -4,7 +4,7 @@
             <div class="p-overlaypanel-content">
                 <slot></slot>
             </div>
-            <button class="p-overlaypanel-close p-link" @click="hide" v-if="showCloseIcon">
+            <button class="p-overlaypanel-close p-link" @click="hide" v-if="showCloseIcon" :aria-label="ariaCloseLabel" type="button" v-ripple>
                 <span class="p-overlaypanel-close-icon pi pi-times"></span>
             </button>
         </div>
@@ -13,6 +13,7 @@
 
 <script>
 import DomHandler from '../utils/DomHandler';
+import Ripple from '../ripple/Ripple';
 
 export default {
     props: {
@@ -24,7 +25,10 @@ export default {
 			type: Boolean,
 			default: false
 		},
-        appendTo: String,
+        appendTo: {
+			type: String,
+			default: null
+		},
         baseZIndex: {
             type: Number,
             default: 0
@@ -32,6 +36,10 @@ export default {
         autoZIndex: {
             type: Boolean,
             default: true
+        },
+        ariaCloseLabel: {
+            type: String,
+            default: 'close'
         }
     },
     data() {
@@ -59,7 +67,7 @@ export default {
         },
         show(event) {
             this.visible = true;
-            this.target = event.target;
+            this.target = event.currentTarget;
         },
         hide() {
             this.visible = false;
@@ -67,9 +75,12 @@ export default {
         onEnter() {
             this.appendContainer();
             this.alignOverlay();
-            this.bindOutsideClickListener();
+            if (this.dismissable) {
+                this.bindOutsideClickListener();
+            }
+
             this.bindResizeListener();
-            
+
             if (this.autoZIndex) {
                 this.$refs.container.style.zIndex = String(this.baseZIndex + DomHandler.generateZIndex());
             }
@@ -136,14 +147,15 @@ export default {
                     document.getElementById(this.appendTo).removeChild(this.$refs.container);
             }
         }
-    } 
+    },
+    directives: {
+        'ripple': Ripple
+    }
 }
 </script>
 
 <style>
 .p-overlaypanel {
-    padding: 0;
-    margin: 0;
     position: absolute;
     margin-top: 10px;
 }
@@ -153,57 +165,35 @@ export default {
     margin-bottom: 10px;
 }
 
-.p-overlaypanel-content {
-    padding: 0.5em 1em;
-}
-
 .p-overlaypanel-close {
-    position: absolute;
-    top: -1em;
-    right: -1em;
-    width: 2em;
-    height: 2em;
-    line-height: 2em;
-    text-align: center;
-    -moz-border-radius: 100%;
-    -webkit-border-radius: 100%;
-    border-radius: 100%;
-}
-
-.p-overlaypanel-close-icon {
-    line-height: inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
 }
 
 /* Animation */
-.p-overlaypanel-enter,
+.p-overlaypanel-enter {
+    opacity: 0;
+    transform: scaleY(0.8);
+}
+
 .p-overlaypanel-leave-to {
     opacity: 0;
-    transform: translate3d(-50%, -25%, 0) scale(0.9);
 }
 
-.p-overlaypanel-enter-active,
+.p-overlaypanel-enter-active {
+    transition: transform .12s cubic-bezier(0, 0, 0.2, 1), opacity .12s cubic-bezier(0, 0, 0.2, 1);
+}
+
 .p-overlaypanel-leave-active {
-    transition: all 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.p-overlaypanel-enter,
-.p-overlaypanel-leave-to {
-    opacity: 0;
-    -webkit-transform: translateY(5%);
-    -ms-transform: translateY(5%);
-    transform: translateY(5%);
-}
-
-.p-overlaypanel-enter-active,
-.p-overlaypanel-leave-active {
-    -webkit-transition: transform .3s, opacity .15s;
-    transition: transform .3s, opacity .15s;
+    transition: opacity .1s linear;
 }
 
 .p-overlaypanel:after, .p-overlaypanel:before {
 	bottom: 100%;
-	left: 1.25em;
-	border: solid transparent;
+	left: 1.25rem;
 	content: " ";
 	height: 0;
 	width: 0;

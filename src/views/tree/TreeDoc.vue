@@ -2,15 +2,15 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Tree from 'primevue/tree';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Tree component requires an array of TreeNode objects as its <i>value</i>.</p>
 
-                <h3>TreeNode API</h3>
+                <h5>TreeNode API utilized by the Tree</h5>
                 <div class="doc-tablewrapper">
                     <table class="doc-table">
                         <thead>
@@ -89,7 +89,7 @@ import Tree from 'primevue/tree';
                 <p>Example below loads the tree nodes from a remote datasource via a service called NodeService.</p>
 <CodeHighlight>
 <template v-pre>
-&lt;Tree :value="nodes"&gt;&lt;/Tree&gt;  
+&lt;Tree :value="nodes"&gt;&lt;/Tree&gt;
 </template>
 </CodeHighlight>
 
@@ -120,7 +120,7 @@ export default class NodeService {
     getTreeNodes() {
         return axios.get('demo/data/treenodes.json').then(res => res.data.root);
     }
-    
+
 }
 </CodeHighlight>
 
@@ -182,7 +182,7 @@ export default class NodeService {
 }
 </CodeHighlight>
 
-                <h3>Programmatic Control</h3>
+                <h5>Programmatic Control</h5>
                 <p>Tree state can be controlled programmatically with the <i>expandedKeys</i> property that defines the keys
                     that are expanded. This property is a Map instance whose key is the key of a node and value is a boolean. Note that <i>expandedKeys</i> also supports two-way binding with the sync modifier.
                 </p>
@@ -194,7 +194,7 @@ export default class NodeService {
     &lt;Button type="button" icon="pi pi-plus" label="Expand All" @click="expandAll" /&gt;
     &lt;Button type="button" icon="pi pi-minus" label="Collapse All" @click="collapseAll" /&gt;
 &lt;/div&gt;
-&lt;Tree :value="nodes" :expandedKeys="expandedKeys"&gt;&lt;/Tree&gt; 
+&lt;Tree :value="nodes" :expandedKeys="expandedKeys"&gt;&lt;/Tree&gt;
 </template>
 </CodeHighlight>
 
@@ -263,8 +263,8 @@ export default {
 }
 </CodeHighlight>
 
-                <h3>Selection</h3>
-                <p>Tree supports <b>single</b>, <b>multiple</b> and <b>checkbox</b> selection modes. Define the <i>selectionKeys</i> with the sync operator and the <i>selectionMode</i> properties to enable the selection. 
+                <h5>Selection</h5>
+                <p>Tree supports <b>single</b>, <b>multiple</b> and <b>checkbox</b> selection modes. Define the <i>selectionKeys</i> with the sync operator and the <i>selectionMode</i> properties to enable the selection.
                 By default in multiple selection mode, metaKey is necessary to add to existing selections however this can be configured with <i>metaKeySelection</i> property. Note that
                 in touch enabled devices, Tree does not require metaKey. In addition selection on a particular node can be disabled if the <i>selectable</i> is false on the node instance.</p>
 
@@ -344,7 +344,7 @@ export default {
     mounted() {
         this.nodeService.getTreeNodes().then(data => {
             this.nodes = data;
-        
+
             //single preselection
             this.selectedKey1[this.nodes[0].key] = true;
 
@@ -359,9 +359,9 @@ export default {
 }
 </CodeHighlight>
 
-                <h3>Lazy</h3>
+                <h5>Lazy</h5>
                 <p>Lazy Loading is handy to deal with huge datasets. Idea is instead of loading the whole tree, load child nodes on demand
-                    using expand expand. The important part is setting <i>leaf</i> to true on a node instance so that even without children, 
+                    using expand expand. The important part is setting <i>leaf</i> to true on a node instance so that even without children,
                     tree would render an expand icon. Example below uses an in memory collection to mimic a lazy loading scenario with timeouts.
                 </p>
 
@@ -397,24 +397,24 @@ export default {
         onNodeExpand(node) {
             if (!node.children) {
                 this.loading = true;
-        
+
                 setTimeout(() => {
                     let _node = {...node};
                     _node.children = [];
-        
+
                     for (let i = 0; i &lt; 3; i++) {
                         _node.children.push({
                             key: node.key + '-' + i,
                             label: 'Lazy ' + node.label + '-' + i
                         });
                     }
-                    
+
                     let _nodes = {...this.nodes}
-                    _nodes[parseInt(node.key, 10)] = _node; 
-                    
+                    _nodes[parseInt(node.key, 10)] = _node;
+
                     this.nodes = _nodes;
                     this.loading = false;
-                }, 500);  
+                }, 500);
             }
         },
         initateNodes() {
@@ -438,8 +438,8 @@ export default {
 }
 </CodeHighlight>
 
-                <h3>Templating</h3>
-                <p>The <i>type</i> property of a TreeNode is used to map a template to a node to create the node label. If it is undefined and no default template is available, 
+                <h5>Templating</h5>
+                <p>The <i>type</i> property of a TreeNode is used to map a template to a node to create the node label. If it is undefined and no default template is available,
                 label of the node is used.</p>
 <CodeHighlight>
 <template v-pre>
@@ -485,11 +485,11 @@ export default {
 }
 </CodeHighlight>
 
-                <h3>Filtering</h3>
-                <p>Filtering is enabled by setting the <i>filter</i> property to true, by default label property of a node 
+                <h5>Filtering</h5>
+                <p>Filtering is enabled by setting the <i>filter</i> property to true, by default label property of a node
                 is used to compare against the value in the text field, in order to customize which field(s) should be used during search, define the <i>filterBy</i> property as a comma separated list.</p>
 
-                <p>In addition <i>filterMode</i> specifies the filtering strategy. In <b>lenient</b> mode when the query matches a node, children of the node are not searched further as all descendants of the node are included. On the other hand, 
+                <p>In addition <i>filterMode</i> specifies the filtering strategy. In <b>lenient</b> mode when the query matches a node, children of the node are not searched further as all descendants of the node are included. On the other hand,
                  in <b>strict</b> mode when the query matches a node, filtering continues on all descendants.</p>
 
 <CodeHighlight>
@@ -498,7 +498,7 @@ export default {
 &lt;Tree :value="nodes" :filter="true" filterMode="lenient"&gt;&lt;/Tree&gt;
 
 &lt;h3&gt;Strict Filter&lt;/h3&gt;
-&lt;Tree :value="nodes" :filter="true" filterMode="strict"&gt;&lt;/Tree&gt;    
+&lt;Tree :value="nodes" :filter="true" filterMode="strict"&gt;&lt;/Tree&gt;
 </template>
 </CodeHighlight>
 
@@ -531,8 +531,9 @@ export default {
             this.expandedKeys = {};
         },
         expandNode(node) {
-            this.expandedKeys[node.key] = true;
             if (node.children &lt;&lt; node.children.length) {
+                this.expandedKeys[node.key] = true;
+
                 for (let child of node.children) {
                     this.expandNode(child);
                 }
@@ -542,8 +543,8 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any valid attribute such as name and autofocus are passed to the underlying input element. Following is the additional property to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property such as style and class are passed to the underlying root element. Following is the additional property to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -622,11 +623,17 @@ export default {
                                 <td>null</td>
                                 <td>Placeholder text to show when filter input is empty.</td>
                             </tr>
+                            <tr>
+                                <td>filterLocale</td>
+                                <td>string</td>
+                                <td>undefined</td>
+                                <td>Locale to use in filtering. The default locale is the host environment's current locale.</td>
+                            </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -661,7 +668,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -716,7 +723,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -734,7 +741,7 @@ export default {
     &lt;Button type="button" icon="pi pi-plus" label="Expand All" @click="expandAll" /&gt;
     &lt;Button type="button" icon="pi pi-minus" label="Collapse All" @click="collapseAll" /&gt;
 &lt;/div&gt;
-&lt;Tree :value="nodes" :expandedKeys="expandedKeys"&gt;&lt;/Tree&gt;   
+&lt;Tree :value="nodes" :expandedKeys="expandedKeys"&gt;&lt;/Tree&gt;
 </template>
 </CodeHighlight>
 
@@ -767,8 +774,9 @@ export default {
             this.expandedKeys = {};
         },
         expandNode(node) {
-            this.expandedKeys[node.key] = true;
             if (node.children &amp;&amp; node.children.length) {
+                this.expandedKeys[node.key] = true;
+
                 for (let child of node.children) {
                     this.expandNode(child);
                 }

@@ -5,24 +5,27 @@
                 <h1>Slider</h1>
                 <p>Slider is an input component to provide a numerical input.</p>
             </div>
+            <AppInputStyleSwitch />
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Basic: {{value1}}</h3>
-            <Slider v-model="value1" />
+            <div class="card">
+                <h5>Basic: {{value1}}</h5>
+                <Slider v-model="value1" />
 
-            <h3>Input: {{value2}}</h3>
-            <InputText v-model.number="value2" />
-            <Slider v-model="value2" />
-            
-            <h3>Step: {{value3}}</h3>
-            <Slider v-model="value3" :step="20" />
+                <h5>Input: {{value2}}</h5>
+                <InputText v-model.number="value2" />
+                <Slider v-model="value2" />
 
-            <h3>Range: {{value4}}</h3>
-            <Slider v-model="value4" :range="true" />
+                <h5>Step: {{value3}}</h5>
+                <Slider v-model="value3" :step="20" />
 
-            <h3>Vertical: {{value5}}</h3>
-            <Slider v-model="value5" orientation="vertical" />
+                <h5>Range: {{value4}}</h5>
+                <Slider v-model="value4" :range="true" />
+
+                <h5>Vertical: {{value5}}</h5>
+                <Slider v-model="value5" orientation="vertical" />
+            </div>
         </div>
 
         <SliderDoc/>
@@ -50,10 +53,10 @@ export default {
 
 <style scoped>
 .p-slider-horizontal, .p-inputtext {
-    width: 14em;
+    width: 14rem;
 }
 
 .p-slider-vertical {
-     height: 14em;
+     height: 14rem;
 }
 </style>

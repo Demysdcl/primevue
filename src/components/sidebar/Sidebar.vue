@@ -1,16 +1,19 @@
 <template>
     <transition name="p-sidebar" @enter="onEnter" @leave="onLeave">
-        <div :class="containerClass" v-if="visible" ref="container">
-            <button class="p-sidebar-close p-link" @click="hide">
-                <span class="p-sidebar-close-icon pi pi-times" />
-            </button>
-            <slot></slot>
+        <div :class="containerClass" v-if="visible" ref="container" role="complementary" :aria-modal="modal">
+            <div class="p-sidebar-content">
+                <button class="p-sidebar-close p-link" @click="hide" :aria-label="ariaCloseLabel" v-if="showCloseIcon" type="button" v-ripple>
+                    <span class="p-sidebar-close-icon pi pi-times" />
+                </button>
+                <slot></slot>
+            </div>
         </div>
     </transition>
 </template>
 
 <script>
 import DomHandler from '../utils/DomHandler';
+import Ripple from '../ripple/Ripple';
 
 export default {
     props: {
@@ -41,6 +44,10 @@ export default {
         modal: {
             type: Boolean,
             default: true
+        },
+        ariaCloseLabel: {
+            type: String,
+            default: 'close'
         }
     },
     mask: null,
@@ -79,21 +86,28 @@ export default {
         enableModality() {
             if (!this.mask) {
                 this.mask = document.createElement('div');
+                this.mask.setAttribute('class', 'p-sidebar-mask');
                 this.mask.style.zIndex = String(parseInt(this.$refs.container.style.zIndex, 10) - 1);
-                DomHandler.addMultipleClasses(this.mask, 'p-component-overlay');
                 if (this.dismissable) {
                     this.bindMaskClickListener();
                 }
                 document.body.appendChild(this.mask);
                 DomHandler.addClass(document.body, 'p-overflow-hidden');
+
+                setTimeout(() => {
+                    DomHandler.addClass(this.mask, 'p-component-overlay');
+                }, 1);
             }
         },
         disableModality() {
             if (this.mask) {
-                this.unbindMaskClickListener();
-                document.body.removeChild(this.mask);
-                DomHandler.removeClass(document.body, 'p-overflow-hidden');
-                this.mask = null;
+                DomHandler.addClass(this.mask, 'p-sidebar-mask-leave');
+                this.mask.addEventListener('transitionend', () => {
+                    this.unbindMaskClickListener();
+                    document.body.removeChild(this.mask);
+                    DomHandler.removeClass(document.body, 'p-overflow-hidden');
+                    this.mask = null;
+                });
             }
         },
         bindMaskClickListener() {
@@ -120,6 +134,9 @@ export default {
         fullScreen() {
             return this.position === 'full';
         }
+    },
+    directives: {
+        'ripple': Ripple
     }
 }
 </script>
@@ -127,22 +144,43 @@ export default {
 <style>
 .p-sidebar {
     position: fixed;
-    padding: .5em 1em;
-    -webkit-transition: transform .3s;
     transition: transform .3s;
+}
+
+.p-sidebar-content {
+    position: relative;
+}
+
+.p-sidebar-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.p-sidebar-mask {
+    background-color: transparent;
+    transition-property: background-color;
+}
+
+.p-sidebar-mask.p-sidebar-mask-leave.p-component-overlay {
+    background-color: transparent;
 }
 
 .p-sidebar-left {
     top: 0;
     left: 0;
-    width: 20em;
+    width: 20rem;
     height: 100%;
 }
 
 .p-sidebar-right {
     top: 0;
     right: 0;
-    width: 20em;
+    width: 20rem;
     height: 100%;
 }
 
@@ -150,14 +188,14 @@ export default {
     top: 0;
     left: 0;
     width: 100%;
-    height: 10em;
+    height: 10rem;
 }
 
 .p-sidebar-bottom {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 10em;
+    height: 10rem;
 }
 
 .p-sidebar-full {
@@ -201,37 +239,32 @@ export default {
 
 .p-sidebar-left.p-sidebar-sm,
 .p-sidebar-right.p-sidebar-sm {
-    width: 20em;
+    width: 20rem;
 }
 
 .p-sidebar-left.p-sidebar-md,
 .p-sidebar-right.p-sidebar-md {
-    width: 40em;
+    width: 40rem;
 }
 
 .p-sidebar-left.p-sidebar-lg,
 .p-sidebar-right.p-sidebar-lg {
-    width: 60em;
+    width: 60rem;
 }
 
 .p-sidebar-top.p-sidebar-sm,
 .p-sidebar-bottom.p-sidebar-sm {
-    height: 10em;
+    height: 10rem;
 }
 
 .p-sidebar-top.p-sidebar-md,
 .p-sidebar-bottom.p-sidebar-md {
-    height: 20em;
+    height: 20rem;
 }
 
 .p-sidebar-top.p-sidebar-lg,
 .p-sidebar-bottom.p-sidebar-lg {
-    height: 30em;
-}
-
-.p-sidebar-close {
-    float: right;
-    cursor: pointer;
+    height: 30rem;
 }
 
 @media screen and (max-width: 64em) {
@@ -239,7 +272,7 @@ export default {
     .p-sidebar-left.p-sidebar-md,
     .p-sidebar-right.p-sidebar-lg,
     .p-sidebar-right.p-sidebar-md {
-        width: 20em;
+        width: 20rem;
     }
 }
 </style>

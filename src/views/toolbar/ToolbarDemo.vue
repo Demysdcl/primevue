@@ -10,15 +10,15 @@
         <div class="content-section implementation">
             <Toolbar>
                 <template slot="left">
-                    <Button label="New" icon="pi pi-plus" style="margin-right: .25em" />
+                    <Button label="New" icon="pi pi-plus" class="p-mr-2" />
                     <Button label="Upload" icon="pi pi-upload" class="p-button-success" />
-                    <i class="pi pi-bars p-toolbar-separator" style="margin-right: .25em" />
+                    <i class="pi pi-bars p-toolbar-separator p-mr-2" />
                     <SplitButton label="Save" icon="pi pi-check" :model="items" class="p-button-warning"></SplitButton>
                 </template>
-                
+
                 <template slot="right">
-                    <Button icon="pi pi-search" style="margin-right: .25em" />
-                    <Button icon="pi pi-calendar" class="p-button-success" style="margin-right: .25em" />
+                    <Button icon="pi pi-search" class="p-mr-2" />
+                    <Button icon="pi pi-calendar" class="p-button-success p-mr-2" />
                     <Button icon="pi pi-times" class="p-button-danger" />
                 </template>
             </Toolbar>
@@ -35,28 +35,28 @@ export default {
         return {
             items: [
                 {
-                    label: 'Update', 
+                    label: 'Update',
                     icon: 'pi pi-refresh'
                 },
                 {
-                    label: 'Delete', 
+                    label: 'Delete',
                     icon: 'pi pi-times'
                 },
                 {
-                    label: 'Vue Website', 
+                    label: 'Vue Website',
                     icon: 'pi pi-external-link',
                     command: () => {
                         window.location.href = 'https://vuejs.org/'
                     }
                 },
-                {   label: 'Upload', 
-                    icon: 'pi pi-upload', 
+                {   label: 'Upload',
+                    icon: 'pi pi-upload',
                     command: () => {
                         window.location.hash = "/fileupload"
                     }
                 }
             ]
-        } 
+        }
     },
 	components: {
 		'ToolbarDoc': ToolbarDoc

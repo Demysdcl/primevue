@@ -14,6 +14,10 @@ export default {
             type: String,
             default: null
         },
+        filterField: {
+            type: String,
+            default: null
+        },
         sortable: {
             type: Boolean,
             default: false
@@ -50,9 +54,21 @@ export default {
             type: String,
             default: null
         },
+        filterHeaderClass: {
+            type: String,
+            default: null
+        },
+        filterHeaderStyle: {
+            type: null,
+            default: false
+        },
         filterMatchMode: {
             type: String,
             default: 'startsWith'
+        },
+        filterFunction: {
+            type: Function,
+            default: null
         },
         excludeGlobalFilter: {
             type: Boolean,
@@ -61,6 +77,38 @@ export default {
         selectionMode: {
             type: String,
             default: null
+        },
+        expander: {
+            type: Boolean,
+            default: false
+        },
+        colspan: {
+            type: Number,
+            default: null
+        },
+        rowspan: {
+            type: Number,
+            default: null
+        },
+        rowReorder: {
+            type: Boolean,
+            default: false
+        },
+        rowReorderIcon: {
+            type: String,
+            default: 'pi pi-bars'
+        },
+        reorderableColumn: {
+            type: Boolean,
+            default: true
+        },
+        rowEditor: {
+            type: Boolean,
+            default: false
+        },
+        frozen: {
+            type: Boolean,
+            default: false
         }
     },
     render() {

@@ -1,16 +1,16 @@
 <template>
     <div>
-        <TreeSubMenu />
-
         <div class="content-section introduction">
             <div class="feature-intro">
-                <h1>Tree - Lazy</h1>
+                <h1>Tree <span>Lazy</span></h1>
                 <p>Lazy loading is handy when dealing with huge datasets. This example imitates a lazy loading case with timeouts.</p>
             </div>
         </div>
 
         <div class="content-section implementation">
-            <Tree :value="nodes" @node-expand="onNodeExpand" :loading="loading"></Tree>
+            <div class="card">
+                <Tree :value="nodes" @node-expand="onNodeExpand" :loading="loading"></Tree>
+            </div>
         </div>
 
         <div class="content-section documentation">
@@ -48,24 +48,24 @@ export default {
         onNodeExpand(node) {
             if (!node.children) {
                 this.loading = true;
-        
+
                 setTimeout(() => {
                     let _node = {...node};
                     _node.children = [];
-        
+
                     for (let i = 0; i &lt; 3; i++) {
                         _node.children.push({
                             key: node.key + '-' + i,
                             label: 'Lazy ' + node.label + '-' + i
                         });
                     }
-                    
+
                     let _nodes = {...this.nodes}
-                    _nodes[parseInt(node.key, 10)] = _node; 
-                    
+                    _nodes[parseInt(node.key, 10)] = _node;
+
                     this.nodes = _nodes;
                     this.loading = false;
-                }, 500);  
+                }, 500);
             }
         },
         initateNodes() {
@@ -96,7 +96,6 @@ export default {
 
 <script>
 import NodeService from '../../service/NodeService';
-import TreeSubMenu from './TreeSubMenu';
 
 export default {
     data() {
@@ -121,24 +120,24 @@ export default {
         onNodeExpand(node) {
             if (!node.children) {
                 this.loading = true;
-        
+
                 setTimeout(() => {
                     let _node = {...node};
                     _node.children = [];
-        
+
                     for (let i = 0; i < 3; i++) {
                         _node.children.push({
                             key: node.key + '-' + i,
                             label: 'Lazy ' + node.label + '-' + i
                         });
                     }
-                    
+
                     let _nodes = {...this.nodes}
-                    nodes[parseInt(node.key, 10)] = _node; 
-                    
+                    _nodes[parseInt(node.key, 10)] = _node;
+
                     this.nodes = _nodes;
                     this.loading = false;
-                }, 500);  
+                }, 500);
             }
         },
         initateNodes() {
@@ -158,15 +157,12 @@ export default {
                 leaf: false
             }];
         }
-    },
-    components: {
-        'TreeSubMenu': TreeSubMenu
     }
 }
 </script>
 
 <style scoped>
 button {
-    margin-right: .5em;
+    margin-right: .5rem;
 }
 </style>

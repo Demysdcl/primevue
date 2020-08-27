@@ -1,5 +1,5 @@
 <template>
-    <div class="p-toolbar p-component">
+    <div class="p-toolbar p-component" role="toolbar">
         <div class="p-toolbar-group-left">
              <slot name="left"></slot>
         </div>
@@ -11,26 +11,21 @@
 
 <script>
 export default {
-    
+
 }
 </script>
 
 <style>
 .p-toolbar {
-    padding: .25em .5em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
-.p-toolbar:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
-.p-toolbar-group-left {
-    float:left
-}
-
+.p-toolbar-group-left,
 .p-toolbar-group-right {
-    float:right
+    display: flex;
+    align-items: center;
 }
 </style>

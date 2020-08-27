@@ -1,25 +1,33 @@
 <template>
-    <div ref="container" :class="containerClass" @click="onClick">
+    <div ref="container" :class="containerClass" @click="onClick($event)">
         <div class="p-hidden-accessible">
-            <input ref="focusInput" type="text" role="listbox" readonly :disabled="disabled" @focus="onFocus" @blur="onBlur" @keydown="onKeyDown" :tabindex="tabindex"/>
+            <input ref="focusInput" type="text" :id="inputId" readonly :disabled="disabled" @focus="onFocus" @blur="onBlur" @keydown="onKeyDown" :tabindex="tabindex"
+                aria-haspopup="listbox" :aria-expanded="overlayVisible" :aria-labelledby="ariaLabelledBy"/>
         </div>
-        <input v-if="editable" type="text" class="p-dropdown-label p-inputtext" :disabled="disabled" @focus="onFocus" @blur="onBlur" :placeholder="placeholder" :value="editableInputValue" @input="onEditableInput">
-        <label v-if="!editable" :class="labelClass">{{label}}</label>
-        <i v-if="showClear && value != null" class="p-dropdown-clear-icon pi pi-times" @click="onClearClick"></i>
-        <div class="p-dropdown-trigger">
-            <span class="p-dropdown-trigger-icon pi pi-chevron-down p-clickable"></span>
+        <input v-if="editable" type="text" class="p-dropdown-label p-inputtext" :disabled="disabled" @focus="onFocus" @blur="onBlur" :placeholder="placeholder" :value="editableInputValue" @input="onEditableInput"
+            aria-haspopup="listbox" :aria-expanded="overlayVisible">
+        <span v-if="!editable" :class="labelClass">
+            <slot name="value" :value="value" :placeholder="placeholder">
+                {{label}}
+            </slot>
+        </span>
+        <i v-if="showClear && value != null" class="p-dropdown-clear-icon pi pi-times" @click="onClearClick($event)"></i>
+        <div class="p-dropdown-trigger" role="button" aria-haspopup="listbox" :aria-expanded="overlayVisible">
+            <span class="p-dropdown-trigger-icon pi pi-chevron-down"></span>
         </div>
-        <transition name="p-input-overlay" @enter="onOverlayEnter" @leave="onOverlayLeave">
-            <div ref="overlay" class="p-dropdown-panel" v-if="overlayVisible">
-                <div v-if="filter" class="p-dropdown-filter-container">
-                    <input type="text" v-model="filterValue" autoComplete="off" class="p-dropdown-filter p-inputtext p-component" :placeholder="filterPlaceholder" @keydown="onFilterKeyDown" />
-                    <span class="p-dropdown-filter-icon pi pi-search"></span>
+        <transition name="p-connected-overlay" @enter="onOverlayEnter" @leave="onOverlayLeave">
+            <div ref="overlay" class="p-dropdown-panel p-component" v-if="overlayVisible">
+                <div class="p-dropdown-header" v-if="filter">
+                     <div  class="p-dropdown-filter-container">
+                        <input type="text" ref="filterInput" v-model="filterValue" autoComplete="off" class="p-dropdown-filter p-inputtext p-component" :placeholder="filterPlaceholder" @keydown="onFilterKeyDown"  @input="onFilterChange"/>
+                        <span class="p-dropdown-filter-icon pi pi-search"></span>
+                    </div>
                 </div>
                 <div ref="itemsWrapper" class="p-dropdown-items-wrapper" :style="{'max-height': scrollHeight}">
-                    <ul class="p-dropdown-items p-dropdown-list p-component">
-                        <li v-for="(option, i) of visibleOptions" :class="['p-dropdown-item', {'p-highlight': isSelected(option), 'p-disabled': isOptionDisabled(option)}]" 
-                            :aria-label="getOptionLabel(option)" :key="getOptionLabel(option)" @click="onOptionSelect($event, option)">
-                            <slot name="option" :option="option" :index="i">  
+                    <ul class="p-dropdown-items" role="listbox">
+                        <li v-for="(option, i) of visibleOptions" :class="['p-dropdown-item', {'p-highlight': isSelected(option), 'p-disabled': isOptionDisabled(option)}]" v-ripple
+                            :aria-label="getOptionLabel(option)" :key="getOptionRenderKey(option)" @click="onOptionSelect($event, option)" role="option" :aria-selected="isSelected(option)">
+                            <slot name="option" :option="option" :index="i">
                                 {{getOptionLabel(option)}}
                             </slot>
                         </li>
@@ -33,6 +41,7 @@
 <script>
 import ObjectUtils from '../utils/ObjectUtils';
 import DomHandler from '../utils/DomHandler';
+import Ripple from '../ripple/Ripple';
 
 export default {
     props: {
@@ -46,13 +55,20 @@ export default {
 			default: '200px'
 		},
 		filter: Boolean,
-		filterPlaceholder: String,
+        filterPlaceholder: String,
+        filterLocale: String,
 		editable: Boolean,
 		placeholder: String,
 		disabled: Boolean,
         dataKey: null,
-		showClear: Boolean,
-		tabindex: String
+        showClear: Boolean,
+        inputId: String,
+        tabindex: String,
+        ariaLabelledBy: null,
+        appendTo: {
+            type: String,
+            default: null
+        }
     },
     data() {
         return {
@@ -67,6 +83,7 @@ export default {
     previousSearchChar: null,
     searchValue: null,
     beforeDestroy() {
+        this.restoreAppend();
         this.unbindOutsideClickListener();
     },
     updated() {
@@ -76,10 +93,13 @@ export default {
     },
     methods: {
         getOptionLabel(option) {
-            return ObjectUtils.resolveFieldData(option, this.optionLabel);
+            return this.optionLabel ? ObjectUtils.resolveFieldData(option, this.optionLabel) : option;
         },
         getOptionValue(option) {
             return this.optionValue ? ObjectUtils.resolveFieldData(option, this.optionValue) : option;
+        },
+        getOptionRenderKey(option) {
+            return this.dataKey ? ObjectUtils.resolveFieldData(option, this.dataKey) : this.getOptionLabel(option);
         },
         isOptionDisabled(option) {
             return this.optionDisabled ? ObjectUtils.resolveFieldData(option, this.optionDisabled) : false;
@@ -89,7 +109,7 @@ export default {
 
             if (this.value != null && this.options) {
                 for (let option of this.options) {
-                    if ((ObjectUtils.equals(this.value, this.getOptionValue(option), this.dataKey))) {
+                    if ((ObjectUtils.equals(this.value, this.getOptionValue(option), this.equalityKey))) {
                         selectedOption = option;
                         break;
                     }
@@ -99,14 +119,14 @@ export default {
             return selectedOption;
         },
         isSelected(option) {
-            return ObjectUtils.equals(this.value, this.getOptionValue(option), this.dataKey);
+            return ObjectUtils.equals(this.value, this.getOptionValue(option), this.equalityKey);
         },
         getSelectedOptionIndex() {
             let selectedOptionIndex = -1;
 
             if (this.value != null && this.visibleOptions) {
                 for (let i = 0; i < this.visibleOptions.length; i++) {
-                    if ((ObjectUtils.equals(this.value, this.getOptionValue(this.visibleOptions[i]), this.dataKey))) {
+                    if ((ObjectUtils.equals(this.value, this.getOptionValue(this.visibleOptions[i]), this.equalityKey))) {
                         selectedOptionIndex = i;
                         break;
                     }
@@ -114,6 +134,14 @@ export default {
             }
 
             return selectedOptionIndex;
+        },
+        show() {
+            this.$emit('before-show');
+            this.overlayVisible = true;
+        },
+        hide() {
+            this.$emit('before-hide');
+            this.overlayVisible = false;
         },
         onFocus() {
             this.focused = true;
@@ -136,7 +164,7 @@ export default {
                 //space
                 case 32:
                     if (!this.overlayVisible) {
-                        this.overlayVisible = true;
+                        this.show();
                         event.preventDefault();
                     }
                 break;
@@ -145,14 +173,14 @@ export default {
                 case 13:
                 case 27:
                     if (this.overlayVisible) {
-                        this.overlayVisible = false;
+                        this.hide();
                         event.preventDefault();
                     }
                 break;
 
                 //tab
                 case 9:
-                    this.overlayVisible = false;
+                    this.hide();
                 break;
 
                 default:
@@ -186,7 +214,7 @@ export default {
         onDownKey(event) {
             if (this.visibleOptions) {
                 if (!this.overlayVisible && event.altKey) {
-                    this.overlayVisible = true;
+                    this.show();
                 }
                 else {
                     let nextOption = this.findNextOption(this.getSelectedOptionIndex());
@@ -221,7 +249,7 @@ export default {
                 return this.findNextOption(i);
             else
                 return option;
-            
+
         },
         findPrevOption(index) {
             let i = index - 1;
@@ -235,15 +263,23 @@ export default {
             else
                 return option;
         },
-        onClearClick() {
+        onClearClick(event) {
             this.updateModel(event, null);
         },
         onClick(event) {
-            if (DomHandler.hasClass(event.target, 'p-dropdown-clear-icon')) {
+            if (this.disabled) {
+                return;
+            }
+
+            if (DomHandler.hasClass(event.target, 'p-dropdown-clear-icon') || event.target.tagName === 'INPUT') {
                 return;
             }
             else if (!this.$refs.overlay || !this.$refs.overlay.contains(event.target)) {
-                this.overlayVisible = !this.overlayVisible;
+                if (this.overlayVisible)
+                    this.hide();
+                else
+                    this.show();
+
                 this.$refs.focusInput.focus();
             }
         },
@@ -253,21 +289,35 @@ export default {
             this.$refs.focusInput.focus();
 
             setTimeout(() => {
-                this.overlayVisible = false;
-            }, 100);
+                this.hide();
+            }, 200);
         },
         onEditableInput(event) {
             this.$emit('input', event.target.value);
         },
         onOverlayEnter() {
+            this.$refs.overlay.style.zIndex = String(DomHandler.generateZIndex());
+            this.appendContainer();
             this.alignOverlay();
             this.bindOutsideClickListener();
+
+            if (this.filter) {
+                this.$refs.filterInput.focus();
+            }
+
+            this.$emit('show');
         },
         onOverlayLeave() {
             this.unbindOutsideClickListener();
+            this.$emit('hide');
         },
         alignOverlay() {
-            DomHandler.relativePosition(this.$refs.overlay, this.$refs.container);
+            if (this.appendTo) {
+                DomHandler.absolutePosition(this.$refs.overlay, this.$refs.container);
+                this.$refs.overlay.style.minWidth = DomHandler.getOuterWidth(this.$refs.container) + 'px';
+            } else {
+                DomHandler.relativePosition(this.$refs.overlay, this.$refs.container);
+            }
         },
         updateModel(event, value) {
             this.$emit('input', value);
@@ -277,7 +327,7 @@ export default {
             if (!this.outsideClickListener) {
                 this.outsideClickListener = (event) => {
                     if (this.overlayVisible && this.$refs.overlay && !this.$refs.container.contains(event.target)) {
-                        this.overlayVisible = false;
+                        this.hide();
                     }
                 };
                 document.addEventListener('click', this.outsideClickListener);
@@ -334,38 +384,59 @@ export default {
         searchOptionInRange(start, end) {
             for (let i = start; i < end; i++) {
                 let opt = this.visibleOptions[i];
-                let label = this.getOptionLabel(opt).toLowerCase();
-                if (label.startsWith(this.searchValue.toLowerCase())) {
+                let label = this.getOptionLabel(opt).toLocaleLowerCase(this.filterLocale);
+                if (label.startsWith(this.searchValue.toLocaleLowerCase(this.filterLocale))) {
                     return opt;
                 }
             }
 
             return null;
+        },
+        appendContainer() {
+            if (this.appendTo) {
+                if (this.appendTo === 'body')
+                    document.body.appendChild(this.$refs.overlay);
+                else
+                    document.getElementById(this.appendTo).appendChild(this.$refs.overlay);
+            }
+        },
+        restoreAppend() {
+            if (this.$refs.overlay && this.appendTo) {
+                if (this.appendTo === 'body')
+                    document.body.removeChild(this.$refs.overlay);
+                else
+                    document.getElementById(this.appendTo).removeChild(this.$refs.overlay);
+            }
+        },
+        onFilterChange(event) {
+            this.$emit('filter', {originalEvent: event, value: event.target.value});
         }
     },
     computed: {
         visibleOptions() {
             if (this.filterValue && this.filterValue.trim().length > 0)
-                return this.options.filter(option => this.getOptionLabel(option).toLowerCase().indexOf(this.filterValue.toLowerCase()) > -1);
+                return this.options.filter(option => this.getOptionLabel(option).toLocaleLowerCase(this.filterLocale).indexOf(this.filterValue.toLocaleLowerCase(this.filterLocale)) > -1);
             else
                 return this.options;
         },
         containerClass() {
             return [
-                'p-dropdown p-component p-unselectable-text',
+                'p-dropdown p-component',
                 {
-                    'p-disabled': this.disabled, 
+                    'p-disabled': this.disabled,
                     'p-dropdown-clearable': this.showClear && !this.disabled,
-                    'p-focus': this.focused
+                    'p-focus': this.focused,
+                    'p-inputwrapper-filled': this.value,
+                    'p-inputwrapper-focus': this.focused
                 }
             ];
         },
         labelClass() {
             return [
-                'p-dropdown-label p-inputtext', 
+                'p-dropdown-label p-inputtext',
                 {
-                    'p-placeholder': this.label === null && this.placeholder, 
-                    'p-dropdown-label-empty': (this.label == null || this.label.length === 0)
+                    'p-placeholder': this.label === this.placeholder,
+                    'p-dropdown-label-empty': !this.$scopedSlots['value'] && (this.label === 'p-emptylabel' || this.label.length === 0)
                 }
             ];
         },
@@ -374,7 +445,7 @@ export default {
             if (selectedOption)
                 return this.getOptionLabel(selectedOption);
             else
-                return this.placeholder||'p-dropdown';
+                return this.placeholder||'p-emptylabel';
         },
         editableInputValue() {
             let selectedOption = this.getSelectedOption();
@@ -382,133 +453,102 @@ export default {
                 return this.getOptionLabel(selectedOption);
             else
                 return this.value;
+        },
+        equalityKey() {
+            return this.optionValue ? null : this.dataKey;
         }
+    },
+    directives: {
+        'ripple': Ripple
     }
 }
 </script>
 
 <style>
 .p-dropdown {
-    display: inline-block;
+    display: inline-flex;
+    cursor: pointer;
     position: relative;
-    cursor: pointer;
-    vertical-align: middle;
+    user-select: none;
 }
 
-.p-dropdown .p-dropdown-clear-icon {
+.p-dropdown-clear-icon {
     position: absolute;
-    right: 2em;
     top: 50%;
-    font-size: 1em;
-    height: 1em;
-    margin-top: -.5em;
+    margin-top: -.5rem;
 }
 
-.p-dropdown .p-dropdown-trigger {
-    border-right: none;
-    border-top: none;
-    border-bottom: none;
-    cursor: pointer;
-    width: 1.5em;
-    height: 100%;
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 0 .25em;
+.p-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-.p-dropdown .p-dropdown-trigger .p-dropdown-trigger-icon {
-    top: 50%;
-    left: 50%;
-    margin-top: -.5em;
-    margin-left: -.5em;
-    position: absolute;
-}
-
-.p-dropdown .p-dropdown-label  {
+.p-dropdown-label {
     display: block;
-    border: none;
     white-space: nowrap;
     overflow: hidden;
-    font-weight: normal;
-    width: 100%;
-    padding-right: 1.5em;
+    flex: 1 1 auto;
+    width: 1%;
+    text-overflow: ellipsis;
+    cursor: pointer;
 }
 
-.p-dropdown .p-dropdown-item-empty,
-.p-dropdown .p-dropdown-label-empty {
+.p-dropdown-label-empty {
     overflow: hidden;
     visibility: hidden;
 }
 
-.p-dropdown.p-disabled .p-dropdown-trigger,
-.p-dropdown.p-disabled .p-dropdown-label {
-    cursor: default;
-}
-
-.p-dropdown label.p-dropdown-label  {
-    cursor: pointer;
-}
-
-.p-dropdown input.p-dropdown-label  {
+input.p-dropdown-label  {
     cursor: default;
 }
 
 .p-dropdown .p-dropdown-panel {
     min-width: 100%;
-    z-index: 1;
 }
 
 .p-dropdown-panel {
     position: absolute;
-    height: auto;
 }
 
-.p-dropdown-panel .p-dropdown-items-wrapper {
+.p-dropdown-items-wrapper {
     overflow: auto;
 }
 
-.p-dropdown-panel .p-dropdown-item {
-    font-weight: normal;
-    border: 0 none;
+.p-dropdown-item {
     cursor: pointer;
-    margin: 1px 0;
-    padding: .125em .25em;
-    text-align: left;
+    font-weight: normal;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
 }
 
-.p-dropdown-panel .p-dropdown-item-group {
-    font-weight: bold;
-}
-
-.p-dropdown-panel .p-dropdown-list {
-    padding: 0.4em;
-    border: 0 none;
+.p-dropdown-items {
     margin: 0;
+    padding: 0;
     list-style-type: none;
 }
 
-.p-dropdown-panel .p-dropdown-filter {
+.p-dropdown-filter {
     width: 100%;
-    box-sizing: border-box;
-    padding-right: 1.5em;
 }
 
-.p-dropdown-panel .p-dropdown-filter-container {
+.p-dropdown-filter-container {
     position: relative;
-    margin: 0;
-    padding: 0.4em;
-    display: inline-block;
 }
 
-.p-dropdown-panel .p-dropdown-filter-container .p-dropdown-filter-icon {
+.p-dropdown-filter-icon {
     position: absolute;
-    top: .8em;
-    right: 1em;
+    top: 50%;
+    margin-top: -.5rem;
 }
 
-/** Dropdown **/
 .p-fluid .p-dropdown {
-    width: 100%;
+    display: flex;
+}
+
+.p-fluid .p-dropdown .p-dropdown-label {
+    width: 1%;
 }
 </style>

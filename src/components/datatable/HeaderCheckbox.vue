@@ -3,8 +3,8 @@
         <div class="p-hidden-accessible">
            <input ref="input" type="checkbox" :checked="checked" @focus="onFocus($event)" @blur="onBlur($event)" :disabled="disabled">
         </div>
-        <div ref="box" :class="['p-checkbox-box p-component', {'p-highlight': checked, 'p-disabled': $attrs.disabled, 'p-focus': focused}]">
-            <span :class="['p-checkbox-icon p-c', {'pi pi-check': checked}]"></span>
+        <div ref="box" :class="['p-checkbox-box p-component', {'p-highlight': checked, 'p-disabled': $attrs.disabled, 'p-focus': focused}]" role="checkbox" :aria-checked="checked">
+            <span :class="['p-checkbox-icon', {'pi pi-check': checked}]"></span>
         </div>
     </div>
 </template>

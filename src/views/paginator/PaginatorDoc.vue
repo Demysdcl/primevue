@@ -2,18 +2,18 @@
     <div class="content-section documentation">
         <TabView>
             <TabPanel header="Documentation">
-                <h3>Import</h3>
+                <h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Paginator from 'primevue/paginator';
 </CodeHighlight>
 
-                <h3>Getting Started</h3>
+                <h5>Getting Started</h5>
                 <p><i>rows</i> and <i>totalRecords</i> are the required properties of the Paginator.</p>
 <CodeHighlight>
 &lt;Paginator :rows="10" :totalRecords="totalItemsCount"&gt;&lt;/Paginator&gt;
 </CodeHighlight>
 
-                <h3>Start Index</h3>
+                <h5>Start Index</h5>
                 <p><i>first</i> property defines the index of the first item displayed by the paginator.</p>
 
 <CodeHighlight>
@@ -25,7 +25,7 @@ import Paginator from 'primevue/paginator';
 &lt;Paginator :first.sync="offset" :rows="10" :totalRecords="totalItemsCount"&gt;&lt;/Paginator&gt;
 </CodeHighlight>
 
-                <h3>Rows Per Page</h3>
+                <h5>Rows Per Page</h5>
                 <p>Number of items per page can be changed by the user using a dropdown with the <i>rowsPerPageOptions</i> property which accepts an array of possible values.</p>
 <CodeHighlight>
 &lt;Paginator :first.sync="offset" :rows="rows" :totalRecords="totalItemsCount" :rowsPerPageOptions="[10,20,30]"&gt;&lt;/Paginator&gt;
@@ -37,11 +37,11 @@ import Paginator from 'primevue/paginator';
 &lt;Paginator :first.sync="offset" :rows.sync="rows" :totalRecords="totalItemsCount" :rowsPerPageOptions="[10,20,30]"&gt;&lt;/Paginator&gt;
 </CodeHighlight>
 
-                <h3>Template</h3>
-                <p>Paginator elements can be customized using the template property using the predefined keys, default value is 
+                <h5>Template</h5>
+                <p>Paginator elements can be customized using the template property using the predefined keys, default value is
                 "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown". Here are the available elements that
                 can be placed inside a paginator in any order.</p>
-                
+
                 <ul>
                     <li>FirstPageLink</li>
                     <li>PrevPageLink</li>
@@ -52,12 +52,20 @@ import Paginator from 'primevue/paginator';
                     <li>CurrentPageReport</li>
                 </ul>
 
-<CodeHighlight>
-&lt;Paginator :first.sync="offset" :rows="10" :totalRecords="totalItemsCount" 
-            template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"&gt;&lt;/Paginator&gt;
-</CodeHighlight>
+                <h5>CurrentPageReport</h5>
+                <p>Current page report item in the template displays information about the pagination state. Default value is (&#123;currentPage&#125; of &#123;totalPages&#125;)
+                    whereas available placeholders are the following;
+                </p>
+                <ul>
+                    <li>&#123;currentPage&#125;</li>
+                    <li>&#123;totalPages&#125;</li>
+                    <li>&#123;rows&#125;</li>
+                    <li>&#123;first&#125;</li>
+                    <li>&#123;last&#125;</li>
+                    <li>&#123;totalRecords&#125;</li>
+                </ul>
 
-                <h3>Custom Content</h3>
+                <h5>Custom Content</h5>
                 <p>There are two templates available named "left" and "right" to add custom content to these locations. Both templates get
                     a state object as a slot property to provide the current page, first index and the rows.
                 </p>
@@ -65,9 +73,9 @@ import Paginator from 'primevue/paginator';
 <template v-pre>
 &lt;Paginator :first.sync="offset" :rows="10" :totalRecords="totalItemsCount"&gt;
     &lt;template #left="slotProps"&gt;
-        Page: {{slotProps.state.page}}
-        First: {{slotProps.state.first}}
-        Rows: {{slotProps.state.rows}}
+        Page: &#123;&#123;slotProps.state.page&#125;&#125;
+        First: &#123;&#123;slotProps.state.first&#125;&#125;
+        Rows: &#123;&#123;slotProps.state.rows&#125;&#125;
     &lt;/template&gt;
     &lt;template #right&gt;
         &lt;Button type="button" icon="pi pi-search" /&gt;
@@ -76,7 +84,7 @@ import Paginator from 'primevue/paginator';
 </template>
 </CodeHighlight>
 
-                <h3>Page Change Event</h3>
+                <h5>Page Change Event</h5>
                 <p>Paginator provides only one event called <i>page</i> that passes all the information about the change event.</p>
 <CodeHighlight>
 &lt;Paginator :rows="10" :totalRecords="totalItemsCount" @page="onPage($event)"&gt;&lt;/Paginator&gt;
@@ -87,11 +95,11 @@ onPage(event) {
     //event.page: New page number
     //event.first: Index of first record
     //event.rows: Number of rows to display in new page
-    //event.pageCount: Total number of pages 
+    //event.pageCount: Total number of pages
 }
 </CodeHighlight>
 
-                <h3>Properties</h3>
+                <h5>Properties</h5>
                 <div class="doc-tablewrapper">
                     <table class="doc-table">
                         <thead>
@@ -142,8 +150,10 @@ onPage(event) {
                             <tr>
                                 <td>currentPageReportTemplate</td>
                                 <td>string</td>
-                                <td>({currentPage} of {totalPages})</td>
-                                <td>Template of the current page report element.</td>
+                                <td>(&#123;currentPage&#125; of &#123;totalPages&#125;)</td>
+                                <td>Template of the current page report element. Available placeholders are
+                                    &#123;currentPage&#125;,&#123;totalPages&#125;,&#123;rows&#125;,&#123;first&#125;,&#123;last&#125; and &#123;totalRecords&#125;
+                                </td>
                             </tr>
                             <tr>
                                 <td>alwaysShow</td>
@@ -155,7 +165,7 @@ onPage(event) {
                     </table>
                 </div>
 
-                <h3>Events</h3>
+                <h5>Events</h5>
                 <div class="doc-tablewrapper">
                     <table class="doc-table">
                         <thead>
@@ -171,7 +181,7 @@ onPage(event) {
                                 <td>event.page: New page number <br/>
                                     event.first: Index of first record <br/>
                                     event.rows: Number of rows to display in new page <br/>
-                                    event.pageCount: Total number of pages 
+                                    event.pageCount: Total number of pages
                                 </td>
                                 <td>Callback to invoke when page changes, the event object contains information about the new state.</td>
                             </tr>
@@ -179,7 +189,7 @@ onPage(event) {
                     </table>
                 </div>
 
-                <h3>Styling</h3>
+                <h5>Styling</h5>
                 <p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
                 <div class="doc-tablewrapper">
                     <table class="doc-table">
@@ -225,13 +235,13 @@ onPage(event) {
                         </tbody>
                     </table>
 
-                    <h3>Dependencies</h3>
+                    <h5>Dependencies</h5>
                     <p>None.</p>
                 </div>
             </TabPanel>
 
             <TabPanel header="Source">
-                <a href="https://github.com/primefaces/primereact/tree/master/src/showcase/paginator" class="btn-viewsource" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/primefaces/primevue/tree/master/src/showcase/paginator" class="btn-viewsource" target="_blank" rel="noopener noreferrer">
                     <span>View on GitHub</span>
                 </a>
 <CodeHighlight>
@@ -239,7 +249,7 @@ onPage(event) {
 &lt;Paginator :rows="10" :totalRecords="totalRecords" :rowsPerPageOptions="[10,20,30]"&gt;&lt;/Paginator&gt;
 
 &lt;h3&gt;Custom&lt;/h3&gt;
-&lt;Paginator :first.sync="first" :rows="1" :totalRecords="totalRecords2" 
+&lt;Paginator :first.sync="first" :rows="1" :totalRecords="totalRecords2"
     template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"&gt;
     &lt;template #left&gt;
         &lt;Button type="button" icon="pi pi-refresh" @click="reset()"/&gt;
@@ -283,7 +293,7 @@ export default {
 
 .image-gallery {
     text-align: center;
-    padding: 1em;
+    padding: 1rem;
 }
 </CodeHighlight>
             </TabPanel>

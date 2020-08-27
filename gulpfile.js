@@ -4,14 +4,13 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     uglifycss = require('gulp-uglifycss'),
     rename = require('gulp-rename'),
-    del = require('del'),
     flatten = require('gulp-flatten');
 
 gulp.task('copy-components', function() {
     return gulp.src(['src/components/**/!(*.js)*'])
         .pipe(gulp.dest('./components'));
 });
-    
+
 gulp.task('build-css', function() {
     return gulp.src([
         'src/components/common/Common.css',
@@ -45,4 +44,3 @@ gulp.task('build-exports', function() {
 //Building project with run sequence
 gulp.task('build-resources', ['build-css','images', 'build-themes']);
 
-        

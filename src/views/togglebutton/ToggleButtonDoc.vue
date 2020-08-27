@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import ToggleButton from 'primevue/togglebutton';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Two-way binding to a boolean property is defined using the standard v-model directive.</p>
 <CodeHighlight>
 &lt;ToggleButton v-model="checked" /&gt;
@@ -24,14 +24,14 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Labels and Icons</h3>
+				<h5>Labels and Icons</h5>
 				<p>Icons and Labels can be customized using <i>onLabel</i>, <i>offLabel</i>, <i>onIcon</i> and <i>offIcon</i> properties.</p>
 <CodeHighlight>
 &lt;ToggleButton v-model="checked" onLabel="I confirm" offLabel="I reject" onIcon="pi pi-check" offIcon="pi pi-times" /&gt;
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -74,34 +74,22 @@ export default {
                                 <td>Label for the off state.</td>
                             </tr>
                             <tr>
-                                <td>inputId</td>
-                                <td>string</td>
-                                <td>null</td>
-                                <td>Identifier of the input element.</td>
-                            </tr>
-                            <tr>
-                                <td>name</td>
-                                <td>string</td>
-                                <td>null</td>
-                                <td>Name of the input element.</td>
-                            </tr>
-                            <tr>
                                 <td>iconPos</td>
                                 <td>string</td>
                                 <td>left</td>
                                 <td>Position of the icon, valid values are "left" and "right".</td>
                             </tr>
                             <tr>
-                                <td>disabled</td>
-                                <td>boolean</td>
+                                <td>ariaLabelledBy</td>
+                                <td>string</td>
                                 <td>null</td>
-                                <td>When present, it specifies that the element should be disabled.</td>
+                                <td>Establishes relationships between the component and label(s) where its value should be one or more element IDs.</td>
                             </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -141,7 +129,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -157,7 +145,7 @@ export default {
                                 <td>Container element</td>
                             </tr>
                             <tr>
-                                <td>p-button-icon-left</td>
+                                <td>p-button-icon</td>
                                 <td>Icon element.</td>
                             </tr>
                             <tr>
@@ -168,7 +156,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -180,11 +168,9 @@ export default {
 <template v-pre>
 &lt;h3&gt;Basic&lt;/h3&gt;
 &lt;ToggleButton v-model="checked1" onIcon="pi pi-check" offIcon="pi pi-times" /&gt;
-&lt;p style="font-weight: bold"&gt;{{checked1}}&lt;/p&gt;
 
 &lt;h3&gt;Customized&lt;/h3&gt;
 &lt;ToggleButton v-model="checked2" onLabel="I confirm" offLabel="I reject" onIcon="pi pi-check" offIcon="pi pi-times" style="width: 10em" /&gt;
-&lt;p style="font-weight: bold"&gt;{{checked2}}&lt;/p&gt;
 </template>
 </CodeHighlight>
 

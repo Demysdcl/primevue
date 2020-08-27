@@ -11,10 +11,19 @@ export declare class MultiSelect extends Vue {
     disabled?: boolean;
     filter?: boolean;
     tabindex?: string;
+    inputId?: string;
     dataKey?: string;
     filterPlaceholder?: string;
+    filterLocale?: string;
+    ariaLabelledBy?: string;
+    appendTo?: string;
     $emit(eventName: 'input', value: any): this;
     $emit(eventName: 'change', e: {originalEvent: Event, value: any}): this;
+    $emit(eventName: 'before-show'): this;
+    $emit(eventName: 'before-leave'): this;
+    $emit(eventName: 'show'): this;
+    $emit(eventName: 'hide'): this;
+    $emit(eventName: 'filter', e: { originalEvent: Event, value: string }): this;
     $slots: {
         value: VNode[];
         option: VNode[];

@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import ProgressBar from 'primevue/progressbar';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>ProgressBar has two modes; "determinate" (default) and "indeterminate". In determinate mode, a value between 0 and 100 is required to display the progress.</p>
 <CodeHighlight>
 &lt;ProgressBar :value="value" /&gt;
@@ -25,7 +25,17 @@ data() {
 &lt;ProgressBar mode="indeterminate"/&gt;
 </CodeHighlight>
 
-				<h3>Properties</h3>
+                <h5>Slot</h5>
+                <p>A custom label can be placed inside the progress bar via the default slot.</p>
+<CodeHighlight>
+<template v-pre>
+&lt;ProgressBar :value="value"&gt;
+    Percent Complete: &#123;&#123;value&#125;&#125;%
+&lt;/ProgressBar&gt;
+</template>
+</CodeHighlight>
+
+				<h5>Properties</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -53,13 +63,13 @@ data() {
                                 <td>showValue</td>
                                 <td>boolean</td>
                                 <td>true</td>
-                                <td>Whether to displau the progress bar value.</td>
+                                <td>Whether to display the progress bar value.</td>
                             </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -94,7 +104,7 @@ data() {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 

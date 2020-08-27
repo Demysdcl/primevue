@@ -12,6 +12,14 @@ export default {
             type: String,
             default: 'Enter a password'
         },
+        mediumRegex: {
+            type: String,
+            default: '^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})' // eslint-disable-line
+        },
+        strongRegex: {
+            type: String,
+            default: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})' // eslint-disable-line
+        },
         weakLabel: {
             type: String,
             default: 'Weak'
@@ -32,38 +40,28 @@ export default {
     panel: null,
     meter: null,
     info: null,
+    mediumCheckRegExp: null,
+    strongCheckRegExp: null,
+    mounted() {
+        this.mediumCheckRegExp = new RegExp(this.mediumRegex);
+        this.strongCheckRegExp = new RegExp(this.strongRegex);
+    },
     methods: {
         testStrength(str) {
-            let grade = 0;
-            let val;
+            let level = 0;
 
-            val = str.match('[0-9]');
-            grade += this.normalize(val ? val.length : 1/4, 1) * 25;
+            if (this.strongCheckRegExp.test(str))
+                level = 3;
+            else if (this.mediumCheckRegExp.test(str))
+                level = 2;
+            else if (str.length)
+                level = 1;
 
-            val = str.match('[a-zA-Z]');
-            grade += this.normalize(val ? val.length : 1/2, 3) * 10;
-
-            val = str.match('[!@#$%^&*?_~.,;=]');
-            grade += this.normalize(val ? val.length : 1/6, 1) * 35;
-
-            val = str.match('[A-Z]');
-            grade += this.normalize(val ? val.length : 1/6, 1) * 30;
-
-            grade *= str.length / 8;
-
-            return grade > 100 ? 100 : grade;
-        },
-        normalize(x, y) {
-            let diff = x - y;
-
-            if(diff <= 0)
-                return x / y;
-            else
-                return 1 + 0.5 * (x / (x + y/4));
+            return level;
         },
         createPanel() {
             this.panel = document.createElement('div');
-            this.panel.className = 'p-password-panel p-component p-hidden p-password-panel-overlay p-input-overlay';
+            this.panel.className = 'p-password-panel p-component p-password-panel-overlay p-connected-overlay';
             this.meter = document.createElement('div');
             this.meter.className = 'p-password-meter';
             this.info = document.createElement('div');
@@ -88,26 +86,26 @@ export default {
                         if (!this.panel) {
                             this.createPanel();
                         }
-                        
+
                         vm.panel.style.zIndex = String(DomHandler.generateZIndex());
                         vm.panel.style.display = 'block';
                         setTimeout(() => {
-                            DomHandler.addClass(this.panel, 'p-input-overlay-visible');
-                            DomHandler.removeClass(this.panel, 'p-input-overlay-hidden');
+                            DomHandler.addClass(this.panel, 'p-connected-overlay-visible');
+                            DomHandler.removeClass(this.panel, 'p-connected-overlay-hidden');
                         }, 1);
                         DomHandler.absolutePosition(this.panel, this.$refs.input);
                     }
-                    
+
                     this.$emit('focus', event);
                 },
                 blur: event => {
                     if (this.panel) {
-                        DomHandler.addClass(this.panel, 'p-input-overlay-hidden');
-                        DomHandler.removeClass(this.panel, 'p-input-overlay-visible');
+                        DomHandler.addClass(this.panel, 'p-connected-overlay-hidden');
+                        DomHandler.removeClass(this.panel, 'p-connected-overlay-visible');
 
                         setTimeout(() => {
                             vm.panel.style.display = 'none';
-                            DomHandler.removeClass(this.panel, 'p-input-overlay-hidden');
+                            DomHandler.removeClass(this.panel, 'p-connected-overlay-hidden');
                         }, 150);
                     }
 
@@ -119,25 +117,26 @@ export default {
                         let label = null;
                         let meterPos = null;
 
-                        if (value.length === 0) {
-                            label = this.promptLabel;
-                            meterPos = '0px 0px';
-                        }
-                        else {
-                            let score = this.testStrength(value);
-
-                            if (score < 30) {
+                        switch (this.testStrength(value)) {
+                            case 1:
                                 label = this.weakLabel;
                                 meterPos = '0px -10px';
-                            }
-                            else if (score >= 30 && score < 80) {
+                                break;
+
+                            case 2:
                                 label = this.mediumLabel;
                                 meterPos = '0px -20px';
-                            } 
-                            else if (score >= 80) {
+                                break;
+
+                            case 3:
                                 label = this.strongLabel;
                                 meterPos = '0px -30px';
-                            }
+                                break;
+
+                            default:
+                                label = this.promptLabel;
+                                meterPos = '0px 0px';
+                                break;
                         }
 
                         vm.meter.style.backgroundPosition = meterPos;

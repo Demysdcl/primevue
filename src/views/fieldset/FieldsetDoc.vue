@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Fieldset from 'primevue/fieldset';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Fieldset is a container component that accepts content as its children.</p>
 <CodeHighlight>
 &lt;Fieldset legend="Godfather I"&gt;
@@ -18,7 +18,7 @@ import Fieldset from 'primevue/fieldset';
 &lt;/Fieldset&gt;
 </CodeHighlight>
 
-                <h3>Custom Header</h3>
+                <h5>Custom Header</h5>
                 <p>Header of the panel is either defined with the <i>legend</i> property or the legend template.</p>
 <CodeHighlight>
 &lt;Fieldset&gt;
@@ -30,7 +30,7 @@ import Fieldset from 'primevue/fieldset';
 </CodeHighlight>
 
 
-				<h3>Toggleable</h3>
+				<h5>Toggleable</h5>
 				<p>Content of the fieldset can be expanded and collapsed using <i>toggleable</i> option..</p>
 <CodeHighlight>
 &lt;Fieldset legend="Godfather I" :toggleable="true"&gt;
@@ -56,8 +56,8 @@ import Fieldset from 'primevue/fieldset';
 &lt;/Fieldset&gt;
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -91,7 +91,7 @@ import Fieldset from 'primevue/fieldset';
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -113,7 +113,7 @@ import Fieldset from 'primevue/fieldset';
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -144,7 +144,7 @@ import Fieldset from 'primevue/fieldset';
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -154,20 +154,20 @@ import Fieldset from 'primevue/fieldset';
 				</a>
 <CodeHighlight>
 <template v-pre>
-&lt;h3&gt;Regular&lt;/h3&gt;
-&lt;Fieldset legend="Godfather I"&gt;
-    The story begins as Don Vito Corleone, the head of a New York Mafia family, oversees his daughter's wedding.
-    His beloved son Michael has just come home from the war, but does not intend to become part of his father's business.
-    Through Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family,
-    kind and benevolent to those who give respect, but given to ruthless violence whenever anything stands against the good of the family.
+&lt;h5&gt;Regular&lt;/h5&gt;
+&lt;Fieldset legend="Header"&gt;
+    &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
 &lt;/Fieldset&gt;
 
-&lt;h3&gt;Toggleable&lt;/h3&gt;
-&lt;Fieldset legend="Godfather I" :toggleable="true"&gt;
-    The story begins as Don Vito Corleone, the head of a New York Mafia family, oversees his daughter's wedding.
-    His beloved son Michael has just come home from the war, but does not intend to become part of his father's business.
-    Through Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family,
-    kind and benevolent to those who give respect, but given to ruthless violence whenever anything stands against the good of the family.
+&lt;h5&gt;Toggleable&lt;/h5&gt;
+&lt;Fieldset legend="Header" :toggleable="true"&gt;
+    &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
 &lt;/Fieldset&gt;
 </template>
 </CodeHighlight>

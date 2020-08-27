@@ -8,24 +8,20 @@
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Single</h3>
-            <SelectButton v-model="selectedCity" :options="cities" optionLabel="name" />
-            <p>Selected City: <span style="font-weight: bold">{{selectedCity}}</span></p>
+            <div class="card">
+                <h5>Single Selection</h5>
+                <SelectButton v-model="value1" :options="options" />
 
-            <h3>Multiple</h3>
-            <SelectButton v-model="selectedCars" :options="cars" optionLabel="brand" :multiple="true" />
-            <p>Selected Cars: <span style="font-weight: bold">{{selectedCars}}</span></p>
+                <h5>Multiple Selection</h5>
+                <SelectButton v-model="value2" :options="paymentOptions" optionLabel="name" multiple />
 
-            <h3>Custom Content</h3>
-            <SelectButton v-model="selectedCar" :options="cars" optionLabel="brand">
-                <template #option="slotProps">
-                    <div style="text-align: center; padding: 1em; width: 125px">
-                        <img :alt="slotProps.option.brand" :src="'demo/images/car/' + slotProps.option.brand + '.png'" style="width:48px" />
-                        <div style="margin-top: 1em">{{slotProps.option.brand}}</div>
-                    </div>
-                </template>
-            </SelectButton>
-            <p>Selected Car: <span style="font-weight: bold">{{selectedCar}}</span></p>
+                <h5>Custom Content</h5>
+                <SelectButton v-model="value3" :options="justifyOptions" dataKey="value">
+                    <template #option="slotProps">
+                        <i :class="slotProps.option.icon"></i>
+                    </template>
+                </SelectButton>
+            </div>
         </div>
 
         <SelectButtonDoc/>
@@ -38,23 +34,21 @@ import SelectButtonDoc from './SelectButtonDoc';
 export default {
     data() {
         return {
-            selectedCity: null,
-            selectedCar: null,
-            selectedCars: null,
-            cities: [
-                {name: 'London', code: 'LND'},
-                {name: 'Paris', code: 'PRS'},
-                {name: 'Rome', code: 'RM'}
+            value1: 'Off',
+            value2: null,
+            value3: null,
+            options: ['Off', 'On'],
+            paymentOptions: [
+                {name: 'Option 1', value: 1},
+                {name: 'Option 2', value: 2},
+                {name: 'Option 3', value: 3}
             ],
-            cars: [
-                {brand: 'Audi', key: 'A'},
-                {brand: 'BMW', key: 'B'},
-                {brand: 'Mercedes', key: 'M'}
-            ]
+            justifyOptions: [
+                {icon: 'pi pi-align-left', value: 'left'},
+                {icon: 'pi pi-align-right', value: 'Right'},
+                {icon: 'pi pi-align-center', value: 'Center'},
+                {icon: 'pi pi-align-justify', value: 'Justify'}]
         }
-    },
-    created() {
-        this.selectedCar = this.cars[1];
     },
     components: {
         'SelectButtonDoc': SelectButtonDoc

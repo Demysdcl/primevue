@@ -3,7 +3,7 @@
 		<div class="p-dataview-header" v-if="$scopedSlots.header">
 			<slot name="header"></slot>
 		</div>
-		<DVPaginator v-if="paginatorTop" :rows="rows" :first="first" :totalRecords="getTotalRecords" :pageLinkSize="pageLinkSize" :template="paginatorTemplate" :rowsPerPageOptions="rowsPerPageOptions"
+		<DVPaginator v-if="paginatorTop" :rows="d_rows" :first="d_first" :totalRecords="getTotalRecords" :pageLinkSize="pageLinkSize" :template="paginatorTemplate" :rowsPerPageOptions="rowsPerPageOptions"
 					:currentPageReportTemplate="currentPageReportTemplate" :class="{'p-paginator-top': paginatorTop}" :alwaysShow="alwaysShowPaginator" @page="onPage($event)">
 			<template #left v-if="$scopedSlots.paginatorLeft">
 				<slot name="paginatorLeft"></slot>
@@ -13,15 +13,19 @@
 			</template>
 		</DVPaginator>
 		<div class="p-dataview-content">
-			<div class="p-grid">
+			<div class="p-grid p-nogutter">
 				<template v-for="(item,index) of items">
 					<slot v-if="$scopedSlots.list && layout === 'list'" name="list" :data="item" :index="index"></slot>
 					<slot v-if="$scopedSlots.grid && layout === 'grid'" name="grid" :data="item" :index="index"></slot>
 				</template>
-				<div v-if="empty" class="p-col-12"><slot name="empty"></slot></div>
+				<div v-if="empty" class="p-col">
+                    <div class="p-dataview-emptymessage">
+                        <slot name="empty"></slot>
+                    </div>
+                </div>
 			</div>
 		</div>
-		<DVPaginator v-if="paginatorBottom" :rows="rows" :first="first" :totalRecords="getTotalRecords" :pageLinkSize="pageLinkSize" :template="paginatorTemplate" :rowsPerPageOptions="rowsPerPageOptions"
+		<DVPaginator v-if="paginatorBottom" :rows="d_rows" :first="d_first" :totalRecords="getTotalRecords" :pageLinkSize="pageLinkSize" :template="paginatorTemplate" :rowsPerPageOptions="rowsPerPageOptions"
 					:currentPageReportTemplate="currentPageReportTemplate" :class="{'p-paginator-bottom': paginatorBottom}" :alwaysShow="alwaysShowPaginator" @page="onPage($event)">
 			<template #left v-if="$scopedSlots.paginatorLeft">
 				<slot name="paginatorLeft"></slot>
@@ -114,6 +118,12 @@ export default {
         },
         rows(newValue) {
             this.d_rows = newValue;
+        },
+        sortField() {
+            this.resetPage();
+        },
+        sortOrder() {
+            this.resetPage();
         }
     },
     methods: {
@@ -153,6 +163,10 @@ export default {
             else {
                 return null;
             }
+        },
+        resetPage() {
+            this.d_first = 0;
+            this.$emit('update:first', this.d_first);
         }
     },
     computed: {
@@ -185,7 +199,7 @@ export default {
                 if (data && data.length && this.sortField) {
                     data = this.sort();
                 }
-            
+
                 if (this.paginator) {
                     const first = this.lazy ? 0 : this.d_first;
                     return data.slice(first, first + this.d_rows);
@@ -193,7 +207,7 @@ export default {
                 else {
                     return data;
                 }
-                    
+
             }
             else {
                 return null;
@@ -205,47 +219,3 @@ export default {
     }
 }
 </script>
-
-<style>
-.p-dataview .p-paginator {
-	text-align: center;
-}
-
-.p-dataview-column {
-	padding: .25em;
-}
-
-.p-dataview-content-empty {
-	padding: .25em .625em;
-}
-
-.p-dataview .p-dataview-header,
-.p-dataview .p-dataview-footer {
-	text-align: center;
-	padding: .5em .75em;
-}
-
-.p-dataview .p-dataview-header {
-	border-bottom: 0 none;
-}
-
-.p-dataview .p-dataview-footer {
-	border-top: 0 none;
-}
-
-.p-dataview .p-paginator-top {
-	border-bottom: 0 none;
-}
-
-.p-dataview .p-paginator-bottom {
-	border-top: 0 none;
-}
-
-.p-dataview.p-dataview-list > .p-dataview-content > div.p-grid > div {
-	width: 100%;
-}
-
-.p-dataview-loading-icon {
-	font-size: 2em;
-}
-</style>

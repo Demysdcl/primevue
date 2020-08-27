@@ -1,19 +1,21 @@
 <template>
-    <div :class="containerClass">
-        <div class="p-toast-item">
-            <button class="p-toast-icon-close p-link" @click="onCloseClick" v-if="message.closable !== false">
-                <span class="p-toast-icon-close-icon pi pi-times"></span>
-            </button>
+    <div :class="containerClass" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="p-toast-message-content">
             <span :class="iconClass"></span>
-            <div class="p-toast-message">
-                <span class="p-toast-title">{{message.summary}}</span>
+            <div class="p-toast-message-text">
+                <span class="p-toast-summary">{{message.summary}}</span>
                 <div class="p-toast-detail">{{message.detail}}</div>
             </div>
+            <button class="p-toast-icon-close p-link" @click="onCloseClick" v-if="message.closable !== false" type="button" v-ripple>
+                <span class="p-toast-icon-close-icon pi pi-times"></span>
+            </button>
         </div>
     </div>
 </template>
 
 <script>
+import Ripple from '../ripple/Ripple';
+
 export default {
     props: {
         message: null
@@ -40,7 +42,7 @@ export default {
     },
     computed: {
         containerClass() {
-            return ['p-toast-item-container p-highlight', {
+            return ['p-toast-message', {
                 'p-toast-message-info': this.message.severity === 'info',
                 'p-toast-message-warn': this.message.severity === 'warn',
                 'p-toast-message-error': this.message.severity === 'error',
@@ -48,13 +50,16 @@ export default {
             }];
         },
         iconClass() {
-            return ['p-toast-image pi', {
+            return ['p-toast-message-icon pi', {
                 'pi-info-circle': this.message.severity === 'info',
                 'pi-exclamation-triangle': this.message.severity === 'warn',
                 'pi-times': this.message.severity === 'error',
                 'pi-check': this.message.severity === 'success'
             }];
         }
+    },
+    directives: {
+        'ripple': Ripple
     }
 }
 </script>

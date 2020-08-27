@@ -1,15 +1,13 @@
 <template>
-    <div :class="buttonClass" @click="onClick($event)">
-        <div class="p-hidden-accessible">
-            <input ref="input" type="checkbox" :id="inputId" :name="name" :checked="value" :disabled="disabled"
-                @focus="onFocus($event)" @blur="onBlur($event)" @keydown.enter.prevent="onClick($event)">
-        </div>
+    <div :class="buttonClass" @click="onClick($event)" role="checkbox" :aria-labelledby="ariaLabelledBy" :aria-checked="value" :tabindex="$attrs.disabled ? null : '0'" v-ripple>
         <span v-if="hasIcon" :class="iconClass"></span>
-        <span class="p-button-text p-unselectable-text p-c">{{label}}</span>
+        <span class="p-button-label">{{label}}</span>
     </div>
 </template>
 
 <script>
+import Ripple from '../ripple/Ripple';
+
 export default {
     props: {
         value: Boolean,
@@ -17,35 +15,19 @@ export default {
 		offIcon: String,
         onLabel: String,
         offLabel: String,
-        inputId: String,
-        name: String,
         iconPos: {
             type: String,
             default: 'left'
         },
-        disabled: Boolean
-    },
-    data() {
-        return {
-            focused: false
-        }
+        ariaLabelledBy: String
     },
     methods: {
         onClick(event) {
-            if (!this.disabled) {
+            if (!this.$attrs.disabled) {
                 this.$emit('click', event);
                 this.$emit('input', !this.value);
                 this.$emit('change', event);
-                this.$refs.input.focus();
             }
-        },
-        onFocus(event) {
-            this.focused = true;
-            this.$emit('focus', event);
-        },
-        onBlur() {
-            this.focused = false;
-            this.$emit('blur', event);
         }
     },
     computed: {
@@ -53,20 +35,17 @@ export default {
             return {
                 'p-button p-togglebutton p-component': true,
                 'p-button-icon-only': this.hasIcon && !this.hasLabel,
-                'p-button-text-icon-left': this.hasIcon && this.hasLabel && this.iconPos === 'left',
-                'p-button-text-icon-right': this.hasIcon && this.hasLabel && this.iconPos === 'right',
-                'p-button-text-only': !this.hasIcon && this.hasLabel,
-                'p-disabled': this.disabled,
-                'p-focus': this.focused,
+                'p-disabled': this.$attrs.disabled,
                 'p-highlight': this.value === true
             }
         },
         iconClass() {
             return [
                 this.value ? this.onIcon: this.offIcon,
+                'p-button-icon',
                 {
-                    'p-button-icon-left': this.iconPos === 'left', 
-                    'p-button-icon-right': this.iconPos === 'right'
+                    'p-button-icon-left': this.iconPos === 'left' && this.label,
+                    'p-button-icon-right': this.iconPos === 'right' && this.label
                 }
             ]
         },
@@ -77,8 +56,11 @@ export default {
             return this.onIcon && this.onIcon.length > 0 && this.offIcon && this.offIcon.length > 0;
         },
         label() {
-            return this.hasLabel ? (this.value ? this.onLabel : this.offLabel): 'p-btn';
+            return this.hasLabel ? (this.value ? this.onLabel : this.offLabel): '&nbsp;';
         }
+    },
+    directives: {
+        'ripple': Ripple
     }
 }
 </script>

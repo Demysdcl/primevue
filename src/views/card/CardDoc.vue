@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Card from 'primevue/card';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Card is used as a container.</p>
 <CodeHighlight>
 &lt;Card&gt;
@@ -15,7 +15,7 @@ import Card from 'primevue/card';
 &lt;/Card&gt;
 </CodeHighlight>
 
-                <h3>Templates</h3>
+                <h5>Templates</h5>
                 <p>Card provides <i>header</i>, <i>title</i>, <i>content</i> and <i>footer</i> as the named templates to place content.</p>
 <CodeHighlight>
 &lt;Card&gt;
@@ -30,13 +30,13 @@ import Card from 'primevue/card';
         quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
     &lt;/template&gt;
     &lt;template slot="footer"&gt;
-        &lt;Button icon="pi pi-check" label="Save" class="p-button-raised" /&gt;
-        &lt;Button icon="pi pi-times" label="Cancel" class="p-button-raised p-button-secondary" style="margin-left: .5em" /&gt;
+        &lt;Button icon="pi pi-check" label="Save" /&gt;
+        &lt;Button icon="pi pi-times" label="Cancel" class="p-button-secondary" style="margin-left: .5em" /&gt;
     &lt;/template&gt;
 &lt;/Card&gt;
 </CodeHighlight>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -71,7 +71,7 @@ import Card from 'primevue/card';
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -81,13 +81,13 @@ import Card from 'primevue/card';
 				</a>
 <CodeHighlight>
 <template v-pre>
-&lt;Card style="width: 25em; margin-bottom: 2em"&gt;
+&lt;Card style="width: 25rem; margin-bottom: 2em"&gt;
     &lt;template slot="title"&gt;
         Simple Card
     &lt;/template&gt;
     &lt;template slot="content"&gt;
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
+        &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
+        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!&lt;/p&gt;
     &lt;/template&gt;
 &lt;/Card&gt;
 
@@ -98,13 +98,16 @@ import Card from 'primevue/card';
     &lt;template slot="title"&gt;
         Advanced Card
     &lt;/template&gt;
+    &lt;template slot="subtitle"&gt;
+        Card subtitle
+    &lt;/template&gt;
     &lt;template slot="content"&gt;
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
+        &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
+        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!&lt;/p&gt;
     &lt;/template&gt;
     &lt;template slot="footer"&gt;
-        &lt;Button icon="pi pi-check" label="Save" class="p-button-raised" /&gt;
-        &lt;Button icon="pi pi-times" label="Cancel" class="p-button-raised p-button-secondary" style="margin-left: .5em" /&gt;
+        &lt;Button icon="pi pi-check" label="Save" /&gt;
+        &lt;Button icon="pi pi-times" label="Cancel" class="p-button-secondary" style="margin-left: .5em" /&gt;
     &lt;/template&gt;
 &lt;/Card&gt;
 </template>

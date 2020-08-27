@@ -3,17 +3,19 @@
         <div class="content-section introduction">
             <div class="feature-intro">
                 <h1>Menu</h1>
-                <p>Menu is a navigation / command component that supports dynamic and static positioning..</p>
+                <p>Menu is a navigation / command component that supports dynamic and static positioning.</p>
             </div>
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Inline</h3>
-            <Menu :model="items" />
+            <div class="card">
+                <h5>Inline</h5>
+                <Menu :model="items" />
 
-            <h3>Overlay</h3>
-            <Button type="button" label="Toggle" @click="toggle" />
-            <Menu ref="menu" :model="items" :popup="true" />
+                <h5>Overlay</h5>
+                <Button type="button" label="Toggle" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
+                <Menu id="overlay_menu" ref="menu" :model="items" :popup="true" />
+            </div>
         </div>
 
         <MenuDoc />
@@ -30,14 +32,14 @@ export default {
                 {
                     label: 'Options',
                     items: [{
-                        label: 'Update', 
-                        icon: 'pi pi-refresh', 
+                        label: 'Update',
+                        icon: 'pi pi-refresh',
                         command: () => {
                             this.$toast.add({severity:'success', summary:'Updated', detail:'Data Updated', life: 3000});
                         }
                     },
                     {
-                        label: 'Delete', 
+                        label: 'Delete',
                         icon: 'pi pi-times',
                         command: () => {
                             this.$toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000});
@@ -47,22 +49,18 @@ export default {
                 {
                     label: 'Navigate',
                     items: [{
-                        label: 'Vue Website', 
+                        label: 'Vue Website',
                         icon: 'pi pi-external-link',
-                        command: () => {
-                            window.location.href = 'https://vuejs.org/'
-                        }
+                        url: 'https://vuejs.org/'
                     },
-                    {   
-                        label: 'Upload', 
-                        icon: 'pi pi-upload', 
-                        command: () => {
-                            window.location.hash = "/fileupload"
-                        }
+                    {
+                        label: 'Router',
+                        icon: 'pi pi-upload',
+                        to: '/fileupload'
                     }
                 ]}
             ]
-        } 
+        }
     },
     methods: {
         toggle(event) {

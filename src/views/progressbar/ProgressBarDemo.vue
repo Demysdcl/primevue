@@ -8,14 +8,16 @@
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Dynamic</h3>
-            <ProgressBar :value="value1" />
+            <div class="card">
+                <h5>Dynamic</h5>
+                <ProgressBar :value="value1" />
 
-            <h3>Static</h3>
-            <ProgressBar :value="value2" :showValue="false" />
+                <h5>Static</h5>
+                <ProgressBar :value="value2" :showValue="false" />
 
-            <h3>Indeterminate</h3>
-            <ProgressBar mode="indeterminate" style="height: .5em" />
+                <h5>Indeterminate</h5>
+                <ProgressBar mode="indeterminate" style="height: .5em" />
+            </div>
         </div>
 
         <ProgressBarDoc/>
@@ -52,7 +54,7 @@ export default {
         this.startProgress();
     },
     beforeDestroy() {
-        this.endProgress();  
+        this.endProgress();
     },
     components: {
         'ProgressBarDoc': ProgressBarDoc

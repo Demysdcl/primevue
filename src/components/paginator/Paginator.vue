@@ -1,5 +1,5 @@
 <template>
-	<div class="p-paginator p-component p-unselectable-text" v-if="alwaysShow ? true : (pageLinks && pageLinks.length > 1)">
+	<div class="p-paginator p-component" v-if="alwaysShow ? true : (pageLinks && pageLinks.length > 1)">
         <div class="p-paginator-left-content" v-if="$scopedSlots.left">
             <slot name="left" :state="currentState"></slot>
         </div>
@@ -9,8 +9,10 @@
 			<NextPageLink v-else-if="item === 'NextPageLink'" :key="item" @click="changePageToNext($event)" :disabled="isLastPage" />
 			<LastPageLink v-else-if="item === 'LastPageLink'" :key="item" @click="changePageToLast($event)" :disabled="isLastPage" />
 			<PageLinks v-else-if="item === 'PageLinks'" :key="item" :value="pageLinks" :page="page" @click="changePageLink($event)" />
-			<CurrentPageReport v-else-if="item === 'CurrentPageReport'" :key="item" :template="currentPageReportTemplate" :page="page" :pageCount="pageCount" />
-			<RowsPerPageDropdown v-else-if="item === 'RowsPerPageDropdown' && rowsPerPageOptions" :key="item" :rows="d_rows" :options="rowsPerPageOptions" @rows-change="onRowChange($event)" />
+			<CurrentPageReport v-else-if="item === 'CurrentPageReport'" :key="item" :template="currentPageReportTemplate"
+                :page="page" :pageCount="pageCount" :first="d_first" :rows="d_rows" :totalRecords="totalRecords" />
+			<RowsPerPageDropdown v-else-if="item === 'RowsPerPageDropdown' && rowsPerPageOptions" :key="item" :rows="d_rows"
+                :options="rowsPerPageOptions" @rows-change="onRowChange($event)" />
         </template>
         <div class="p-paginator-right-content" v-if="$scopedSlots.right">
             <slot name="right" :state="currentState"></slot>
@@ -74,6 +76,11 @@ export default {
         },
         rows(newValue) {
             this.d_rows = newValue;
+        },
+        totalRecords(newValue) {
+            if (this.page > 0 && newValue && (this.d_first >= newValue)) {
+                this.changePage(this.pageCount - 1);
+            }
         }
     },
     methods: {
@@ -193,103 +200,38 @@ export default {
 
 <style lang="css">
 .p-paginator {
-	margin: 0;
-	text-align: center;
-	padding: .125em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
-.p-paginator .p-paginator-top {
-	border-bottom: 0 none;
+.p-paginator-left-content {
+	margin-right: auto;
 }
 
-.p-paginator .p-paginator-bottom {
-	border-top:0 none;
+.p-paginator-right-content {
+	margin-left: auto;
 }
 
-.p-paginator .p-paginator-left-content {
-	float: left;
-}
-
-.p-paginator .p-paginator-right-content {
-	float: right;
-}
-
-.p-paginator .p-paginator-page,
-.p-paginator .p-paginator-pages,
-.p-paginator .p-paginator-next,
-.p-paginator .p-paginator-last,
-.p-paginator .p-paginator-first,
-.p-paginator .p-paginator-prev,
-.p-paginator .p-paginator-current {
-	display: inline-block;
-	width: 1.5em;
-	height: 1.5em;
-	line-height: 1.5em;
-	zoom: 1;
-	margin-left: .063em;
-	margin-right: .063em;
-	text-decoration: none;
-	vertical-align: middle;
-	text-align: center;
-    position: relative;
+.p-paginator-page,
+.p-paginator-next,
+.p-paginator-last,
+.p-paginator-first,
+.p-paginator-prev,
+.p-paginator-current {
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    user-select: none;
+    overflow: hidden;
+    position: relative;
 }
 
-.p-paginator .p-paginator-pages {
-	width: auto;
-	line-height: 1;
-}
-
-.p-paginator .p-paginator-icon {
-	display: block;
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	width: 1em;
-	height: 1em;
-	margin-top: -.5em;
-	margin-left: -.5em;
-}
-
-.p-paginator .p-paginator-page,
-.p-paginator .p-paginator-next,
-.p-paginator .p-paginator-last,
-.p-paginator .p-paginator-first,
-.p-paginator .p-paginator-prev{
-	cursor: pointer;
-}
-
-.p-paginator .p-paginator-current,
-.p-paginator .p-paginator-rpp-options {
-	margin-left: 1em;
-	margin-right: 1em;
-	background-image: none;
-}
-
-.p-paginator .p-paginator-jtp-select option,
-.p-paginator .p-paginator-rpp-options option {
-	background-image: none;
-	border: 0 none;
-	box-shadow: none;
-	-moz-box-shadow: none;
-	-webkit-box-shadow: none;
-}
-
-.p-paginator .p-disabled {
-	outline: 0 none;
-}
-
-.p-paginator .p-dropdown {
-	min-width: 4em;
-	margin-left: .375em;
-}
-
-.p-fluid .p-paginator .p-dropdown {
-	width: auto;
-}
-
-.p-paginator .p-paginator-current {
-	width: auto;
-	height: auto;
+.p-paginator-element:focus {
+    z-index: 1;
+    position: relative;
 }
 </style>

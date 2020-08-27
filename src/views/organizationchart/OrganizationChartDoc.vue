@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import OrganizationChart from 'primevue/organizationchart';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>OrganizationChart requires an OrganizationChartNode instance as its root value and at least one template to display node content where node instance is passed via slotProps.</p>
 <CodeHighlight>
 <template v-pre>
@@ -62,7 +62,7 @@ export default {
 }
 </CodeHighlight>
 
-                <h3>OrganizationChartNode</h3>
+                <h5>OrganizationChartNode</h5>
                 <p>API of the OrganizationChartNode has the properties below.</p>
                 <div class="doc-tablewrapper">
                     <table class="doc-table">
@@ -121,11 +121,11 @@ export default {
                     </table>
                 </div>
 
-                <h3>Collapsible Nodes</h3>
+                <h5>Collapsible Nodes</h5>
                 <p>All nodes are expanded by default however they can be expanded and collapsed when <i>collapsible</i> is enabled. The optional <i>collapsedKeys</i> property defines the keys
                     that are collapsed, this property is two-way binding enabled so that user changes or programmatic changes are reflected to the UI.
                 </p>
-                <p>Example below displays the root of chart in previous example as collapsed. Notice that the collapsedKeys is a map whose key is the 
+                <p>Example below displays the root of chart in previous example as collapsed. Notice that the collapsedKeys is a map whose key is the
                     key of the node and value is true.
                 </p>
 <CodeHighlight>
@@ -184,7 +184,7 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Selection</h3>
+				<h5>Selection</h5>
 				<p>Selection is enabled by defining the <i>selectionMode</i> to either "single" or "multiple" and specifying the <i>selectionKeys</i> with the sync operator. Note that
                 selection on a particular node can be disabled if the <i>selectable</i> is false on the node instance.</p>
 <CodeHighlight>
@@ -241,7 +241,7 @@ export default {
 }
 </CodeHighlight>
 
-                <h3>Templating</h3>
+                <h5>Templating</h5>
                 <p>The <i>type</i> property of an OrganizationChartNode is used to map a template to a node. If it is undefined, the default template is used.</p>
 
 <CodeHighlight>
@@ -350,8 +350,8 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -397,7 +397,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -432,7 +432,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -475,7 +475,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -647,7 +647,7 @@ export default {
 }
 </CodeHighlight>
 
-<CodeHighlight lang="scss">
+<CodeHighlight lang="css">
 /deep/ .p-organizationchart {
     .p-person {
         padding: 0;
@@ -655,7 +655,7 @@ export default {
     }
 
     .node-header, .node-content {
-        padding: .5em .7em;
+        padding: .5em .7rem;
     }
 
     .node-header {
@@ -685,14 +685,6 @@ export default {
     .department-cto {
         background-color: #e9286f;
         color: #ffffff;
-    }
-
-    .p-person .p-node-toggler {
-        color: #495ebb !important;
-    }
-
-    .department-cto .p-node-toggler {
-        color: #8a0a39 !important;
     }
 }
 </CodeHighlight>

@@ -1,9 +1,12 @@
 <template>
     <div :class="containerClass" @click="onBarClick" ref="container">
         <span class="p-slider-range" :style="rangeStyle"></span>
-        <span v-if="!range" class="p-slider-handle" :style="handleStyle" @mousedown="onHandleMouseDown($event)" @keydown="onHandleKeyDown($event)" tabindex="0"></span>
-        <span v-if="range" class="p-slider-handle" :style="rangeStartHandleStyle" @mousedown="onHandleMouseDown($event, 0)" @keydown="onHandleKeyDown($event, 0)" tabindex="0"></span>
-        <span v-if="range" class="p-slider-handle" :style="rangeEndHandleStyle" @mousedown="onHandleMouseDown($event, 1)" @keydown="onHandleKeyDown($event, 1)" tabindex="0"></span>
+        <span v-if="!range" class="p-slider-handle" :style="handleStyle" @mousedown="onHandleMouseDown($event)" @keydown="onHandleKeyDown($event)" tabindex="0"
+             role="slider" :aria-valuemin="min" aria-valuenow="value" aria-valuemax="max" :aria-labelledby="ariaLabelledBy"></span>
+        <span v-if="range" class="p-slider-handle" :style="rangeStartHandleStyle" @mousedown="onHandleMouseDown($event, 0)" @keydown="onHandleKeyDown($event, 0)" tabindex="0"
+            role="slider" :aria-valuemin="min" aria-valuenow="value ? value[0] : null" aria-valuemax="max" :aria-labelledby="ariaLabelledBy"></span>
+        <span v-if="range" class="p-slider-handle" :style="rangeEndHandleStyle" @mousedown="onHandleMouseDown($event, 1)" @keydown="onHandleKeyDown($event, 1)" tabindex="0"
+            role="slider" :aria-valuemin="min" aria-valuenow="value = value[1] : null" aria-valuemax="max" :aria-labelledby="ariaLabelledBy"></span>
     </div>
 </template>
 
@@ -36,7 +39,11 @@ export default {
         disabled: {
 			type: Boolean,
 			default: false
-		}
+        },
+        ariaLabelledBy: {
+            type: String,
+			default: null
+        }
     },
     dragging: false,
     handleIndex: null,
@@ -66,11 +73,11 @@ export default {
                 else
                     this.updateModel(event, newValue);
             }
-            else {            
+            else {
                 if (this.step)
                     this.handleStepChange(event, newValue, this.value);
                 else
-                    this.updateModel(event, newValue);      
+                    this.updateModel(event, newValue);
             }
         },
         onSlide(event) {
@@ -80,12 +87,12 @@ export default {
         handleStepChange(event, newValue, oldValue) {
             let diff = (newValue - oldValue);
             let val = oldValue;
-            
+
             if (diff < 0)
                 val = oldValue + Math.ceil(newValue / this.step - oldValue / this.step) * this.step;
             else if (diff > 0)
                 val = oldValue + Math.floor(newValue / this.step - oldValue / this.step) * this.step;
-            
+
             this.updateModel(event, val);
         },
         updateModel(event, value) {
@@ -96,25 +103,25 @@ export default {
                 if (this.handleIndex == 0) {
                     if (newValue < this.min)
                         newValue = this.min;
-                    else if (value > this.value[1])
+                    else if (newValue >= this.value[1])
                         newValue = this.value[1];
                 }
                 else {
                     if (newValue > this.max)
                         newValue = this.max;
-                    else if (newValue < this.value[0])
+                    else if (newValue <= this.value[0])
                         newValue = this.value[0];
                 }
-                
+
                 modelValue = [...this.value];
-                modelValue[this.handleIndex] = Math.floor(value);
+                modelValue[this.handleIndex] = Math.floor(newValue);
             }
             else {
                 if (newValue < this.min)
                     newValue = this.min;
                 else if (newValue > this.max)
                     newValue = this.max;
-                
+
                 modelValue = Math.floor(newValue);
             }
 
@@ -125,7 +132,7 @@ export default {
             if (this.disabled) {
                 return;
             }
-            
+
             if (!DomHandler.hasClass(event.target, 'p-slider-handle')) {
                 this.updateDomData();
                 this.onSlide(event);
@@ -135,7 +142,9 @@ export default {
             if (this.disabled) {
                 return;
             }
-            
+
+            DomHandler.addClass(this.$el, 'p-slider-sliding');
+
             this.dragging = true;
             this.updateDomData();
             this.handleIndex = index;
@@ -237,7 +246,8 @@ export default {
                 this.mouseupListener = (event) => {
                     if (this.dragging) {
                         this.dragging = false;
-                        this.$emit('slideend', {originalEvent: event, values: this.value});                  
+                        DomHandler.removeClass(this.$el, 'p-slider-sliding');
+                        this.$emit('slideend', {originalEvent: event, values: this.value});
                     }
                 };
 
@@ -249,7 +259,7 @@ export default {
                 document.removeEventListener('mousemove', this.dragListener);
                 this.dragListener = null;
             }
-            
+
             if (this.mouseupListener) {
                 document.removeEventListener('mouseup', this.mouseupListener);
                 this.mouseupListener = null;
@@ -289,7 +299,7 @@ export default {
                 return {'left': this.handlePosition + '%'};
             else
                 return {'bottom': this.handlePosition + '%'};
-            
+
         },
         handlePosition() {
             if (this.value === 0)
@@ -319,7 +329,7 @@ export default {
             else
                 return {'bottom': this.rangeStartPosition + '%'};
         },
-        rangeEndHandleStyle() {            
+        rangeEndHandleStyle() {
             if (this.horizontal)
                 return {'left': this.rangeEndPosition + '%'};
             else
@@ -332,47 +342,41 @@ export default {
 <style>
 .p-slider {
 	position: relative;
-	text-align: left;
-}
-.p-slider .p-slider-handle {
-	position: absolute;
-	width: 1.2em;
-	height: 1.2em;
-	cursor: default;
-	-ms-touch-action: none;
-	touch-action: none;
-}
-.p-slider .p-slider-range {
-	position: absolute;
-	font-size: .7em;
-	display: block;
-	border: 0;
-	background-position: 0 0;
 }
 
-.p-slider-horizontal {
-	height: .8em;
+.p-slider .p-slider-handle {
+	position: absolute;
+	cursor: grab;
+    touch-action: none;
+    display: block;
 }
-.p-slider-horizontal .p-slider-handle {
-	top: -.3em;
-	margin-left: -.6em;
+
+.p-slider-range {
+	position: absolute;
+    display: block;
 }
+
 .p-slider-horizontal .p-slider-range {
-	top: 0;
+    top: 0;
+    left: 0;
 	height: 100%;
 }
+
+.p-slider-horizontal .p-slider-handle {
+    top: 50%;
+}
+
 .p-slider-vertical {
-	width: .8em;
 	height: 100px;
 }
+
 .p-slider-vertical .p-slider-handle {
-	left: -.3em;
-	margin-left: 0;
-	margin-bottom: -.6em;
+    left: 50%;
 }
+
 .p-slider-vertical .p-slider-range {
-	left: 0;
-    width: 100%;
     bottom: 0;
+    left: 0;
+    width: 100%;
 }
 </style>

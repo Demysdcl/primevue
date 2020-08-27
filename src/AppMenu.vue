@@ -1,182 +1,254 @@
 <template>
     <div :class="['layout-sidebar', {'active': active}]">
         <div class="layout-menu">
-            <a tabindex="0" @click="toggleMenu($event, 0)" @keydown.enter="toggleMenu($event, 0)" :class="{'active-menuitem': activeMenuIndex === 0}">
-                <img alt="input" class="layout-menu-icon-inactive" src="./assets/images/menu/input.svg" />
-                <img alt="input" class="layout-menu-icon-active" src="./assets/images/menu/input-active.svg" />
-                <span>Input</span>
-            </a>
-            <transition name="layout-submenu-wrapper">
-                <div v-show="activeMenuIndex === 0">
-                    <div>
-                        <router-link to="/autocomplete">&#9679; AutoComplete</router-link>
-                        <router-link to="/calendar">&#9679; Calendar</router-link>
-                        <router-link to="/checkbox">&#9679; Checkbox</router-link>
-                        <router-link to="/chips">&#9679; Chips</router-link>
-                        <router-link to="/dropdown">&#9679; Dropdown</router-link>
-                        <router-link to="/editor">&#9679; Editor</router-link>
-                        <router-link to="/inputgroup">&#9679; InputGroup</router-link>
-                        <router-link to="/inputswitch">&#9679; InputSwitch</router-link>
-                        <router-link to="/inputtext">&#9679; InputText</router-link>
-                        <router-link to="/listbox">&#9679; Listbox</router-link>
-                        <router-link to="/multiselect">&#9679; MultiSelect</router-link>
-                        <router-link to="/password">&#9679; Password</router-link>
-                        <router-link to="/radiobutton">&#9679; RadioButton</router-link>
-                        <router-link to="/rating">&#9679; Rating</router-link>
-                        <router-link to="/selectbutton">&#9679; SelectButton</router-link>
-                        <router-link to="/slider">&#9679; Slider</router-link>
-                        <router-link to="/spinner">&#9679; Spinner</router-link>
-                        <router-link to="/textarea">&#9679; Textarea</router-link>
-                        <router-link to="/togglebutton">&#9679; ToggleButton</router-link>
-                        <router-link to="/tristatecheckbox">&#9679; TriCheckbox</router-link>
-                    </div>
-                </div>
-            </transition>
+            <div class="menu-category">General</div>
+            <div class="menu-items">
+                <router-link to="/setup">Get Started</router-link>
+                <a href="https://forum.primefaces.org/viewforum.php?f=110" target="_blank">Community Forum</a>
+                <a href="https://github.com/primefaces/primevue" target="_blank">Source Code</a>
+                <router-link to="/support">Support</router-link>
+                <a href="https://www.primefaces.org/store" target="_blank">Store</a>
+            </div>
 
-            <a tabindex="0" @click="toggleMenu($event, 1)" @keydown.enter="toggleMenu($event, 1)" :class="{'active-menuitem': activeMenuIndex === 1}">
-                <img alt="button" class="layout-menu-icon-inactive" src="./assets/images/menu/button.svg" />
-                <img alt="button" class="layout-menu-icon-active" src="./assets/images/menu/button-active.svg" />
-                <span>Button</span>
-            </a>
-            <transition name="layout-submenu-wrapper">
-                <div v-show="activeMenuIndex === 1">
-                    <div>
-                        <router-link to="/button">&#9679; Button</router-link>
-                        <router-link to="/splitbutton">&#9679; SplitButton</router-link>
-                    </div>
-                </div>
-            </transition>
+            <div class="menu-category">Theming</div>
+            <div class="menu-items">
+                <router-link to="/theming">Guide</router-link>
+                <a href="https://www.primefaces.org/designer/primevue">Theme Designer</a>
+                <a href="https://www.primefaces.org/designer-vue">Visual Editor</a>
+                <a href="https://www.primefaces.org/designer/api/primevue/2.0.1">SASS API</a>
+            </div>
 
-            <a tabindex="0" @click="toggleMenu($event, 2)" @keydown.enter="toggleMenu($event, 2)" :class="{'active-menuitem': activeMenuIndex === 2}">
-                <img alt="data" class="layout-menu-icon-inactive" src="./assets/images/menu/data.svg" />
-                <img alt="data" class="layout-menu-icon-active" src="./assets/images/menu/data-active.svg" />
-                <span>Data</span>
-            </a>
-            <transition name="layout-submenu-wrapper">
-                <div v-show="activeMenuIndex === 2">
-                    <div>
-                        <router-link to="/datatable">&#9679; DataTable</router-link>
-                        <router-link to="/dataview">&#9679; DataView</router-link>
-                        <router-link to="/fullcalendar">&#9679; FullCalendar</router-link>
-                        <router-link to="/orderlist">&#9679; OrderList</router-link>
-                        <router-link to="/organizationchart">&#9679; Org Chart</router-link>
-                        <router-link to="/paginator">&#9679; Paginator</router-link>
-                        <router-link to="/picklist">&#9679; PickList</router-link>
-                        <router-link to="/tree">&#9679; Tree</router-link>
-                    </div>
-                </div>
-            </transition>
+            <div class="menu-category">PrimeFlex</div>
+            <div class="menu-items">
+                <router-link to="/primeflex">Setup</router-link>
+                <router-link to="/display">Display</router-link>
+                <router-link to="/elevation">Elevation</router-link>
+                <router-link to="/flexbox">FlexBox</router-link>
+                <router-link to="/formlayout">Form Layout</router-link>
+                <router-link to="/grid">Grid System</router-link>
+                <router-link to="/spacing">Spacing</router-link>
+                <router-link to="/text">Text</router-link>
+            </div>
 
-            <a tabindex="0" @click="toggleMenu($event, 3)" @keydown.enter="toggleMenu($event, 3)" :class="{'active-menuitem': activeMenuIndex === 3}">
-                <img alt="panel" class="layout-menu-icon-inactive" src="./assets/images/menu/panel.svg" />
-                <img alt="panel" class="layout-menu-icon-active" src="./assets/images/menu/panel-active.svg" />
-                <span>Panel</span>
-            </a>
-            <transition name="layout-submenu-wrapper">
-                <div v-show="activeMenuIndex === 3">
-                    <div>
-                        <router-link to="/accordion">&#9679; Accordion</router-link>
-                        <router-link to="/card">&#9679; Card</router-link>
-                        <router-link to="/deferredcontent">&#9679; Deferred</router-link>
-                        <router-link to="/fieldset">&#9679; Fieldset</router-link>
-                        <router-link to="/flexgrid">&#9679; FlexGrid</router-link>
-                        <router-link to="/panel">&#9679; Panel</router-link>
-                        <router-link to="/tabview">&#9679; TabView</router-link>
-                        <router-link to="/toolbar">&#9679; Toolbar</router-link>
-                    </div>
-                </div>
-            </transition>
+            <div class="menu-category">PrimeIcons</div>
+            <div class="menu-items">
+                <router-link to="/icons">Icons v4.0</router-link>
+            </div>
 
-            <a tabindex="0" @click="toggleMenu($event, 4)" @keydown.enter="toggleMenu($event, 4)" :class="{'active-menuitem': activeMenuIndex === 4}">
-                <img alt="overlay" class="layout-menu-icon-inactive" src="./assets/images/menu/overlay.svg" />
-                <img alt="overlay" class="layout-menu-icon-active" src="./assets/images/menu/overlay-active.svg" />
-                <span>Overlay</span>
-            </a>
-            <transition name="layout-submenu-wrapper">
-                <div v-show="activeMenuIndex === 4">
-                    <div>
-                        <router-link to="/dialog">&#9679; Dialog</router-link>
-                        <router-link to="/overlaypanel">&#9679; OverlayPanel</router-link>
-                        <router-link to="/sidebar">&#9679; Sidebar</router-link>
-                    </div>
-                </div>
-            </transition>
+            <div class="menu-category">Form</div>
+            <div class="menu-items">
+                <router-link to="/autocomplete">AutoComplete</router-link>
+                <router-link to="/calendar">Calendar</router-link>
+                <router-link to="/checkbox">Checkbox</router-link>
+                <router-link to="/chips">Chips</router-link>
+                <router-link to="/colorpicker">ColorPicker</router-link>
+                <router-link to="/dropdown">Dropdown</router-link>
+                <router-link to="/editor">Editor</router-link>
+                <router-link to="/inputgroup">InputGroup</router-link>
+                <router-link to="/inputmask">InputMask</router-link>
+                <router-link to="/inputnumber">InputNumber</router-link>
+                <router-link to="/inputswitch">InputSwitch</router-link>
+                <router-link to="/inputtext">InputText</router-link>
+                <router-link to="/floatlabel">FloatLabel</router-link>
+                <router-link to="/listbox">Listbox</router-link>
+                <router-link to="/multiselect">MultiSelect</router-link>
+                <router-link to="/password">Password</router-link>
+                <router-link to="/radiobutton">RadioButton</router-link>
+                <router-link to="/rating">Rating</router-link>
+                <router-link to="/selectbutton">SelectButton</router-link>
+                <router-link to="/slider">Slider</router-link>
+                <router-link to="/textarea">Textarea</router-link>
+                <router-link to="/togglebutton">ToggleButton</router-link>
+                <router-link to="/tristatecheckbox">TriStateCheckbox</router-link>
+            </div>
 
-            <a tabindex="0" @click="toggleMenu($event, 5)" @keydown.enter="toggleMenu($event, 5)" :class="{'active-menuitem': activeMenuIndex === 5}">
-                <img alt="file" class="layout-menu-icon-inactive" src="./assets/images/menu/file.svg" />
-                <img alt="file" class="layout-menu-icon-active" src="./assets/images/menu/file-active.svg" />
-                <span>File</span>
-            </a>
-            <transition name="layout-submenu-wrapper">
-                <div v-show="activeMenuIndex === 5">
-                    <div>
-                        <router-link to="/fileupload">&#9679; Upload</router-link>
-                    </div>
-                </div>
-            </transition>
+            <div class="menu-category">Button</div>
+            <div class="menu-items">
+                <router-link to="/button">Button</router-link>
+                <router-link to="/splitbutton">SplitButton</router-link>
+            </div>
 
-            <a tabindex="0" @click="toggleMenu($event, 6)" @keydown.enter="toggleMenu($event, 6)" :class="{'active-menuitem': activeMenuIndex === 6}">
-                <img alt="menu" class="layout-menu-icon-inactive" src="./assets/images/menu/menu.svg" />
-                <img alt="menu" class="layout-menu-icon-active" src="./assets/images/menu/menu-active.svg" />
-                <span>Menu</span>
-            </a>
-            <transition name="layout-submenu-wrapper">
-                <div v-show="activeMenuIndex === 6">
+            <div class="menu-category">Data</div>
+            <div class="menu-items">
+                <router-link to="/datatable" v-slot="{ href, route, navigate, isActive }">
                     <div>
-                        <router-link to="/menumodel">&#9679; MenuModel</router-link>
-                        <router-link to="/menu">&#9679; Menu</router-link>
+                        <a tabindex="0" @click="toggleSubmenu($event, 'datatable')">DataTable</a>
+                        <transition name="p-toggleable-content">
+                            <div class="p-toggleable-content" v-show="isSubmenuActive('datatable', isActive)">
+                                <ul>
+                                    <li><router-link to="/datatable">Documentation</router-link></li>
+                                    <li><router-link to="/datatable/basic">Basic</router-link></li>
+                                    <li><router-link to="/datatable/dynamiccolumns">Dynamic</router-link></li>
+                                    <li><router-link to="/datatable/templating">Templating</router-link></li>
+                                    <li><router-link to="/datatable/size">Size</router-link></li>
+                                    <li><router-link to="/datatable/gridlines">GridLines</router-link></li>
+                                    <li><router-link to="/datatable/striped">Striped</router-link></li>
+                                    <li><router-link to="/datatable/colgroup">ColGroup</router-link></li>
+                                    <li><router-link to="/datatable/paginator">Paginator</router-link></li>
+                                    <li><router-link to="/datatable/sort">Sort</router-link></li>
+                                    <li><router-link to="/datatable/filter">Filter</router-link></li>
+                                    <li><router-link to="/datatable/selection">Selection</router-link></li>
+                                    <li><router-link to="/datatable/lazy">Lazy</router-link></li>
+                                    <li><router-link to="/datatable/scroll">Scroll</router-link></li>
+                                    <li><router-link to="/datatable/flexscroll">FlexScroll</router-link></li>
+                                    <li><router-link to="/datatable/rowexpand">Expand</router-link></li>
+                                    <li><router-link to="/datatable/edit">Edit</router-link></li>
+                                    <li><router-link to="/datatable/coltoggle">ColToggle</router-link></li>
+                                    <li><router-link to="/datatable/colresize">ColResize</router-link></li>
+                                    <li><router-link to="/datatable/reorder">Reorder</router-link></li>
+                                    <li><router-link to="/datatable/rowgroup">RowGroup</router-link></li>
+                                    <li><router-link to="/datatable/contextmenu">ContextMenu</router-link></li>
+                                    <li><router-link to="/datatable/responsive">Responsive</router-link></li>
+                                    <li><router-link to="/datatable/export">Export</router-link></li>
+                                    <li><router-link to="/datatable/state">State</router-link></li>
+                                    <li><router-link to="/datatable/style">Style</router-link></li>
+                                    <li><router-link to="/datatable/crud">Crud</router-link></li>
+                                </ul>
+                            </div>
+                        </transition>
                     </div>
-                </div>
-            </transition>
+                </router-link>
 
-            <a tabindex="0" @click="toggleMenu($event, 7)" @keydown.enter="toggleMenu($event, 7)" :class="{'active-menuitem': activeMenuIndex === 7}">
-                <img alt="charts" class="layout-menu-icon-inactive" src="./assets/images/menu/charts.svg" />
-                <img alt="charts" class="layout-menu-icon-active" src="./assets/images/menu/charts-active.svg" />
-                <span>Chart</span>
-            </a>
-            <transition name="layout-submenu-wrapper">
-                <div v-show="activeMenuIndex === 7">
+                <router-link to="/dataview">DataView</router-link>
+                <router-link to="/fullcalendar">FullCalendar</router-link>
+                <router-link to="/orderlist">OrderList</router-link>
+                <router-link to="/organizationchart">OrganizationChart</router-link>
+                <router-link to="/paginator">Paginator</router-link>
+                <router-link to="/picklist">PickList</router-link>
+                <router-link to="/tree" v-slot="{ href, route, navigate, isActive }">
                     <div>
-                        <router-link to="/chart">&#9679; ChartModel</router-link>
-                        <router-link to="/chart/pie">&#9679; Pie</router-link>
-                        <router-link to="/chart/doughnut">&#9679; Doughnut</router-link>
-                        <router-link to="/chart/bar">&#9679; Bar</router-link>
-                        <router-link to="/chart/line">&#9679; Line</router-link>
-                        <router-link to="/chart/polararea">&#9679; PolarArea</router-link>
-                        <router-link to="/chart/radar">&#9679; Radar</router-link>
-                        <router-link to="/chart/combo">&#9679; Combo</router-link>
+                        <a tabindex="0" @click="toggleSubmenu($event, 'tree')">Tree</a>
+                        <transition name="p-toggleable-content">
+                            <div class="p-toggleable-content" v-show="isSubmenuActive('tree', isActive)">
+                                <ul>
+                                    <li><router-link to="/tree">Documentation</router-link></li>
+                                    <li><router-link to="/tree/selection">Selection</router-link></li>
+                                    <li><router-link to="/tree/lazy">Lazy</router-link></li>
+                                    <li><router-link to="/tree/templating">Templating</router-link></li>
+                                    <li><router-link to="/tree/filter">Filter</router-link></li>
+                                </ul>
+                            </div>
+                        </transition>
                     </div>
-                </div>
-            </transition>
+                </router-link>
+                <router-link to="/treetable" v-slot="{ href, route, navigate, isActive }">
+                    <div>
+                        <a tabindex="0" @click="toggleSubmenu($event, 'treetable')">TreeTable</a>
+                        <transition name="p-toggleable-content">
+                            <div class="p-toggleable-content" v-show="isSubmenuActive('treetable', isActive)">
+                                <ul>
+                                    <li><router-link to="/treetable">Documentation</router-link></li>
+                                    <li><router-link to="/treetable/templating">Templating</router-link></li>
+                                    <li><router-link to="/treetable/size">Size</router-link></li>
+                                    <li><router-link to="/treetable/paginator">Paginator</router-link></li>
+                                    <li><router-link to="/treetable/sort">Sort</router-link></li>
+                                    <li><router-link to="/treetable/filter">Filter</router-link></li>
+                                    <li><router-link to="/treetable/selection">Selection</router-link></li>
+                                    <li><router-link to="/treetable/lazy">Lazy</router-link></li>
+                                    <li><router-link to="/treetable/coltoggle">ColToggle</router-link></li>
+                                    <li><router-link to="/treetable/colresize">Resize</router-link></li>
+                                    <li><router-link to="/treetable/responsive">Responsive</router-link></li>
+                                </ul>
+                            </div>
+                        </transition>
+                    </div>
+                </router-link>
+            </div>
 
-            <a tabindex="0" @click="toggleMenu($event, 8)" @keydown.enter="toggleMenu($event, 8)" :class="{'active-menuitem': activeMenuIndex === 8}">
-                <img alt="message" class="layout-menu-icon-inactive" src="./assets/images/menu/message.svg" />
-                <img alt="message" class="layout-menu-icon-active" src="./assets/images/menu/message-active.svg" />
-                <span>Messages</span>
-            </a>
-            <transition name="layout-submenu-wrapper">
-                <div v-show="activeMenuIndex === 8">
-                    <div>
-                        <router-link to="/message">&#9679; Message</router-link>
-                        <router-link to="/toast">&#9679; Toast</router-link>
-                    </div>
-                </div>
-            </transition>
+            <div class="menu-category">Panel</div>
+            <div class="menu-items">
+                <router-link to="/accordion">Accordion</router-link>
+                <router-link to="/card">Card</router-link>
+                <router-link to="/deferredcontent">Deferred</router-link>
+                <router-link to="/fieldset">Fieldset</router-link>
+                <router-link to="/panel">Panel</router-link>
+                <router-link to="/scrollpanel">ScrollPanel</router-link>
+                <router-link to="/tabview">TabView</router-link>
+                <router-link to="/toolbar">Toolbar</router-link>
+            </div>
 
-            <a tabindex="0" @click="toggleMenu($event, 9)" @keydown.enter="toggleMenu($event, 9)" :class="{'active-menuitem': activeMenuIndex === 9}">
-                <img alt="misc" class="layout-menu-icon-inactive" src="./assets/images/menu/misc.svg" />
-                <img alt="misc" class="layout-menu-icon-active" src="./assets/images/menu/misc-active.svg" />
-                <span>Misc</span>
-            </a>
-            <transition name="layout-submenu-wrapper">
-                <div v-show="activeMenuIndex === 9">
+            <div class="menu-category">Overlay</div>
+            <div class="menu-items">
+                <router-link to="/dialog">Dialog</router-link>
+                <router-link to="/overlaypanel">OverlayPanel</router-link>
+                <router-link to="/sidebar">Sidebar</router-link>
+                <router-link to="/tooltip">Tooltip</router-link>
+            </div>
+
+            <div class="menu-category">File</div>
+            <div class="menu-items">
+                <router-link to="/fileupload">Upload</router-link>
+            </div>
+
+            <div class="menu-category">Menu</div>
+            <div class="menu-items">
+                <router-link to="/menumodel">MenuModel</router-link>
+                <router-link to="/breadcrumb">Breadcrumb</router-link>
+                <router-link to="/contextmenu">ContextMenu</router-link>
+                <router-link to="/megamenu">MegaMenu</router-link>
+                <router-link to="/menu">Menu</router-link>
+                <router-link to="/menubar">Menubar</router-link>
+                <router-link to="/panelmenu">PanelMenu</router-link>
+                <router-link to="/steps">Steps</router-link>
+                <router-link to="/tabmenu">TabMenu</router-link>
+                <router-link to="/tieredmenu">TieredMenu</router-link>
+            </div>
+
+            <div class="menu-category">Chart</div>
+            <div class="menu-items">
+                <router-link to="/chart">ChartModel</router-link>
+                <router-link to="/chart/pie">Pie</router-link>
+                <router-link to="/chart/doughnut">Doughnut</router-link>
+                <router-link to="/chart/bar">Bar</router-link>
+                <router-link to="/chart/line">Line</router-link>
+                <router-link to="/chart/polararea">PolarArea</router-link>
+                <router-link to="/chart/radar">Radar</router-link>
+                <router-link to="/chart/combo">Combo</router-link>
+            </div>
+
+            <div class="menu-category">Messages</div>
+            <div class="menu-items">
+                <router-link to="/message">Message</router-link>
+                <router-link to="/toast">Toast</router-link>
+            </div>
+
+            <div class="menu-category">Media</div>
+            <div class="menu-items">
+                <router-link to="/carousel">Carousel</router-link>
+                <router-link to="/galleria" v-slot="{ href, route, navigate, isActive }">
                     <div>
-                        <router-link to="/inplace">&#9679; Inplace</router-link>
-                        <router-link to="/progressbar">&#9679; ProgressBar</router-link>
-                        <router-link to="/progressspinner">&#9679; ProgressSpinner</router-link>
+                        <a tabindex="0" @click="toggleSubmenu($event, 'galleria')">Galleria</a>
+                        <transition name="p-toggleable-content">
+                            <div class="p-toggleable-content" v-show="isSubmenuActive('galleria', isActive)">
+                                <ul>
+                                    <li><router-link to="/galleria">Documentation</router-link></li>
+                                    <li><router-link to="/galleria/programmatic">Programmatic</router-link></li>
+                                    <li><router-link to="/galleria/indicator">Indicator</router-link></li>
+                                    <li><router-link to="/galleria/thumbnail">Thumbnail</router-link></li>
+                                    <li><router-link to="/galleria/navigator">Navigator</router-link></li>
+                                    <li><router-link to="/galleria/responsive">Responsive</router-link></li>
+                                    <li><router-link to="/galleria/fullscreen">FullScreen</router-link></li>
+                                    <li><router-link to="/galleria/autoplay">AutoPlay</router-link></li>
+                                    <li><router-link to="/galleria/caption">Caption</router-link></li>
+                                    <li><router-link to="/galleria/advanced">Advanced</router-link></li>
+                                </ul>
+                            </div>
+                        </transition>
                     </div>
-                </div>
-            </transition>
+                </router-link>
+            </div>
+
+            <div class="menu-category">Misc</div>
+            <div class="menu-items">
+                <router-link to="/accessibility">Accessibility</router-link>
+                <router-link to="/badge">Badge</router-link>
+                <router-link to="/blockui">BlockUI</router-link>
+                <router-link to="/inplace">Inplace</router-link>
+                <router-link to="/progressbar">ProgressBar</router-link>
+                <router-link to="/progressspinner">ProgressSpinner</router-link>
+                <router-link to="/ripple">Ripple</router-link>
+                <router-link to="/terminal">Terminal</router-link>
+            </div>
         </div>
     </div>
 </template>
@@ -188,12 +260,25 @@ export default {
     },
     data() {
         return {
-            activeMenuIndex: null
+            activeSubmenus: {}
         }
     },
     methods: {
-        toggleMenu(event, index) {
-            this.activeMenuIndex = (this.activeMenuIndex === index) ? null : index;
+        toggleSubmenu(event, name) {
+            this.activeSubmenus[name] = this.activeSubmenus[name] ? false: true;
+            this.activeSubmenus = {...this.activeSubmenus};
+            event.preventDefault();
+        },
+        isSubmenuActive(name, routerIsActive) {
+            if (this.activeSubmenus.hasOwnProperty(name)) {
+                return this.activeSubmenus[name];
+            }
+            else if (routerIsActive) {
+                this.activeSubmenus[name] = true;
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -1,30 +1,30 @@
 <template>
     <div>
-        <TreeSubMenu />
-
         <div class="content-section introduction">
             <div class="feature-intro">
-                <h1>Tree - Selection</h1>
+                <h1>Tree <span>Selection</span></h1>
                 <p>Tree supports <b>single</b>, <b>multiple</b> and <b>checkbox</b> as selection modes.</p>
             </div>
         </div>
 
         <div class="content-section implementation">
-            <h3>Single Selection</h3>
-            <Tree :value="nodes" selectionMode="single" :selectionKeys.sync="selectedKey1"></Tree>
+            <div class="card">
+                <h5>Single Selection</h5>
+                <Tree :value="nodes" selectionMode="single" :selectionKeys.sync="selectedKey1"></Tree>
 
-            <h3>Multiple Selection with MetaKey</h3>
-            <Tree :value="nodes" selectionMode="multiple" :selectionKeys.sync="selectedKeys1"></Tree>
+                <h5>Multiple Selection with MetaKey</h5>
+                <Tree :value="nodes" selectionMode="multiple" :selectionKeys.sync="selectedKeys1"></Tree>
 
-            <h3>Multiple Selection without MetaKey</h3>
-            <Tree :value="nodes" selectionMode="multiple" :selectionKeys.sync="selectedKeys2" :metaKeySelection="false"></Tree>
+                <h5>Multiple Selection without MetaKey</h5>
+                <Tree :value="nodes" selectionMode="multiple" :selectionKeys.sync="selectedKeys2" :metaKeySelection="false"></Tree>
 
-            <h3>Checkbox Selection</h3>
-            <Tree :value="nodes" selectionMode="checkbox" :selectionKeys.sync="selectedKeys3"></Tree>
+                <h5>Checkbox Selection</h5>
+                <Tree :value="nodes" selectionMode="checkbox" :selectionKeys.sync="selectedKeys3"></Tree>
 
-            <h3>Events</h3>
-            <Tree :value="nodes" selectionMode="single" :selectionKeys.sync="selectedKey2" :metaKeySelection="false"
-                @node-select="onNodeSelect" @node-unselect="onNodeUnselect"></Tree>
+                <h5>Events</h5>
+                <Tree :value="nodes" selectionMode="single" :selectionKeys.sync="selectedKey2" :metaKeySelection="false"
+                    @node-select="onNodeSelect" @node-unselect="onNodeUnselect"></Tree>
+            </div>
         </div>
 
         <div class="content-section documentation">
@@ -89,7 +89,6 @@ export default {
 
 <script>
 import NodeService from '../../service/NodeService';
-import TreeSubMenu from './TreeSubMenu';
 
 export default {
     data() {
@@ -116,15 +115,12 @@ export default {
         onNodeUnselect(node) {
             this.$toast.add({severity:'success', summary: 'Node Unselected', detail: node.label, life: 3000});
         }
-    },
-    components: {
-        'TreeSubMenu': TreeSubMenu
     }
 }
 </script>
 
 <style scoped>
 button {
-    margin-right: .5em;
+    margin-right: .5rem;
 }
 </style>

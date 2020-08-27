@@ -2,18 +2,18 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Chips from 'primevue/chips';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>An array as the value can be bound using the standard v-model directive.</p>
 <CodeHighlight>
 &lt;Chips v-model="value" /&gt;
 </CodeHighlight>
 
-				<h3>Custom Content</h3>
+				<h5>Custom Content</h5>
 				<p>A chip is customized using the <i>chip</i> template where the chip value is passed to the slotProps with the value property.</p>
 <CodeHighlight>
 <template v-pre>
@@ -28,8 +28,8 @@ import Chips from 'primevue/chips';
 </template>
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -42,22 +42,52 @@ import Chips from 'primevue/chips';
 						</thead>
 						<tbody>
                             <tr>
+                                <td>addOnBlur</td>
+                                <td>boolean</td>
+                                <td>false</td>
+                                <td>Whether to add an item when the input loses focus.</td>
+                            </tr>
+                            <tr>
+                                <td>allowDuplicate</td>
+                                <td>boolean</td>
+                                <td>true</td>
+                                <td>Whether to allow duplicate values or not.</td>
+                            </tr>
+                            <tr>
+                                <td>ariaLabelledBy</td>
+                                <td>string</td>
+                                <td>null</td>
+                                <td>Establishes relationships between the component and label(s) where its value should be one or more element IDs.</td>
+                            </tr>
+                             <tr>
+                                <td>max</td>
+                                <td>number</td>
+                                <td>null</td>
+                                <td>Maximum number of entries allowed.</td>
+                            </tr>
+                            <tr>
                                 <td>value</td>
                                 <td>array</td>
                                 <td>null</td>
                                 <td>Value of the component.</td>
                             </tr>
                             <tr>
-                                <td>max</td>
-                                <td>number</td>
+                                <td>separator</td>
+                                <td>string</td>
                                 <td>null</td>
-                                <td>Maximum number of entries allowed.</td>
+                                <td>Separator char to add an item when pressed in addition to the enter key. Currently only possible value is ","</td>
+                            </tr>
+                            <tr>
+                                <td>placeholder</td>
+                                <td>string</td>
+                                <td>null</td>
+                                <td>Specifies a short hint that describes the expected value of the input field.</td>
                             </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -99,7 +129,7 @@ import Chips from 'primevue/chips';
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -134,7 +164,7 @@ import Chips from 'primevue/chips';
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -144,11 +174,14 @@ import Chips from 'primevue/chips';
 				</a>
 <CodeHighlight>
 <template v-pre>
-&lt;h3&gt;Basic&lt;/h3&gt;
+&lt;h5&gt;Basic&lt;/h5&gt;
 &lt;Chips v-model="value1" /&gt;
 
-&lt;h3&gt;Template&lt;/h3&gt;
-&lt;Chips v-model="value2"&gt;
+&lt;h5&gt;Comma Separator&lt;/h5&gt;
+&lt;Chips v-model="value2" separator="," /&gt;
+
+&lt;h5&gt;Template&lt;/h5&gt;
+&lt;Chips v-model="value3"&gt;
     &lt;template #chip="slotProps"&gt;
         &lt;div&gt;
             &lt;span&gt;{{slotProps.value}} - (active) &lt;/span&gt;
@@ -164,7 +197,8 @@ export default {
 	data() {
 		return {
 			value1: null,
-			value2: null
+			value2: null,
+            value3: null
 		}
 	}
 }

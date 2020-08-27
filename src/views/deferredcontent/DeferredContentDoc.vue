@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import DeferredContent from 'primevue/deferredcontent';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>DeferredContent is used as a wrapper element of its content..</p>
 <CodeHighlight>
 <template v-pre>
@@ -22,7 +22,7 @@ import DeferredContent from 'primevue/deferredcontent';
 </template>
 </CodeHighlight>
 
-                <h3>Load Event</h3>
+                <h5>Load Event</h5>
                 <p>onLoad callback is useful to initialize the content when it becomes visible on scroll such as loading data.</p>
 <CodeHighlight>
 <template v-pre>
@@ -37,10 +37,10 @@ import DeferredContent from 'primevue/deferredcontent';
 </template>
 </CodeHighlight>
 
-				<h3>Properties</h3>
+				<h5>Properties</h5>
 				<p>Component has no properties.</p>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -60,10 +60,10 @@ import DeferredContent from 'primevue/deferredcontent';
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Component does not apply any styling.</p>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -85,35 +85,35 @@ import DeferredContent from 'primevue/deferredcontent';
 &lt;/div&gt;
 
 &lt;DeferredContent @load="onDataLoad"&gt;
-    &lt;DataTable :value="cars"&gt;
-        &lt;Column field="vin" header="Vin"&gt;&lt;/Column&gt;
-        &lt;Column field="year" header="Year"&gt;&lt;/Column&gt;
-        &lt;Column field="brand" header="Brand"&gt;&lt;/Column&gt;
-        &lt;Column field="color" header="Color"&gt;&lt;/Column&gt;
+    &lt;DataTable :value="products"&gt;
+        &lt;Column field="code" header="Code"&gt;&lt;/Column&gt;
+        &lt;Column field="name" header="Name"&gt;&lt;/Column&gt;
+        &lt;Column field="category" header="Category"&gt;&lt;/Column&gt;
+        &lt;Column field="quantity" header="Quantity"&gt;&lt;/Column&gt;
     &lt;/DataTable&gt;
 &lt;/DeferredContent&gt;
 </template>
 </CodeHighlight>
 
 <CodeHighlight lang="javascript">
-import CarService from '../../service/CarService';
+import ProductService from '../../service/ProductService';
 
 export default {
     data() {
         return {
-            cars: null
+            products: null
         }
     },
-    carService: null,
+    productService: null,
     created() {
-        this.carService = new CarService();
+        this.productService = new ProductService();
     },
     methods: {
         onImageLoad() {
             this.$toast.add({severity: 'success', summary: 'Image Initialized', detail: 'Scroll down to load the datatable'});
         },
         onDataLoad() {
-            this.carService.getCarsSmall().then(data => this.cars = data);
+            this.productService.getProductsSmall().then(data => this.products = data);
             this.$toast.add({severity: 'success', summary: 'Data Initialized', detail: 'Render Completed'});
         }
     }

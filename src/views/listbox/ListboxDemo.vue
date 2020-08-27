@@ -5,21 +5,24 @@
                 <h1>Listbox</h1>
                 <p>Listbox is used to select one or more values from a list of items.</p>
             </div>
+            <AppInputStyleSwitch />
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Single</h3>
-            <Listbox v-model="selectedCity" :options="cities" optionLabel="name" />
+            <div class="card">
+                <h5>Single</h5>
+                <Listbox v-model="selectedCity" :options="cities" optionLabel="name" style="width:15rem" />
 
-            <h3>Advanced with Templating, Filtering and Multiple Selection</h3>
-            <Listbox v-model="selectedCars" :options="cars" :multiple="true" :filter="true" optionLabel="brand" listStyle="max-height:250px" style="width:15em">
-                <template #option="slotProps">
-                    <div class="p-clearfix">
-                        <img :alt="slotProps.option.brand" :src="'demo/images/car/' + slotProps.option.brand + '.png'" style="display:inline-block;margin:5px 0 0 5px;width:48px" />
-                        <span style="float:right;margin:1.25em .5em 0 0">{{slotProps.option.brand}}</span>
-                    </div>
-                </template>
-            </Listbox>
+                <h5>Advanced with Templating, Filtering and Multiple Selection</h5>
+                <Listbox v-model="selectedCountries" :options="countries" :multiple="true" :filter="true" optionLabel="name" listStyle="max-height:250px" style="width:15rem">
+                    <template #option="slotProps">
+                        <div class="country-item">
+                            <img src="../../assets/images/flag_placeholder.png" :class="'flag flag-' + slotProps.option.code.toLowerCase()" />
+                            <div>{{slotProps.option.name}}</div>
+                        </div>
+                    </template>
+                </Listbox>
+            </div>
         </div>
 
         <ListboxDoc/>
@@ -33,7 +36,7 @@ export default {
     data() {
         return {
             selectedCity: null,
-            selectedCars: null,
+            selectedCountries: null,
             cities: [
                 {name: 'New York', code: 'NY'},
                 {name: 'Rome', code: 'RM'},
@@ -41,16 +44,17 @@ export default {
                 {name: 'Istanbul', code: 'IST'},
                 {name: 'Paris', code: 'PRS'}
             ],
-            cars: [
-                {brand: 'Audi', value: 'Audi'},
-                {brand: 'BMW', value: 'BMW'},
-                {brand: 'Fiat', value: 'Fiat'},
-                {brand: 'Honda', value: 'Honda'},
-                {brand: 'Jaguar', value: 'Jaguar'},
-                {brand: 'Mercedes', value: 'Mercedes'},
-                {brand: 'Renault', value: 'Renault'},
-                {brand: 'Volkswagen', value: 'Volkswagen'},
-                {brand: 'Volvo', value: 'Volvo'}
+            countries: [
+                {name: 'Australia', code: 'AU'},
+                {name: 'Brazil', code: 'BR'},
+                {name: 'China', code: 'CN'},
+                {name: 'Egypt', code: 'EG'},
+                {name: 'France', code: 'FR'},
+                {name: 'Germany', code: 'DE'},
+                {name: 'India', code: 'IN'},
+                {name: 'Japan', code: 'JP'},
+                {name: 'Spain', code: 'ES'},
+                {name: 'United States', code: 'US'}
             ]
         }
     },

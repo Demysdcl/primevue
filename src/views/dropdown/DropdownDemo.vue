@@ -5,24 +5,36 @@
                 <h1>Dropdown</h1>
                 <p>Dropdown is used to select an item from a list of options.</p>
             </div>
+            <AppInputStyleSwitch />
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Basic</h3>
-            <Dropdown v-model="selectedCity1" :options="cities" optionLabel="name" placeholder="Select a City" />
+            <div class="card">
+                <h5>Basic</h5>
+                <Dropdown v-model="selectedCity1" :options="cities" optionLabel="name" placeholder="Select a City" />
 
-            <h3>Editable</h3>
-            <Dropdown v-model="selectedCity2" :options="cities" optionLabel="name" :editable="true"/>
+                <h5>Editable</h5>
+                <Dropdown v-model="selectedCity2" :options="cities" optionLabel="name" :editable="true"/>
 
-            <h3>Advanced with Templating, Filtering and Clear Icon</h3>
-            <Dropdown v-model="selectedCar" :options="cars" optionLabel="brand" placeholder="Select a Car" :filter="true" :showClear="true">
-                <template #option="slotProps">
-                    <div class="p-clearfix p-dropdown-car-option">
-                        <img :alt="slotProps.option.brand" :src="'demo/images/car/' + slotProps.option.brand + '.png'" />
-                        <span>{{slotProps.option.brand}}</span>
-                    </div>
-                </template>
-            </Dropdown>
+                <h5>Advanced with Templating, Filtering and Clear Icon</h5>
+                <Dropdown v-model="selectedCountry" :options="countries" optionLabel="name" :filter="true" placeholder="Select a Country" :showClear="true">
+                    <template #value="slotProps">
+                        <div class="country-item country-item-value" v-if="slotProps.value">
+                            <img src="../../assets/images/flag_placeholder.png" :class="'flag flag-' + slotProps.value.code.toLowerCase()" />
+                            <div>{{slotProps.value.name}}</div>
+                        </div>
+                        <span v-else>
+                            {{slotProps.placeholder}}
+                        </span>
+                    </template>
+                    <template #option="slotProps">
+                        <div class="country-item">
+                            <img src="../../assets/images/flag_placeholder.png" :class="'flag flag-' + slotProps.option.code.toLowerCase()" />
+                            <div>{{slotProps.option.name}}</div>
+                        </div>
+                    </template>
+                </Dropdown>
+            </div>
         </div>
 
         <DropdownDoc/>
@@ -37,7 +49,7 @@ export default {
         return {
             selectedCity1: null,
             selectedCity2: null,
-            selectedCar: null,
+            selectedCountry: null,
             cities: [
                 {name: 'New York', code: 'NY'},
                 {name: 'Rome', code: 'RM'},
@@ -45,16 +57,17 @@ export default {
                 {name: 'Istanbul', code: 'IST'},
                 {name: 'Paris', code: 'PRS'}
             ],
-            cars: [
-                {brand: 'Audi', value: 'Audi'},
-                {brand: 'BMW', value: 'BMW'},
-                {brand: 'Fiat', value: 'Fiat'},
-                {brand: 'Honda', value: 'Honda'},
-                {brand: 'Jaguar', value: 'Jaguar'},
-                {brand: 'Mercedes', value: 'Mercedes'},
-                {brand: 'Renault', value: 'Renault'},
-                {brand: 'Volkswagen', value: 'Volkswagen'},
-                {brand: 'Volvo', value: 'Volvo'}
+            countries: [
+                {name: 'Australia', code: 'AU'},
+                {name: 'Brazil', code: 'BR'},
+                {name: 'China', code: 'CN'},
+                {name: 'Egypt', code: 'EG'},
+                {name: 'France', code: 'FR'},
+                {name: 'Germany', code: 'DE'},
+                {name: 'India', code: 'IN'},
+                {name: 'Japan', code: 'JP'},
+                {name: 'Spain', code: 'ES'},
+                {name: 'United States', code: 'US'}
             ]
         }
     },
@@ -66,19 +79,12 @@ export default {
 
 <style lang="scss" scoped>
 .p-dropdown {
-    width: 12em;
+    width: 14rem;
 }
 
-.p-dropdown-car-option {
-    img {
-        vertical-align: middle;
-        margin-right: .5em;
-        width: 24px;
-    }
-
-    span {
-        float: right;
-        margin-top: .125em;
+.country-item-value {
+    img.flag {
+        width: 17px;
     }
 }
 </style>

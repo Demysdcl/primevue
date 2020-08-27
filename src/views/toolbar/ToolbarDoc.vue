@@ -2,31 +2,31 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Toolbar from 'primevue/toolbar';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Toolbar provides <i>left</i> and <i>right</i> templates to place content at these sections.</p>
 <CodeHighlight>
 &lt;Toolbar&gt;
-	&lt;template slot="left"&gt;
-		&lt;Button label="New" icon="pi pi-plus" style="margin-right: .25em" /&gt;
-		&lt;Button label="Upload" icon="pi pi-upload" class="p-button-success" /&gt;
-		&lt;i class="pi pi-bars p-toolbar-separator" style="margin-right: .25em" /&gt;
-		&lt;SplitButton label="Save" icon="pi pi-check" :model="items" class="p-button-warning"&gt;&lt;/SplitButton&gt;
-	&lt;/template&gt;
+    &lt;template slot="left"&gt;
+        &lt;Button label="New" icon="pi pi-plus" class="p-mr-2" /&gt;
+        &lt;Button label="Upload" icon="pi pi-upload" class="p-button-success" /&gt;
+        &lt;i class="pi pi-bars p-toolbar-separator p-mr-2" /&gt;
+        &lt;SplitButton label="Save" icon="pi pi-check" :model="items" class="p-button-warning"&gt;&lt;/SplitButton&gt;
+    &lt;/template&gt;
 
-	&lt;template slot="right"&gt;
-		&lt;Button icon="pi pi-search" style="margin-right: .25em" /&gt;
-		&lt;Button icon="pi pi-calendar" class="p-button-success" style="margin-right: .25em" /&gt;
-		&lt;Button icon="pi pi-times" class="p-button-danger" /&gt;
-	&lt;/template&gt;
+    &lt;template slot="right"&gt;
+        &lt;Button icon="pi pi-search" class="p-mr-2" /&gt;
+        &lt;Button icon="pi pi-calendar" class="p-button-success p-mr-2" /&gt;
+        &lt;Button icon="pi pi-times" class="p-button-danger" /&gt;
+    &lt;/template&gt;
 &lt;/Toolbar&gt;
 </CodeHighlight>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -53,7 +53,7 @@ import Toolbar from 'primevue/toolbar';
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -65,15 +65,15 @@ import Toolbar from 'primevue/toolbar';
 <template v-pre>
 &lt;Toolbar&gt;
     &lt;template slot="left"&gt;
-        &lt;Button label="New" icon="pi pi-plus" style="margin-right: .25em" /&gt;
+        &lt;Button label="New" icon="pi pi-plus" class="p-mr-2" /&gt;
         &lt;Button label="Upload" icon="pi pi-upload" class="p-button-success" /&gt;
-        &lt;i class="pi pi-bars p-toolbar-separator" style="margin-right: .25em" /&gt;
-        &lt;Button label="Save" icon="pi pi-check" class="p-button-warning" /&gt;
+        &lt;i class="pi pi-bars p-toolbar-separator p-mr-2" /&gt;
+        &lt;SplitButton label="Save" icon="pi pi-check" :model="items" class="p-button-warning"&gt;&lt;/SplitButton&gt;
     &lt;/template&gt;
 
     &lt;template slot="right"&gt;
-        &lt;Button icon="pi pi-search" style="margin-right: .25em" /&gt;
-        &lt;Button icon="pi pi-calendar" class="p-button-success" style="margin-right: .25em" /&gt;
+        &lt;Button icon="pi pi-search" class="p-mr-2" /&gt;
+        &lt;Button icon="pi pi-calendar" class="p-button-success p-mr-2" /&gt;
         &lt;Button icon="pi pi-times" class="p-button-danger" /&gt;
     &lt;/template&gt;
 &lt;/Toolbar&gt;
@@ -86,28 +86,28 @@ export default {
         return {
             items: [
                 {
-                    label: 'Update', 
+                    label: 'Update',
                     icon: 'pi pi-refresh'
                 },
                 {
-                    label: 'Delete', 
+                    label: 'Delete',
                     icon: 'pi pi-times'
                 },
                 {
-                    label: 'Vue Website', 
+                    label: 'Vue Website',
                     icon: 'pi pi-external-link',
                     command: () => {
                         window.location.href = 'https://vuejs.org/'
                     }
                 },
-                {   label: 'Upload', 
-                    icon: 'pi pi-upload', 
+                {   label: 'Upload',
+                    icon: 'pi pi-upload',
                     command: () => {
                         window.location.hash = "/fileupload"
                     }
                 }
             ]
-        } 
+        }
     }
 }
 </CodeHighlight>

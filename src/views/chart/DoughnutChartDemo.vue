@@ -8,7 +8,9 @@
         </div>
 
         <div class="content-section implementation">
-            <Chart type="doughnut" :data="chartData" />
+            <div class="card">
+                <Chart type="doughnut" :data="chartData" :options="chartOptions" />
+            </div>
         </div>
 
         <DoughnutChartDoc/>
@@ -17,8 +19,20 @@
 
 <script>
 import DoughnutChartDoc from './DoughnutChartDoc';
+import EventBus from '@/EventBus';
 
 export default {
+    mounted() {
+        EventBus.$on('change-theme', event => {
+            if (event.dark)
+                this.chartOptions = this.getDarkTheme();
+            else
+                this.chartOptions = this.getLightTheme();
+        });
+    },
+    beforeDestroy() {
+        EventBus.$off('change-theme');
+    },
     data() {
         return {
             chartData: {
@@ -37,7 +51,31 @@ export default {
                             "#FFCE56"
                         ]
                     }
-                ]    
+                ]
+            },
+            chartOptions: this.isDarkTheme() ? this.getDarkTheme() : this.getLightTheme()
+        }
+    },
+    methods: {
+        isDarkTheme() {
+            return this.$appState.darkTheme === true;
+        },
+        getLightTheme() {
+            return {
+                legend: {
+                    labels: {
+                        fontColor: '#495057'
+                    }
+                }
+            }
+        },
+        getDarkTheme() {
+            return {
+                legend: {
+                    labels: {
+                        fontColor: '#ebedef'
+                    }
+                }
             }
         }
     },

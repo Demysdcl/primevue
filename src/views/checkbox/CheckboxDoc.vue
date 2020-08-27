@@ -2,18 +2,18 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Checkbox from 'primevue/checkbox';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Checkbox can either be used in multiple selection with other checkboxes or as a single checkbox to provide a boolean value.</p>
 <CodeHighlight>
 &lt;Checkbox v-model="checked" :binary="true" /&gt;
 </CodeHighlight>
 
-				<h3>Multiple Values</h3>
+				<h5>Multiple Values</h5>
 				<p>Multiple mode is enabled by default, v-model property refers to an array to bind the selected values.</p>
 <CodeHighlight>
 &lt;Checkbox id="city1" inputId="city1" name="city" value="Chicago" v-model="cities" /&gt;
@@ -35,8 +35,8 @@ export default {
 				<p>As v-model is two-way binding enabled, prepopulating the model array with values is enough to display the related
 					checkboxes as checked by default.</p>
 
-				<h3>Properties</h3>
-                <p>Any valid attribute such as name and autofocus are passed to the underlying input element. Following are the additional properties to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property such as name and autofocus are passed to the underlying input element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -64,7 +64,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -104,7 +104,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -135,7 +135,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -146,54 +146,50 @@ export default {
 <CodeHighlight>
 <template v-pre>
 &lt;h3&gt;Basic&lt;/h3&gt;
-&lt;Checkbox id="binary" v-model="checked" :binary="true"/&gt;
-&lt;label for="binary" class="p-checkbox-label" style="font-weight: bold"&gt;{{checked}}&lt;/label&gt;
+&lt;div class="p-field-checkbox"&gt;
+    &lt;Checkbox id="binary" v-model="checked" :binary="true" /&gt;
+    &lt;label for="binary"&gt;{{checked}}&lt;/label&gt;
+&lt;/div&gt;
 
 &lt;h3&gt;Multiple&lt;/h3&gt;
-&lt;div class="p-grid"&gt;
-    &lt;div class="p-col-12"&gt;
-        &lt;Checkbox id="city1" name="city" value="Chicago" v-model="cities" /&gt;
-        &lt;label for="city1" class="p-checkbox-label"&gt;Chicago&lt;/label&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12"&gt;
-        &lt;Checkbox id="city2" name="city" value="Los Angeles" v-model="cities" /&gt;
-        &lt;label for="city2" class="p-checkbox-label"&gt;Los Angeles&lt;/label&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12"&gt;
-        &lt;Checkbox id="city3" name="city" value="New York" v-model="cities" /&gt;
-        &lt;label for="city3" class="p-checkbox-label"&gt;New York&lt;/label&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12"&gt;
-        &lt;Checkbox id="city4" name="city" value="San Francisco" v-model="cities" /&gt;
-        &lt;label for="city4" class="p-checkbox-label"&gt;San Francisco&lt;/label&gt;
-    &lt;/div&gt;
+&lt;div class="p-field-checkbox"&gt;
+    &lt;Checkbox id="city1" name="city" value="Chicago" v-model="cities" /&gt;
+    &lt;label for="city1"&gt;Chicago&lt;/label&gt;
 &lt;/div&gt;
-&lt;p&gt;Selected Cities : &lt;span style="font-weight: bold"&gt;{{cities}}&lt;/span&gt;&lt;/p&gt;
+&lt;div class="p-field-checkbox"&gt;
+    &lt;Checkbox id="city2" name="city" value="Los Angeles" v-model="cities" /&gt;
+    &lt;label for="city2"&gt;Los Angeles&lt;/label&gt;
+&lt;/div&gt;
+&lt;div class="p-field-checkbox"&gt;
+    &lt;Checkbox id="city3" name="city" value="New York" v-model="cities" /&gt;
+    &lt;label for="city3"&gt;New York&lt;/label&gt;
+&lt;/div&gt;
+&lt;div class="p-field-checkbox"&gt;
+    &lt;Checkbox id="city4" name="city" value="San Francisco" v-model="cities" /&gt;
+    &lt;label for="city4"&gt;San Francisco&lt;/label&gt;
+&lt;/div&gt;
 
 &lt;h3&gt;Dynamic Values, Preselection, Value Binding and Disabled Option&lt;/h3&gt;
-&lt;div class="p-grid"&gt;
-    &lt;div v-for="theme of themes" :key="theme.key" class="p-col-12"&gt;
-        &lt;Checkbox :id="theme.key" name="theme" :value="theme" v-model="selectedThemes" :disabled="theme.key === 'U'"/&gt;
-        &lt;label :for="theme.key" class="p-checkbox-label"&gt;{{theme.name}}&lt;/label&gt;
-    &lt;/div&gt;
+&lt;div v-for="category of categories" :key="category.key" class="p-field-checkbox"&gt;
+    &lt;Checkbox :id="category.key" name="category" :value="category" v-model="selectedCategories" :disabled="category.key === 'R'"/&gt;
+    &lt;label :for="category.key"&gt;{{category.name}}&lt;/label&gt;
 &lt;/div&gt;
-&lt;p&gt;Selected Themes: &lt;span style="font-weight: bold"&gt;{{this.selectedThemes}}&lt;/span&gt;&lt;/p&gt;
 </template>
 </CodeHighlight>
 
 <CodeHighlight lang="javascript">
 export default {
-	data() {
-		return {
-			checked: false,
-			cities: [],
-			themes: [{name: 'Apollo', key: 'A'}, {name: 'Babylon', key: 'B'}, {name: 'Serenity', key: 'S'}, {name: 'Ultima', key: 'U'}],
-			selectedThemes: []
-		}
-	},
-	created() {
-		this.selectedThemes = this.themes.slice(1,3);
-	}
+    data() {
+        return {
+            checked: false,
+            cities: [],
+            categories: [{name: 'Accounting', key: 'A'}, {name: 'Marketing', key: 'M'}, {name: 'Production', key: 'P'}, {name: 'Research', key: 'R'}],
+            selectedCategories: []
+        }
+    },
+    created() {
+        this.selectedCategories = this.categories.slice(1,3);
+    }
 }
 </CodeHighlight>
 			</TabPanel>

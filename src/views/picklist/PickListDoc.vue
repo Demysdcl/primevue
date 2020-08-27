@@ -2,13 +2,13 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import PickList from 'primevue/picklist';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
-                <p>PickList requires a multidimensional array as its value bound with the v-model directive and a template for its content 
+				<h5>Getting Started</h5>
+                <p>PickList requires a multidimensional array as its value bound with the v-model directive and a template for its content
                     that gets the <i>item</i> instance and the <i>index</i> via slotProps.</p>
 <CodeHighlight>
 <template v-pre>
@@ -16,14 +16,17 @@ import PickList from 'primevue/picklist';
     &lt;template #item="slotProps"&gt;
         &lt;div class="p-caritem"&gt;
             &lt;img :src="'demo/images/car/' + slotProps.item.brand + '.png'"&gt;
-            &lt;div&gt;&#123;&#123;slotProps.item.brand&#125;&#125; - &#123;&#123;slotProps.item.year&#125;&#125; - &#123;&#123;slotProps.item.color&#125;&#125;&lt;/div&gt;
+            &lt;div&gt;
+                &lt;span class="p-caritem-vin"&gt;{{slotProps.item.vin}}&lt;/span&gt;
+                &lt;span&gt;{{slotProps.item.year}} - {{slotProps.item.color}}&lt;/span&gt;
+            &lt;/div&gt;
         &lt;/div&gt;
     &lt;/template&gt;
 &lt;/PickList&gt;
 </template>
 </CodeHighlight>
 
-                <h3>Templates</h3>
+                <h5>Templates</h5>
                 <p>In addition to the mandatory "item" template, picklist provides "sourceHeader" and "targetHeader" slots as optional templates.</p>
 <CodeHighlight>
 <template v-pre>
@@ -37,36 +40,42 @@ import PickList from 'primevue/picklist';
     &lt;template #item="slotProps"&gt;
         &lt;div class="p-caritem"&gt;
             &lt;img :src="'demo/images/car/' + slotProps.item.brand + '.png'"&gt;
-            &lt;div&gt;&#123;&#123;slotProps.item.brand&#125;&#125; - &#123;&#123;slotProps.item.year&#125;&#125; - &#123;&#123;slotProps.item.color&#125;&#125;&lt;/div&gt;
+            &lt;div&gt;
+                &lt;span class="p-caritem-vin"&gt;{{slotProps.item.vin}}&lt;/span&gt;
+                &lt;span&gt;{{slotProps.item.year}} - {{slotProps.item.color}}&lt;/span&gt;
+            &lt;/div&gt;
         &lt;/div&gt;
     &lt;/template&gt;
 &lt;/PickList&gt;
 </template>
 </CodeHighlight>
 
-                <h3>Selection</h3>
+                <h5>Selection</h5>
                 <p>In case you need to access the selected items in the list, define a binding to the <i>selection</i> property with the sync operator so that
                 it gets updated when the user makes a selection. Since it is two-way binding enabled, your changes to the selection will be reflected as well.  Note that
                 this is optional and only necessary when you need to access the selection.</p>
-                
+
 <CodeHighlight>
 <template v-pre>
 &lt;PickList v-model="cars" dataKey="vin" :selection.sync="selection"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;div class="p-caritem"&gt;
             &lt;img :src="'demo/images/car/' + slotProps.item.brand + '.png'"&gt;
-            &lt;div&gt;&#123;&#123;slotProps.item.brand&#125;&#125; - &#123;&#123;slotProps.item.year&#125;&#125; - &#123;&#123;slotProps.item.color&#125;&#125;&lt;/div&gt;
+            &lt;div&gt;
+                &lt;span class="p-caritem-vin"&gt;{{slotProps.item.vin}}&lt;/span&gt;
+                &lt;span&gt;{{slotProps.item.year}} - {{slotProps.item.color}}&lt;/span&gt;
+            &lt;/div&gt;
         &lt;/div&gt;
     &lt;/template&gt;
 &lt;/PickList&gt;
 </template>
 </CodeHighlight>
 
-                <h3>DataKey</h3>
+                <h5>DataKey</h5>
                 <p>It is recommended to provide the name of the field that uniquely identifies the a record in the data via the <i>dataKey</i> property for better performance.</p>
 
-				<h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -115,7 +124,7 @@ import PickList from 'primevue/picklist';
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -167,7 +176,7 @@ import PickList from 'primevue/picklist';
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -210,7 +219,7 @@ import PickList from 'primevue/picklist';
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -220,7 +229,7 @@ import PickList from 'primevue/picklist';
 				</a>
 <CodeHighlight>
 <template v-pre>
-&lt;PickList v-model="cars" listStyle="height:342px" dataKey="vin"&gt;
+&lt;PickList v-model="products" listStyle="height:342px" dataKey="id"&gt;
     &lt;template #sourceHeader&gt;
         Available
     &lt;/template&gt;
@@ -228,9 +237,19 @@ import PickList from 'primevue/picklist';
         Selected
     &lt;/template&gt;
     &lt;template #item="slotProps"&gt;
-        &lt;div class="p-caritem"&gt;
-            &lt;img :src="'demo/images/car/' + slotProps.item.brand + '.png'"&gt;
-            &lt;div&gt;&#123;&#123;slotProps.item.brand&#125;&#125; - &#123;&#123;slotProps.item.year&#125;&#125; - &#123;&#123;slotProps.item.color&#125;&#125;&lt;/div&gt;
+        &lt;div class="product-item"&gt;
+            &lt;div class="image-container"&gt;
+                &lt;img :src="'demo/images/product/' + slotProps.item.image" :alt="slotProps.item.name" /&gt;
+            &lt;/div&gt;
+            &lt;div class="product-list-detail"&gt;
+                &lt;h5 class="p-mb-2"&gt;{{slotProps.item.name}}&lt;/h5&gt;
+                &lt;i class="pi pi-tag product-category-icon"&gt;&lt;/i&gt;
+                &lt;span class="product-category"&gt;{{slotProps.item.category}}&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="product-list-action"&gt;
+                &lt;h6 class="p-mb-2"&gt;${{slotProps.item.price}}&lt;/h6&gt;
+                &lt;span :class="'product-badge status-'+slotProps.item.inventoryStatus.toLowerCase()"&gt;{{slotProps.item.inventoryStatus}}&lt;/span&gt;
+            &lt;/div&gt;
         &lt;/div&gt;
     &lt;/template&gt;
 &lt;/PickList&gt;
@@ -238,43 +257,71 @@ import PickList from 'primevue/picklist';
 </CodeHighlight>
 
 <CodeHighlight lang="js">
-import CarService from '../../service/CarService';
+import ProductService from '../../service/ProductService';
 
 export default {
     data() {
         return {
-            cars: null
+            products: null
         }
     },
-    carService: null,
+    productService: null,
     created() {
-        this.carService = new CarService();
+        this.productService = new ProductService();
     },
     mounted() {
-        this.carService.getCarsSmall().then(data => this.cars = [data.slice(0,5),[]]);
+        this.productService.getProductsSmall().then(data => this.products = [data, []]);
     }
 }
 </CodeHighlight>
 
 <CodeHighlight lang="css">
-.p-caritem {
-    &amp;:after {
-        content: "";
-        display: table;
-        clear: both;
+product-item {
+	display: flex;
+	align-items: center;
+	padding: .5rem;
+	width: 100%;
+
+	img {
+		width: 75px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        margin-right: 1rem;
+	}
+
+	.product-list-detail {
+		flex: 1 1 0;
+	}
+
+	.product-list-action {
+		display: flex;
+        flex-direction: column;
+        align-items: flex-end;
     }
 
-    img {
-        display:inline-block;
-        margin:2px 0 2px 2px;
-        width: 48px;
-        height: 48px;
+    .product-category-icon {
+        vertical-align: middle;
+        margin-right: .5rem;
     }
 
-    div {
-        font-size:14px;
-        float:right;
-        margin: 16px 6px 0 0;
+    .product-category {
+        vertical-align: middle;
+        line-height: 1;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .product-item {
+        flex-wrap: wrap;
+
+        .image-container {
+            width: 100%;
+            text-align: center;
+        }
+
+        img {
+            margin: 0 0 1rem 0;
+            width: 100px;
+        }
     }
 }
 </CodeHighlight>

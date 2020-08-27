@@ -2,13 +2,13 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import FullCalendar from 'primevue/fullcalendar';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
-				<p>FullCalendar is a wrapper around on <a href="https://fullcalendar.io/docs/v4">FullCalendar 4.0.0+</a> so fullcalendar needs to be included in your project. 
+				<h5>Getting Started</h5>
+				<p>FullCalendar is a wrapper around on <a href="https://fullcalendar.io/docs/v4">FullCalendar 4.0.0+</a> so fullcalendar needs to be included in your project.
                 For a complete documentation and samples please refer to the <a href="https://fullcalendar.io/">fullcalendar website</a>.</p>
 <CodeHighlight>
 npm install @fullcalendar/core --save
@@ -19,6 +19,13 @@ npm install @fullcalendar/core --save
 npm install @fullcalendar/daygrid --save
 npm install @fullcalendar/timegrid --save
 npm install @fullcalendar/interaction --save
+</CodeHighlight>
+
+                <p>Include the core style and the styles of the plugins that you use in your application.</p>
+<CodeHighlight>
+import '@fullcalendar/core/main.min.css';
+import '@fullcalendar/daygrid/main.min.css';
+import '@fullcalendar/timegrid/main.min.css';
 </CodeHighlight>
 
 				<p>Events should be an array and defined using the events property.</p>
@@ -101,7 +108,7 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Options</h3>
+				<h5>Options</h5>
 				<p>FullCalendar has a long list of customization parameters that can be defined with the options property. Example below customizes the plugins, header and editable properties.</p>
 <CodeHighlight>
 &lt;FullCalendar :events="events" :options="options" /&gt;
@@ -139,7 +146,7 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Callbacks</h3>
+				<h5>Callbacks</h5>
 				<p>Callbacks of the FullCalendar such as dateClick are also defined with the options property.</p>
 <CodeHighlight lang="js">
 export default {
@@ -163,7 +170,7 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Properties</h3>
+				<h5>Properties</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -188,9 +195,9 @@ export default {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
                 <p><a href="https://fullcalendar.io/docs/v4">FullCalendar 4.0.0+</a></p>
-				
+
 			</TabPanel>
 
 			<TabPanel header="Source">

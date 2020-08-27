@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import Inplace from 'primevue/inplace';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Inplace requires <i>display</i> and <i>content</i> templates to define the content of each state.</p>
 
 <CodeHighlight>
@@ -15,7 +15,7 @@ import Inplace from 'primevue/inplace';
 &lt;Inplace&gt;
     &lt;template #display&gt;
         &lt;span class="pi pi-search" style="vertical-align: middle"&gt;&lt;/span&gt;
-        &lt;span style="margin-left:.5em; vertical-align: middle"&gt;View Picture&lt;/span&gt;
+        &lt;span style="margin-left:.5rem; vertical-align: middle"&gt;View Picture&lt;/span&gt;
     &lt;/template&gt;
     &lt;template #content&gt;
         &lt;img src="demo/images/nature/nature1.jpg" /&gt;
@@ -24,7 +24,7 @@ import Inplace from 'primevue/inplace';
 </template>
 </CodeHighlight>
 
-                <h3>Closable</h3>
+                <h5>Closable</h5>
                 <p><i>closable</i> property is handy within forms as it enables to switch back to output mode after editing is completed using a button displayed next to the form field.</p>
 <CodeHighlight>
 <template v-pre>
@@ -39,7 +39,7 @@ import Inplace from 'primevue/inplace';
 </template>
 </CodeHighlight>
 
-				<h3>Lazy Data</h3>
+				<h5>Lazy Data</h5>
 				<p>Inplace allows lazy loading content so that the content gets initialized after getting opened instead of on load. Here is an example that loads, data of a table if the user decides to open the inplace.</p>
 <CodeHighlight>
 <template v-pre>
@@ -80,8 +80,8 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -109,7 +109,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -134,7 +134,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -161,7 +161,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -185,7 +185,7 @@ export default {
 &lt;Inplace&gt;
     &lt;template #display&gt;
         &lt;span className="pi pi-search" style="vertical-align: middle"&gt;&lt;/span&gt;
-        &lt;span style="margin-left:.5em; vertical-align: middle"&gt;View Picture&lt;/span&gt;
+        &lt;span style="margin-left:.5rem; vertical-align: middle"&gt;View Picture&lt;/span&gt;
     &lt;/template&gt;
     &lt;template #content&gt;
         &lt;img src="demo/images/nature/nature1.jpg" /&gt;
@@ -198,11 +198,11 @@ export default {
         View Data
     &lt;/template&gt;
     &lt;template #content&gt;
-        &lt;DataTable :value="cars"&gt;
-            &lt;Column field="vin" header="Vin"&gt;&lt;/Column&gt;
-            &lt;Column field="year" header="Year"&gt;&lt;/Column&gt;
-            &lt;Column field="brand" header="Brand"&gt;&lt;/Column&gt;
-            &lt;Column field="color" header="Color"&gt;&lt;/Column&gt;
+        &lt;DataTable :value="products"&gt;
+            &lt;Column field="code" header="Code"&gt;&lt;/Column&gt;
+            &lt;Column field="name" header="Name"&gt;&lt;/Column&gt;
+            &lt;Column field="category" header="Category"&gt;&lt;/Column&gt;
+            &lt;Column field="quantity" header="Quantity"&gt;&lt;/Column&gt;
         &lt;/DataTable&gt;
     &lt;/template&gt;
 &lt;/Inplace&gt;
@@ -210,21 +210,22 @@ export default {
 </CodeHighlight>
 
 <CodeHighlight lang="javascript">
-import CarService from '../../service/CarService';
+import ProductService from '../../service/ProductService';
 
 export default {
      data() {
         return {
-            cars: null
+            text: null,
+            products: null
         }
     },
-    carService: null,
+    productService: null,
     created() {
-        this.carService = new CarService();
+        this.productService = new ProductService();
     },
     methods: {
         loadData() {
-             this.carService.getCarsSmall().then(data => this.cars = data);
+             this.productService.getProductsSmall().then(data => this.products = data);
         }
     }
 }

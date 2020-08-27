@@ -1,6 +1,6 @@
 <template>
     <div :class="containerClass">
-        <div class="p-inplace-display" :tabindex="$attrs.tabindex||'0'" v-if="!d_active" @click="open" @keydown.enter="open"> 
+        <div class="p-inplace-display" :tabindex="$attrs.tabindex||'0'" v-if="!d_active" @click="open" @keydown.enter="open">
             <slot name="display"></slot>
         </div>
         <div class="p-inplace-content" v-else>
@@ -61,12 +61,18 @@ export default {
 .p-inplace .p-inplace-display {
     display: inline;
     cursor: pointer;
-    border: 0 none;
-    padding: .25em;
-    font-weight: normal;
 }
 
 .p-inplace .p-inplace-content {
     display: inline;
+}
+
+.p-fluid .p-inplace.p-inplace-closable .p-inplace-content {
+    display: flex;
+}
+
+.p-fluid .p-inplace.p-inplace-closable .p-inplace-content > .p-inputtext {
+    flex: 1 1 auto;
+    width: 1%;
 }
 </style>

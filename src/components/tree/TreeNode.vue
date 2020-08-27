@@ -1,12 +1,12 @@
 <template>
     <li :class="containerClass">
-        <div :class="contentClass" tabindex="0" role="treeitem" :aria-expanded="expanded" 
+        <div :class="contentClass" tabindex="0" role="treeitem" :aria-expanded="expanded"
             @click="onClick" @keydown="onKeyDown" @touchend="onTouchEnd" :style="node.style">
-            <span class="p-tree-toggler p-unselectable-text p-link" @click="toggle">
+            <button type="button" class="p-tree-toggler p-link" @click="toggle" tabindex="-1" v-ripple>
                 <span :class="toggleIcon"></span>
-            </span>
+            </button>
             <div class="p-checkbox p-component" v-if="checkboxMode">
-                <div :class="checkboxClass">
+                <div :class="checkboxClass" role="checkbox" :aria-checked="checked">
                     <span :class="checkboxIcon"></span>
                 </div>
             </div>
@@ -18,7 +18,7 @@
         <ul class="p-treenode-children" role="group" v-if="hasChildren && expanded">
             <sub-treenode v-for="childNode of node.children" :key="childNode.key" :node="childNode" :templates="templates"
                 :expandedKeys="expandedKeys" @node-toggle="onChildNodeToggle" @node-click="onChildNodeClick"
-                :selectionMode="selectionMode" :selectionKeys="selectionKeys" 
+                :selectionMode="selectionMode" :selectionKeys="selectionKeys"
                 @checkbox-change="propagateUp"></sub-treenode>
         </ul>
     </li>
@@ -26,6 +26,7 @@
 
 <script>
 import DomHandler from '../utils/DomHandler';
+import Ripple from '../ripple/Ripple';
 
 const TreeNodeTemplate = {
     functional: true,
@@ -148,11 +149,11 @@ export default {
                 //right-left arrows
                 case 37:
                 case 39:
-                    this.$emit('toggle', this.node);
+                    this.$emit('node-toggle', this.node);
 
                     event.preventDefault();
                 break;
- 
+
                 //enter
                 case 13:
                     this.onClick(event);
@@ -165,7 +166,7 @@ export default {
             }
         },
         toggleCheckbox() {
-            let _selectionKeys = this.selectionKeys ? {...this.selectionKeys} : {};   
+            let _selectionKeys = this.selectionKeys ? {...this.selectionKeys} : {};
             const _check = !this.checked;
 
             this.propagateDown(this.node, _check, _selectionKeys);
@@ -193,7 +194,7 @@ export default {
             let _selectionKeys = {...event.selectionKeys};
             let checkedChildCount = 0;
             let childPartialSelected = false;
-            
+
             for(let child of this.node.children) {
                 if(_selectionKeys[child.key] && _selectionKeys[child.key].checked)
                     checkedChildCount++;
@@ -219,7 +220,7 @@ export default {
                 node: event.node,
                 check: event.check,
                 selectionKeys: _selectionKeys
-            }); 
+            });
         },
         onChildCheckboxChange(event) {
             this.$emit('checkbox-change', event);
@@ -270,7 +271,7 @@ export default {
             return this.node.leaf === false ? false : !(this.node.children && this.node.children.length);
         },
         selectable() {
-            return this.node.selectable === false ? false : this.selectionMode != null; 
+            return this.node.selectable === false ? false : this.selectionMode != null;
         },
         selected() {
             return (this.selectionMode && this.selectionKeys) ? this.selectionKeys[this.node.key] === true : false;
@@ -289,15 +290,15 @@ export default {
         },
         toggleIcon() {
             return ['p-tree-toggler-icon pi pi-fw', {
-                'pi-caret-down': this.expanded,
-                'pi-caret-right': !this.expanded
+                'pi-chevron-down': this.expanded,
+                'pi-chevron-right': !this.expanded
             }];
         },
         checkboxClass() {
-            return ['p-checkbox-box', {'p-highlight': this.checked}];
+            return ['p-checkbox-box', {'p-highlight': this.checked, 'p-indeterminate': this.partialChecked}];
         },
         checkboxIcon() {
-            return ['p-checkbox-icon p-c', {'pi pi-check': this.checked, 'pi pi-minus': this.partialChecked}];
+            return ['p-checkbox-icon', {'pi pi-check': this.checked, 'pi pi-minus': this.partialChecked}];
         },
         checkboxMode() {
             return this.selectionMode === 'checkbox' && this.node.selectable !== false;
@@ -311,6 +312,9 @@ export default {
     },
     components: {
         'TreeNodeTemplate': TreeNodeTemplate
+    },
+    directives: {
+        'ripple': Ripple
     }
 }
 </script>

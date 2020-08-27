@@ -1,22 +1,24 @@
 <template>
-    <span :class="containerClass">
-        <input ref="input" :class="inputClass" v-bind="$attrs" v-on="listeners" :value="inputValue" type="text" autoComplete="off" v-if="!multiple">
+    <span :class="containerClass" aria-haspopup="listbox" :aria-owns="listId" :aria-expanded="overlayVisible">
+        <input ref="input" :class="inputClass" v-bind="$attrs" v-on="listeners" :value="inputValue" type="text" autoComplete="off" v-if="!multiple"
+            role="searchbox" aria-autocomplete="list" :aria-controls="listId" :aria-labelledby="ariaLabelledBy">
         <ul ref="multiContainer" :class="multiContainerClass" v-if="multiple" @click="onMultiContainerClick">
-            <li v-for="(item, i) of value" :key="i" class="p-autocomplete-token p-highlight">
-                <span class="p-autocomplete-token-icon pi pi-fw pi-times" @click="removeItem($event, i)"></span>
+            <li v-for="(item, i) of value" :key="i" class="p-autocomplete-token">
                 <span class="p-autocomplete-token-label">{{getItemContent(item)}}</span>
+                <span class="p-autocomplete-token-icon pi pi-times-circle" @click="removeItem($event, i)"></span>
             </li>
             <li class="p-autocomplete-input-token">
-                <input ref="input" type="text" autoComplete="off" v-bind="$attrs" v-on="listeners">
+                <input ref="input" type="text" autoComplete="off" v-bind="$attrs" v-on="listeners"
+                role="searchbox" aria-autocomplete="list" :aria-controls="listId" :aria-labelledby="ariaLabelledBy">
             </li>
         </ul>
-        <i class="p-autocomplete-loader pi pi-spinner pi-spin" v-show="searching"></i>
-        <Button ref="dropdownButton" type="button" icon="pi pi-fw pi-chevron-down" class="p-autocomplete-dropdown" :disabled="$attrs.disabled" @click="onDropdownClick" v-if="dropdown"/>
-        <transition name="p-input-overlay" @enter="onOverlayEnter" @leave="onOverlayLeave">
-            <div ref="overlay" class="p-autocomplete-panel" :style="{'max-height': scrollHeight}" v-if="overlayVisible">
-                <ul class="p-autocomplete-items p-autocomplete-list p-component">
-                    <li v-for="(item, i) of suggestions" class="p-autocomplete-list-item" :key="i" @click="selectItem($event, item)">
-                        <slot name="item" :item="item" :index="i">  
+        <i class="p-autocomplete-loader pi pi-spinner pi-spin" v-if="searching"></i>
+        <Button ref="dropdownButton" type="button" icon="pi pi-chevron-down" class="p-autocomplete-dropdown" :disabled="$attrs.disabled" @click="onDropdownClick" v-if="dropdown"/>
+        <transition name="p-connected-overlay" @enter="onOverlayEnter" @leave="onOverlayLeave">
+            <div ref="overlay" class="p-autocomplete-panel p-component" :style="{'max-height': scrollHeight}" v-if="overlayVisible">
+                <ul :id="listId" class="p-autocomplete-items" role="listbox">
+                    <li v-for="(item, i) of suggestions" class="p-autocomplete-item" :key="i" @click="selectItem($event, item)" role="option" v-ripple>
+                        <slot name="item" :item="item" :index="i">
                             {{getItemContent(item)}}
                         </slot>
                     </li>
@@ -30,6 +32,8 @@
 import ObjectUtils from '../utils/ObjectUtils';
 import DomHandler from '../utils/DomHandler';
 import Button from '../button/Button';
+import UniqueComponentId from '../utils/UniqueComponentId';
+import Ripple from '../ripple/Ripple';
 
 export default {
     inheritAttrs: false,
@@ -66,6 +70,14 @@ export default {
         delay: {
             type: Number,
             default: 300
+        },
+        ariaLabelledBy: {
+            type: String,
+            default: null
+        },
+        appendTo: {
+            type: String,
+            default: null
         }
     },
     timeout: null,
@@ -74,8 +86,8 @@ export default {
         return {
             searching: false,
             focused: false,
-            filled: false,
-            overlayVisible: false
+            overlayVisible: false,
+            inputTextValue: null
         };
     },
     watch: {
@@ -91,9 +103,14 @@ export default {
             }
         }
     },
+    beforeDestroy() {
+        this.restoreAppend();
+        this.unbindOutsideClickListener();
+    },
     methods: {
         onOverlayEnter() {
             this.$refs.overlay.style.zIndex = String(DomHandler.generateZIndex());
+            this.appendContainer();
             this.alignOverlay();
             this.bindOutsideClickListener();
         },
@@ -101,10 +118,11 @@ export default {
             this.unbindOutsideClickListener();
         },
         alignOverlay() {
-            if (this.multiple)
-                DomHandler.relativePosition(this.$refs.overlay, this.$refs.multiContainer);
+            let target = this.multiple ? this.$refs.multiContainer : this.$refs.input;
+            if (this.appendTo)
+                DomHandler.absolutePosition(this.$refs.overlay, target);
             else
-                DomHandler.relativePosition(this.$refs.overlay, this.$refs.input);
+                DomHandler.relativePosition(this.$refs.overlay, target);
         },
         bindOutsideClickListener() {
             if (!this.outsideClickListener) {
@@ -137,6 +155,8 @@ export default {
         selectItem(event, item) {
             if (this.multiple) {
                 this.$refs.input.value = '';
+                this.inputTextValue = '';
+
                 if (!this.isSelected(item)) {
                     let newValue = this.value ? [...this.value, item] : [item];
                     this.$emit('input', newValue);
@@ -146,7 +166,7 @@ export default {
                 this.$emit('input', item);
             }
 
-            this.$emit('select', {
+            this.$emit('item-select', {
                 originalEvent: event,
                 value: item
             });
@@ -161,7 +181,7 @@ export default {
             let removedValue = this.value[index];
             let newValue = this.value.filter((val, i) => (index !== i));
             this.$emit('input', newValue);
-            this.$emit('unselect', {
+            this.$emit('item-unselect', {
                 originalEvent: event,
                 value: removedValue
             });
@@ -210,15 +230,17 @@ export default {
             });
         },
         onInput(event) {
+            this.inputTextValue = event.target.value;
+
             if (this.timeout) {
                 clearTimeout(this.timeout);
             }
-            
+
             let query = event.target.value;
             if (!this.multiple) {
                 this.$emit('input', query);
             }
-            
+
             if (query.length === 0) {
                 this.hideOverlay();
                 this.$emit('clear');
@@ -256,11 +278,11 @@ export default {
                                 DomHandler.removeClass(highlightItem, 'p-highlight');
                                 DomHandler.scrollInView(this.$refs.overlay, nextElement);
                             }
-                        }    
+                        }
                         else {
                             DomHandler.addClass(this.$refs.overlay.firstChild.firstChild, 'p-highlight');
                         }
-                        
+
                         event.preventDefault();
                     break;
 
@@ -274,7 +296,7 @@ export default {
                                 DomHandler.scrollInView(this.$refs.overlay, previousElement);
                             }
                         }
-                        
+
                         event.preventDefault();
                     break;
 
@@ -284,7 +306,7 @@ export default {
                             this.selectItem(event, this.suggestions[DomHandler.index(highlightItem)]);
                             this.hideOverlay();
                         }
-                        
+
                         event.preventDefault();
                     break;
 
@@ -299,14 +321,14 @@ export default {
                         if (highlightItem) {
                             this.selectItem(event, this.suggestions[DomHandler.index(highlightItem)]);
                         }
-                        
+
                         this.hideOverlay();
                     break;
 
                     default:
                     break;
                 }
-            } 
+            }
 
             if (this.multiple) {
                 switch(event.which) {
@@ -315,9 +337,9 @@ export default {
                         if (this.value && this.value.length && !this.$refs.input.value) {
                             let removedValue = this.value[this.value.length - 1];
                             let newValue = this.value.slice(0, -1);
-                            
+
                             this.$emit('input', newValue);
-                            this.$emit('unselect', {
+                            this.$emit('item-unselect', {
                                 originalEvent: event,
                                 value: removedValue
                             });
@@ -339,8 +361,24 @@ export default {
                     }
                 }
             }
-            
+
             return selected;
+        },
+        appendContainer() {
+            if (this.appendTo) {
+                if (this.appendTo === 'body')
+                    document.body.appendChild(this.$refs.overlay);
+                else
+                    document.getElementById(this.appendTo).appendChild(this.$refs.overlay);
+            }
+        },
+        restoreAppend() {
+            if (this.$refs.overlay && this.appendTo) {
+                if (this.appendTo === 'body')
+                    document.body.removeChild(this.$refs.overlay);
+                else
+                    document.getElementById(this.appendTo).removeChild(this.$refs.overlay);
+            }
         }
     },
     computed: {
@@ -357,13 +395,13 @@ export default {
             return ['p-autocomplete p-component', {
                 'p-autocomplete-dd': this.dropdown,
                 'p-autocomplete-multiple': this.multiple,
-                'p-inputwrapper-filled': this.value,
+                'p-inputwrapper-filled': ((this.value) || (this.inputTextValue && this.inputTextValue.length)),
                 'p-inputwrapper-focus': this.focused
             }];
         },
         inputClass() {
             return ['p-autocomplete-input p-inputtext p-component', {
-                'p-autocomplete-dd-input': this.dropdown, 
+                'p-autocomplete-dd-input': this.dropdown,
                 'p-disabled': this.$attrs.disabled
             }];
         },
@@ -385,46 +423,46 @@ export default {
             else {
                 return '';
             }
+        },
+        listId() {
+            return UniqueComponentId() + '_list';
         }
     },
     components: {
         'Button': Button
+    },
+    directives: {
+        'ripple': Ripple
     }
 }
 </script>
 
 <style>
 .p-autocomplete {
-    width: auto;
-    zoom: 1;
-    cursor: pointer;
-    -moz-box-shadow: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
+    display: inline-flex;
     position: relative;
-    display: inline-block;
-}
-
-.p-autocomplete .p-autocomplete-dropdown {
-    height: 100%;
-    width: 2em;
-    margin-right: 0;
-    vertical-align: top;
-}
-
-.p-autocomplete .p-autocomplete-input {
-    padding-right: 1.5em;
 }
 
 .p-autocomplete-loader {
     position: absolute;
-    right: .25em;
     top: 50%;
-    margin-top: -.5em;
+    margin-top: -.5rem;
 }
 
-.p-autocomplete-query {
-    font-weight: bold;
+.p-autocomplete-dd .p-autocomplete-input {
+    flex: 1 1 auto;
+    width: 1%;
+}
+
+.p-autocomplete-dd .p-autocomplete-input,
+.p-autocomplete-dd .p-autocomplete-multiple-container {
+     border-top-right-radius: 0;
+     border-bottom-right-radius: 0;
+ }
+
+.p-autocomplete-dd .p-autocomplete-dropdown {
+     border-top-left-radius: 0;
+     border-bottom-left-radius: 0px;
 }
 
 .p-autocomplete .p-autocomplete-panel {
@@ -436,125 +474,61 @@ export default {
     overflow: auto;
 }
 
-.p-autocomplete-panel .p-autocomplete-list {
-    border: 0 none;
+.p-autocomplete-items {
+    margin: 0;
     padding: 0;
-    margin: 0;
-}
-
-.p-autocomplete-panel .p-autocomplete-list-item {
-    border: 0 none;
-    cursor: pointer;
-    font-weight: normal;
-    margin: 1px 0;
-    padding: 0.186em 0.313em;
-    text-align: left;
-}
-
-.p-autocomplete .p-button-icon-only,
-.p-autocomplete .p-button-icon-only:enabled:hover,
-.p-autocomplete .p-button-icon-only:enabled:focus,
-.p-autocomplete .p-button-icon-only:enabled:active {
-    border-left: 0 none;
-}
-
-/* Multiple Selection */
-.p-autocomplete-multiple-container {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.p-autocomplete-multiple-container.p-inputtext {
-    clear: left;
-    cursor: text;
     list-style-type: none;
-    margin: 0;
+}
+
+.p-autocomplete-item {
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
     overflow: hidden;
-    padding: 0 1.5em 0 .25em;
+}
+
+.p-autocomplete-multiple-container {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    cursor: text;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
 }
 
 .p-autocomplete-token {
     cursor: default;
-    display: inline-block;
-    vertical-align: middle;
-    overflow: hidden;
-    padding: .125em .5em;
-    white-space: nowrap;
-    position: relative;
-    margin-right: .125em;
-    border: 0 none;
-    font-size: .9em;
-}
-
-.p-autocomplete-token-label {
-    display: block;
-    margin-right: 2em;
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
 }
 
 .p-autocomplete-token-icon {
-    margin-top: -.5em;
-    position: absolute;
-    right: 0.2em;
-    top: 50%;
     cursor: pointer;
 }
 
 .p-autocomplete-input-token {
-    display: inline-block;
-    vertical-align: middle;
-    list-style-type: none;
-    margin: 0 0 0 .125em;
-    padding: .25em .25em .25em 0;
+    flex: 1 1 auto;
+    display: inline-flex;
 }
 
 .p-autocomplete-input-token input {
     border: 0 none;
-    width: 10em;
-    outline: medium none;
+    outline: 0 none;
     background-color: transparent;
     margin: 0;
     padding: 0;
     box-shadow: none;
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
     border-radius: 0;
-}
-
-.p-autocomplete-dd .p-autocomplete-loader {
-    right: 2.25em;
-}
-
-.p-autocomplete-dd input,
-.p-autocomplete-dd .p-autocomplete-multiple-container {
-     -moz-border-radius-topright: 0px; 
-     -webkit-border-top-right-radius: 0px;
-     border-top-right-radius: 0px;
-     -moz-border-radius-bottomright: 0px;
-     -webkit-border-bottom-right-radius: 0px;
-     border-bottom-right-radius: 0px;
- }
- 
-.p-autocomplete-dd .p-autocomplete-dropdown {
-     -moz-border-radius-topleft: 0px; 
-     -webkit-border-top-left-radius: 0px;
-     border-top-left-radius: 0px;
-     -moz-border-radius-bottomleft: 0px;
-     -webkit-border-bottom-left-radius: 0px;
-     border-bottom-left-radius: 0px;
-}
-
-/** AutoComplete **/
-.p-fluid .p-autocomplete,
-.p-fluid .p-autocomplete-input {
     width: 100%;
 }
 
-.p-fluid .p-autocomplete.p-autocomplete-dd .p-autocomplete-input,
-.p-fluid .p-autocomplete.p-autocomplete-dd .p-autocomplete-multiple-container {
-    width: calc(100% - 2em);
+.p-fluid .p-autocomplete {
+    display: flex;
 }
 
-.p-fluid .p-autocomplete .p-autocomplete-dropdown.p-button {
-    width: 2em;
+.p-fluid .p-autocomplete-dd .p-autocomplete-input {
+    width: 1%;
 }
 </style>

@@ -8,41 +8,43 @@
         </div>
 
         <div class="content-section implementation">
-            <h3>Input</h3>
-            <Inplace :closable="true">
-                <template #display>
-                    {{text || 'Click to Edit'}}
-                </template>
-                <template #content>
-                    <InputText v-model="text" autoFocus />
-                </template>
-            </Inplace>
+            <div class="card">
+                <h5>Input</h5>
+                <Inplace :closable="true">
+                    <template #display>
+                        {{text || 'Click to Edit'}}
+                    </template>
+                    <template #content>
+                        <InputText v-model="text" autoFocus />
+                    </template>
+                </Inplace>
 
-            <h3>Image</h3>
-            <Inplace>
-                <template #display>
-                    <span class="pi pi-search" style="vertical-align: middle"></span>
-                    <span style="margin-left:.5em; vertical-align: middle">View Picture</span>
-                </template>
-                <template #content>
-                    <img src="demo/images/nature/nature1.jpg" />
-                </template>
-            </Inplace>
+                <h5>Image</h5>
+                <Inplace>
+                    <template #display>
+                        <span class="pi pi-search" style="vertical-align: middle"></span>
+                        <span style="margin-left:.5rem; vertical-align: middle">View Picture</span>
+                    </template>
+                    <template #content>
+                        <img src="demo/images/nature/nature1.jpg" />
+                    </template>
+                </Inplace>
 
-            <h3>Lazy Data</h3>
-            <Inplace @open="loadData">
-                <template #display>
-                    View Data
-                </template>
-                <template #content>
-                    <DataTable :value="cars">
-                        <Column field="vin" header="Vin"></Column>
-                        <Column field="year" header="Year"></Column>
-                        <Column field="brand" header="Brand"></Column>
-                        <Column field="color" header="Color"></Column>
-                    </DataTable>
-                </template>
-            </Inplace>
+                <h5>Lazy Data</h5>
+                <Inplace @open="loadData">
+                    <template #display>
+                        View Data
+                    </template>
+                    <template #content>
+                        <DataTable :value="products">
+                            <Column field="code" header="Code"></Column>
+                            <Column field="name" header="Name"></Column>
+                            <Column field="category" header="Category"></Column>
+                            <Column field="quantity" header="Quantity"></Column>
+                        </DataTable>
+                    </template>
+                </Inplace>
+            </div>
         </div>
 
         <InplaceDoc />
@@ -50,23 +52,23 @@
 </template>
 
 <script>
-import CarService from '../../service/CarService';
+import ProductService from '../../service/ProductService';
 import InplaceDoc from './InplaceDoc';
 
 export default {
      data() {
         return {
             text: null,
-            cars: null
+            products: null
         }
     },
-    carService: null,
+    productService: null,
     created() {
-        this.carService = new CarService();
+        this.productService = new ProductService();
     },
     methods: {
         loadData() {
-             this.carService.getCarsSmall().then(data => this.cars = data);
+             this.productService.getProductsSmall().then(data => this.products = data);
         }
     },
     components: {

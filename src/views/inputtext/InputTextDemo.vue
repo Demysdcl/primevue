@@ -3,23 +3,59 @@
         <div class="content-section introduction">
             <div class="feature-intro">
                 <h1>InputText</h1>
-                <p>InputText renders and input field where the user can enter data.</p>
+                <p>InputText renders a text field to enter data.</p>
             </div>
+            <AppInputStyleSwitch />
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Basic</h3>
-            <InputText type="text" v-model="value1" />
-            <span :style="{marginLeft: '.5em'}">{{value1}}</span>
+            <div class="card">
+                <h5>Basic</h5>
+                <InputText type="text" v-model="value1" />
+                <span :style="{marginLeft: '.5em'}">{{value1}}</span>
 
-            <h3>Floating Label</h3>
-            <span class="p-float-label">
-                <InputText id="username" type="text" v-model="value2" />
-                <label for="username">Username</label>
-            </span>
+                <h5>Floating Label</h5>
+                <span class="p-float-label">
+                    <InputText id="username" type="text" v-model="value2" />
+                    <label for="username">Username</label>
+                </span>
 
-            <h3>Disabled</h3>
-            <InputText type="text" v-model="value3" disabled />
+                <h5>Left Icon</h5>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search" />
+                    <InputText type="text" v-model="value3" placeholder="Search" />
+                </span>
+
+                <h5>Right Icon</h5>
+                <span class="p-input-icon-right">
+                    <i class="pi pi-spin pi-spinner" />
+                    <InputText type="text" v-model="value4" />
+                </span>
+
+                <h5>Help Text</h5>
+                <div class="p-field">
+                    <label for="username1">Username</label>
+                    <InputText id="username1" type="username" aria-describedby="username1-help" />
+                    <small id="username1-help">Enter your username to reset your password.</small>
+                </div>
+
+                <h5>Invalid</h5>
+                <div class="p-field">
+                    <label for="username2">Username</label>
+                    <InputText id="username2" type="username" aria-describedby="username2-help" class="p-invalid" />
+                    <small id="username2-help" class="p-invalid">Username is not available.</small>
+                </div>
+
+                <h5>Disabled</h5>
+                <InputText type="text" v-model="value5" disabled />
+
+                <h5>Sizes</h5>
+                <div class="sizes">
+                    <InputText type="text" class="p-inputtext-sm" placeholder="Small" />
+                    <InputText type="text" placeholder="Normal" />
+                    <InputText type="text" class="p-inputtext-lg"  placeholder="Large" />
+                </div>
+            </div>
         </div>
 
         <InputTextDoc />
@@ -34,7 +70,9 @@ export default {
         return {
             value1: '',
             value2: '',
-            value3: 'PrimeVue'
+            value3: '',
+            value4: '',
+            value5: 'PrimeVue'
         }
     },
 	components: {
@@ -43,6 +81,19 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+.sizes {
+    .p-inputtext {
+        display: block;
+        margin-bottom: .5rem;
 
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.p-field * {
+    display: block;
+}
 </style>

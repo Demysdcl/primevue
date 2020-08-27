@@ -1,44 +1,44 @@
 <template>
 	<div>
-        <DataTableSubMenu />
-        
 		<div class="content-section introduction">
 			<div class="feature-intro">
-				<h1>DataTable - Responsive</h1>
-				<p>DataTable display can be optimized according to screen sizes, this example demonstrates a demo where columns are stacked on small screens.</p>
+				<h1>DataTable <span>Responsive</span></h1>
+				<p>DataTable display can be optimized according for different screen sizes, this example demonstrates a demo where columns are stacked on a small screens.</p>
 			</div>
 		</div>
 
 		<div class="content-section implementation">
-			<DataTable :value="cars" class="p-datatable-responsive">
-                <template #header>
-                    Responsive
-                </template>
-                <Column field="vin" header="Vin">
-                    <template #body="slotProps">
-                        <span class="p-column-title">Vin</span>
-                        {{slotProps.data.vin}}
+            <div class="card">
+                <DataTable :value="products" class="p-datatable-responsive-demo" :paginator="true" :rows="10">
+                    <template #header>
+                        Responsive
                     </template>
-                </Column>
-                <Column field="year" header="Year">
-                    <template #body="slotProps">
-                        <span class="p-column-title">Year</span>
-                        {{slotProps.data.year}}
-                    </template>
-                </Column>
-                <Column field="brand" header="Brand">
-                    <template #body="slotProps">
-                        <span class="p-column-title">Brand</span>
-                        {{slotProps.data.brand}}
-                    </template>
-                </Column>
-                <Column field="color" header="Color">
-                    <template #body="slotProps">
-                        <span class="p-column-title">Color</span>
-                        {{slotProps.data.color}}
-                    </template>
-                </Column>
-            </DataTable>
+                    <Column field="code" header="Code">
+                        <template #body="slotProps">
+                            <span class="p-column-title">Code</span>
+                            {{slotProps.data.code}}
+                        </template>
+                    </Column>
+                    <Column field="name" header="Name">
+                        <template #body="slotProps">
+                            <span class="p-column-title">Name</span>
+                            {{slotProps.data.name}}
+                        </template>
+                    </Column>
+                    <Column field="category" header="Category">
+                        <template #body="slotProps">
+                            <span class="p-column-title">Category</span>
+                            {{slotProps.data.category}}
+                        </template>
+                    </Column>
+                    <Column field="quantity" header="Quantity">
+                        <template #body="slotProps">
+                            <span class="p-column-title">Quantity</span>
+                            {{slotProps.data.quantity}}
+                        </template>
+                    </Column>
+                </DataTable>
+            </div>
 		</div>
 
         <div class="content-section documentation">
@@ -46,32 +46,32 @@
                 <TabPanel header="Source">
 <CodeHighlight>
 <template v-pre>
-&lt;DataTable :value="cars" class="p-datatable-responsive"&gt;
+&lt;DataTable :value="products" class="p-datatable-responsive-demo" :paginator="true" :rows="10"&gt;
     &lt;template #header&gt;
         Responsive
     &lt;/template&gt;
-    &lt;Column field="vin" header="Vin"&gt;
+    &lt;Column field="code" header="Code"&gt;
         &lt;template #body="slotProps"&gt;
-            &lt;span class="p-column-title"&gt;Vin&lt;/span&gt;
-            {{slotProps.data.vin}}
+            &lt;span class="p-column-title"&gt;Code&lt;/span&gt;
+            {{slotProps.data.code}}
         &lt;/template&gt;
     &lt;/Column&gt;
-    &lt;Column field="year" header="Year"&gt;
+    &lt;Column field="name" header="Name"&gt;
         &lt;template #body="slotProps"&gt;
-            &lt;span class="p-column-title"&gt;Year&lt;/span&gt;
-            {{slotProps.data.year}}
+            &lt;span class="p-column-title"&gt;Name&lt;/span&gt;
+            {{slotProps.data.name}}
         &lt;/template&gt;
     &lt;/Column&gt;
-    &lt;Column field="brand" header="Brand"&gt;
+    &lt;Column field="category" header="Category"&gt;
         &lt;template #body="slotProps"&gt;
-            &lt;span class="p-column-title"&gt;Brand&lt;/span&gt;
-            {{slotProps.data.brand}}
+            &lt;span class="p-column-title"&gt;Category&lt;/span&gt;
+            {{slotProps.data.category}}
         &lt;/template&gt;
     &lt;/Column&gt;
-    &lt;Column field="color" header="Color"&gt;
+    &lt;Column field="quantity" header="Quantity"&gt;
         &lt;template #body="slotProps"&gt;
-            &lt;span class="p-column-title"&gt;Color&lt;/span&gt;
-            {{slotProps.data.color}}
+            &lt;span class="p-column-title"&gt;Quantity&lt;/span&gt;
+            {{slotProps.data.quantity}}
         &lt;/template&gt;
     &lt;/Column&gt;
 &lt;/DataTable&gt;
@@ -79,50 +79,58 @@
 </CodeHighlight>
 
 <CodeHighlight lang="javascript">
-import CarService from '../../service/CarService';
+import ProductService from '../../service/ProductService';
 
 export default {
     data() {
         return {
-            cars: null
+            products: null
         }
     },
-    carService: null,
+    productService: null,
     created() {
-        this.carService = new CarService();
+        this.productService = new ProductService();
     },
     mounted() {
-        this.carService.getCarsSmall().then(data => this.cars = data);
+        this.productService.getProducts().then(data => this.products = data);
     }
 }
 </CodeHighlight>
 
 <CodeHighlight lang="css">
-.p-datatable-responsive .p-datatable-tbody > tr > td .p-column-title {
+.p-datatable-responsive-demo .p-datatable-tbody > tr > td .p-column-title {
     display: none;
 }
 
 @media screen and (max-width: 40em) {
-    .p-datatable-responsive .p-datatable-thead > tr > th,
-    .p-datatable-responsive .p-datatable-tfoot > tr > td {
-        display: none !important;
-    }
+    /deep/ .p-datatable {
+        &.p-datatable-responsive-demo {
+            .p-datatable-thead > tr > th,
+            .p-datatable-tfoot > tr > td {
+                display: none !important;
+            }
 
-    .p-datatable-responsive .p-datatable-tbody > tr > td {
-        text-align: left;
-        display: block;
-        border: 0 none;
-        width: 100% !important;
-		float: left;
-		clear: left;
-    }
+            .p-datatable-tbody > tr > td {
+                text-align: left;
+                display: block;
+                width: 100%;
+                float: left;
+                clear: left;
+                border: 0 none;
 
-    .p-datatable-responsive .p-datatable-tbody > tr > td .p-column-title {
-        padding: .4em;
-        min-width: 30%;
-        display: inline-block;
-        margin: -.4em 1em -.4em -.4em;
-        font-weight: bold;
+                .p-column-title {
+                    padding: .4rem;
+                    min-width: 30%;
+                    display: inline-block;
+                    margin: -.4em 1em -.4em -.4rem;
+                    font-weight: bold;
+                }
+
+                &:last-child {
+                    border-bottom: 1px solid var(--surface-d);
+                }
+            }
+        }
     }
 }
 </CodeHighlight>
@@ -133,54 +141,58 @@ export default {
 </template>
 
 <script>
-import CarService from '../../service/CarService';
-import DataTableSubMenu from './DataTableSubMenu';
+import ProductService from '../../service/ProductService';
 
 export default {
     data() {
         return {
-            cars: null
+            products: null
         }
     },
-    carService: null,
+    productService: null,
     created() {
-        this.carService = new CarService();
+        this.productService = new ProductService();
     },
     mounted() {
-        this.carService.getCarsSmall().then(data => this.cars = data);
-    },
-    components: {
-        'DataTableSubMenu': DataTableSubMenu
+        this.productService.getProducts().then(data => this.products = data);
     }
 }
 </script>
 
-<style>
-.p-datatable-responsive .p-datatable-tbody > tr > td .p-column-title {
+<style lang="scss" scoped>
+.p-datatable-responsive-demo .p-datatable-tbody > tr > td .p-column-title {
     display: none;
 }
 
 @media screen and (max-width: 40em) {
-    .p-datatable-responsive .p-datatable-thead > tr > th,
-    .p-datatable-responsive .p-datatable-tfoot > tr > td {
-        display: none !important;
-    }
+    /deep/ .p-datatable {
+        &.p-datatable-responsive-demo {
+            .p-datatable-thead > tr > th,
+            .p-datatable-tfoot > tr > td {
+                display: none !important;
+            }
 
-    .p-datatable-responsive .p-datatable-tbody > tr > td {
-        text-align: left;
-        display: block;
-        border: 0 none;
-        width: 100% !important;
-		float: left;
-		clear: left;
-    }
+            .p-datatable-tbody > tr > td {
+                text-align: left;
+                display: block;
+                width: 100%;
+                float: left;
+                clear: left;
+                border: 0 none;
 
-    .p-datatable-responsive .p-datatable-tbody > tr > td .p-column-title {
-        padding: .4em;
-        min-width: 30%;
-        display: inline-block;
-        margin: -.4em 1em -.4em -.4em;
-        font-weight: bold;
+                .p-column-title {
+                    padding: .4rem;
+                    min-width: 30%;
+                    display: inline-block;
+                    margin: -.4em 1em -.4em -.4rem;
+                    font-weight: bold;
+                }
+
+                &:last-child {
+                    border-bottom: 1px solid var(--surface-d);
+                }
+            }
+        }
     }
 }
 </style>

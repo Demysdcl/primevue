@@ -8,27 +8,31 @@
         </div>
 
         <div class="content-section implementation">
-            <h3>Advanced</h3>
-            <OrganizationChart :value="data1" :collapsible="true" class="company" selectionMode="single" :selectionKeys.sync="selection"
-                @node-select="onNodeSelect" @node-unselect="onNodeUnselect" @node-collapse="onNodeCollapse" @node-expand="onNodeExpand">
-                <template #person="slotProps">
-                    <div class="node-header ui-corner-top">{{slotProps.node.data.label}}</div>
-                    <div class="node-content">
-                        <img :src="'demo/images/organization/' + slotProps.node.data.avatar" width="32">
-                        <div>{{slotProps.node.data.name}}</div>
-                    </div>
-                </template>
-                <template #default="slotProps">
-                    <span>{{slotProps.node.data.label}}</span>
-                </template>
-            </OrganizationChart>
+            <div class="card">
+                <h5>Advanced</h5>
+                <OrganizationChart :value="data1" :collapsible="true" class="company" selectionMode="single" :selectionKeys.sync="selection"
+                    @node-select="onNodeSelect" @node-unselect="onNodeUnselect" @node-collapse="onNodeCollapse" @node-expand="onNodeExpand">
+                    <template #person="slotProps">
+                        <div class="node-header ui-corner-top">{{slotProps.node.data.label}}</div>
+                        <div class="node-content">
+                            <img :src="'demo/images/organization/' + slotProps.node.data.avatar" width="32">
+                            <div>{{slotProps.node.data.name}}</div>
+                        </div>
+                    </template>
+                    <template #default="slotProps">
+                        <span>{{slotProps.node.data.label}}</span>
+                    </template>
+                </OrganizationChart>
+            </div>
 
-            <h3>Basic</h3>
-            <OrganizationChart :value="data2">
-                <template #default="slotProps">
-                    <span>{{slotProps.node.data.label}}</span>
-                </template>
-            </OrganizationChart>
+            <div class="card">
+                <h5>Basic</h5>
+                <OrganizationChart :value="data2">
+                    <template #default="slotProps">
+                        <span>{{slotProps.node.data.label}}</span>
+                    </template>
+                </OrganizationChart>
+            </div>
         </div>
 
         <OrganizationChartDoc />
@@ -185,7 +189,7 @@ export default {
     }
 
     .node-header, .node-content {
-        padding: .5em .7em;
+        padding: .5em .7rem;
     }
 
     .node-header {
@@ -215,14 +219,6 @@ export default {
     .department-cto {
         background-color: #e9286f;
         color: #ffffff;
-    }
-
-    .p-person .p-node-toggler {
-        color: #495ebb !important;
-    }
-
-    .department-cto .p-node-toggler {
-        color: #8a0a39 !important;
     }
 }
 </style>

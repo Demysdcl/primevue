@@ -3,6 +3,11 @@ import Vue, { VNode } from 'vue';
 export declare class Chips extends Vue {
     value?: any[];
     max?: number;
+    ariaLabelledBy?: string;
+    addOnBlur?: boolean;
+    allowDuplicate?: boolean;
+    separator?: string;
+    placeholder?: string;
     $emit(eventName: 'focus', event: Event): this;
     $emit(eventName: 'blur', event: Event): this;
     $emit(eventName: 'input', value: any[]): this;

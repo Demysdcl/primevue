@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import RadioButton from 'primevue/radiobutton';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Two-way value binding is defined using the standard v-model directive.</p>
 <CodeHighlight>
 &lt;RadioButton inputId="city1" name="city" value="Chicago" v-model="city" /&gt;
@@ -33,8 +33,8 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any valid attribute such as name and autofocus are passed to the underlying input element. Following is the additional property to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property such as name and autofocus are passed to the underlying input element. Following is the additional property to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -56,7 +56,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -96,7 +96,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -127,7 +127,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -138,49 +138,43 @@ export default {
 <CodeHighlight>
 <template v-pre>
 &lt;h3&gt;Basic&lt;/h3&gt;
-&lt;div class="p-grid"&gt;
-    &lt;div class="p-col-12"&gt;
-        &lt;RadioButton id="city1" name="city" value="Chicago" v-model="city" /&gt;
-        &lt;label for="city1" class="p-radiobutton-label"&gt;Chicago&lt;/label&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12"&gt;
-        &lt;RadioButton id="city2" name="city" value="Los Angeles" v-model="city" /&gt;
-        &lt;label for="city2" class="p-radiobutton-label"&gt;Los Angeles&lt;/label&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12"&gt;
-        &lt;RadioButton id="city3" name="city" value="New York" v-model="city" /&gt;
-        &lt;label for="city3" class="p-radiobutton-label"&gt;New York&lt;/label&gt;
-    &lt;/div&gt;
-    &lt;div class="p-col-12"&gt;
-        &lt;RadioButton id="city4" name="city" value="San Francisco" v-model="city" /&gt;
-        &lt;label for="city4" class="p-radiobutton-label"&gt;San Francisco&lt;/label&gt;
-    &lt;/div&gt;
+    &lt;div class="p-field-radiobutton"&gt;
+    &lt;RadioButton id="city1" name="city" value="Chicago" v-model="city" /&gt;
+    &lt;label for="city1"&gt;Chicago&lt;/label&gt;
 &lt;/div&gt;
-&lt;p&gt;Selected City: &lt;span style="font-weight: bold"&gt;{{this.city}}&lt;/span&gt;&lt;/p&gt;
+&lt;div class="p-field-radiobutton"&gt;
+    &lt;RadioButton id="city2" name="city" value="Los Angeles" v-model="city" /&gt;
+    &lt;label for="city2"&gt;Los Angeles&lt;/label&gt;
+&lt;/div&gt;
+&lt;div class="p-field-radiobutton"&gt;
+    &lt;RadioButton id="city3" name="city" value="New York" v-model="city" /&gt;
+    &lt;label for="city3"&gt;New York&lt;/label&gt;
+&lt;/div&gt;
+&lt;div class="p-field-radiobutton"&gt;
+    &lt;RadioButton id="city4" name="city" value="San Francisco" v-model="city" /&gt;
+    &lt;label for="city4"&gt;San Francisco&lt;/label&gt;
+&lt;/div&gt;
 
-&lt;h3&gt;Dynamic Values, Preselection, Value Binding and Disabled Option&lt;/h3&gt;
-&lt;div class="p-grid"&gt;
-    &lt;div v-for="theme of themes" :key="theme.key" class="p-col-12"&gt;
-        &lt;RadioButton :id="theme.key" name="theme" :value="theme" v-model="selectedTheme" :disabled="theme.key === 'U'" /&gt;
-        &lt;label :for="theme.key" class="p-radiobutton-label"&gt;{{theme.name}}&lt;/label&gt;
-    &lt;/div&gt;
+&lt;h5&gt;Dynamic Values, Preselection, Value Binding and Disabled Option&lt;/h5&gt;
+&lt;div v-for="category of categories" :key="category.key" class="p-field-radiobutton"&gt;
+    &lt;RadioButton :id="category.key" name="category" :value="category" v-model="selectedCategory" :disabled="category.key === 'R'" /&gt;
+    &lt;label :for="category.key"&gt;{{category.name}}&lt;/label&gt;
 &lt;/div&gt;
-&lt;p&gt;Selected Theme: &lt;span style="font-weight: bold"&gt;{{this.selectedTheme}}&lt;/span&gt;&lt;/p&gt;
 </template>
 </CodeHighlight>
 
 <CodeHighlight lang="javascript">
 export default {
-	data() {
-		return {
-			city: null,
-			themes: [{name: 'Apollo', key: 'A'}, {name: 'Babylon', key: 'B'}, {name: 'Serenity', key: 'S'}, {name: 'Ultima', key: 'U'}],
-			selectedTheme: null
-		}
-	},
-	created() {
-		this.selectedTheme = this.themes[1];
-	}
+    data() {
+        return {
+            city: null,
+            categories: [{name: 'Accounting', key: 'A'}, {name: 'Marketing', key: 'M'}, {name: 'Production', key: 'P'}, {name: 'Research', key: 'R'}],
+            selectedCategory: null
+        }
+    },
+    created() {
+        this.selectedCategory = this.categories[1];
+    }
 }
 </CodeHighlight>
 			</TabPanel>

@@ -21,7 +21,7 @@ export default {
         },
         position: {
             type: String,
-            default: 'topright'
+            default: 'top-right'
         },
         autoZIndex: {
             type: Boolean,
@@ -61,8 +61,8 @@ export default {
         add(message) {
             if (message.id == null) {
                 message.id = messageIdx++;
-            } 
-            
+            }
+
             this.messages = [...this.messages, message];
         },
         remove(message) {
@@ -96,74 +96,67 @@ export default {
 <style>
 .p-toast {
     position: fixed;
-    width: 20em;
+    width: 25rem;
 }
 
-.p-toast-topright {
+.p-toast-message-content {
+    display: flex;
+    align-items: flex-start;
+}
+
+.p-toast-message-text {
+    flex: 1 1 auto;
+}
+
+.p-toast-top-right {
 	top: 20px;
 	right: 20px;
 }
 
-.p-toast-topleft {
+.p-toast-top-left {
 	top: 20px;
 	left: 20px;
 }
 
-.p-toast-bottomleft {
+.p-toast-bottom-left {
 	bottom: 20px;
 	left: 20px;
 }
 
-.p-toast-bottomright {
+.p-toast-bottom-right {
 	bottom: 20px;
 	right: 20px;
 }
 
-.p-toast-item-container {
-    position: relative;
+.p-toast-top-center {
+	top: 20px;
+    left: 50%;
+    margin-left: -10em;
 }
 
-.p-toast-item {
-	position: relative;
-	display: block;
-    padding: .5em 1em;
-    overflow: hidden;
+.p-toast-bottom-center {
+	bottom: 20px;
+	left: 50%;
+    margin-left: -10em;
 }
 
-.p-toast-item .p-toast-detail {
-	padding: 0;
-	margin: 0;
+.p-toast-center {
+	left: 50%;
+	top: 50%;
+    min-width: 20vw;
+    transform: translate(-50%, -50%);
 }
 
 .p-toast-icon-close {
-	position: absolute;
-	top: 4px;
-	right: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.p-toast-icon-close.p-link {
 	cursor: pointer;
-}
-
-.p-toast-title {
-	font-weight: bold;
-	padding: 0 0 .5em 0;
-	display: block;
-}
-
-.p-toast-image {
-    position: absolute;
-    display: inline-block;
-    left: .5em;
-    top: .25em;
-    padding: 0;
-	font-size: 2em;
-}
-
-.p-toast-message {
-	padding: 0 0 .25em 0;
-    margin-left: 2.5em;
-}
-
-.p-toast-message p {
-	font-weight: normal;
 }
 
 /* Animations */
@@ -178,7 +171,7 @@ export default {
     max-height: 1000px;
 }
 
-.p-toast .p-toast-item-container.p-toast-message-leave-to {
+.p-toast .p-toast-message.p-toast-message-leave-to {
     max-height: 0;
     opacity: 0;
     margin-bottom: 0;

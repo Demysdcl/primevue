@@ -1,15 +1,17 @@
 <template>
-    <transition name="p-input-overlay" @enter="onEnter" @leave="onLeave">
-        <div ref="container"  :class="containerClass" v-if="popup ? visible : true">
-            <ul class="p-menu-list p-reset">
-                <template v-for="item of model">
-                    <template v-if="item.items">
-                        <li class="p-submenu-header " :key="item.label" v-if="item.items">{{item.label}}</li>
-                        <Menuitem v-for="child of item.items" :key="child.label" :item="child" @click="itemClick" />
+    <transition name="p-connected-overlay" @enter="onEnter" @leave="onLeave">
+        <div ref="container" :class="containerClass" v-if="popup ? overlayVisible : true">
+            <ul class="p-menu-list p-reset" role="menu">
+                <template v-for="(item, i) of model">
+                    <template v-if="item.items && visible(item) && !item.separator">
+                        <li class="p-submenu-header" :key="item.label+i" v-if="item.items">{{item.label}}</li>
+                        <template v-for="(child, j) of item.items">
+                            <Menuitem v-if="visible(child) && !child.separator" :key="child.label + i + j" :item="child" @click="itemClick" />
+                            <li v-else-if="visible(child) && child.separator" class="p-menu-separator" :style="child.style" :key="'separator' + i + j" role="separator"></li>
+                        </template>
                     </template>
-                    <template v-else>
-                        <Menuitem :key="item.label" :item="item" @click="itemClick" />
-                    </template>
+                    <li v-else-if="visible(item) && item.separator" class="p-menu-separator" :style="item.style" :key="'separator' + i" role="separator"></li>
+                    <Menuitem v-else :key="item.label+i" :item="item" @click="itemClick" />
                 </template>
             </ul>
         </div>
@@ -41,51 +43,58 @@ export default {
         baseZIndex: {
             type: Number,
             default: 0
-        },
+        }
     },
     data() {
         return {
-            visible: false
+            overlayVisible: false
         };
     },
     target: null,
     outsideClickListener: null,
     resizeListener: null,
+    relativeAlign: false,
     beforeDestroy() {
         this.restoreAppend();
         this.unbindResizeListener();
-        if (this.dismissable) {
-            this.unbindOutsideClickListener();
-        }
+        this.unbindOutsideClickListener();
         this.target = null;
     },
     methods: {
         itemClick(event) {
             const item = event.item;
+            if (item.disabled) {
+                return;
+            }
+
             if (item.command) {
                 item.command(event);
+                event.originalEvent.preventDefault();
             }
-            this.overlayVisible = false;
+            this.hide();
         },
         toggle(event) {
-            if (this.visible)
+            if (this.overlayVisible)
                 this.hide();
             else
                 this.show(event);
         },
         show(event) {
-            this.visible = true;
-            this.target = event.target;
+            this.overlayVisible = true;
+            this.relativeAlign = event.relativeAlign;
+            this.target = event.currentTarget;
         },
         hide() {
-            this.visible = false;
+            this.overlayVisible = false;
+            this.target = false;
+            this.relativeAlign = false;
         },
         onEnter() {
             this.appendContainer();
             this.alignOverlay();
             this.bindOutsideClickListener();
             this.bindResizeListener();
-            
+
             if (this.autoZIndex) {
                 this.$refs.container.style.zIndex = String(this.baseZIndex + DomHandler.generateZIndex());
             }
@@ -95,17 +104,17 @@ export default {
             this.unbindResizeListener();
         },
         alignOverlay() {
-            DomHandler.absolutePosition(this.$refs.container, this.target);
+            if (this.relativeAlign)
+                DomHandler.relativePosition(this.$refs.container, this.target);
+            else
+                DomHandler.absolutePosition(this.$refs.container, this.target);
 
-            if (DomHandler.getOffset(this.$refs.container).top < DomHandler.getOffset(this.target).top) {
-                DomHandler.addClass(this.$refs.container, 'p-overlaypanel-flipped');
-            }
         },
         bindOutsideClickListener() {
             if (!this.outsideClickListener) {
                 this.outsideClickListener = (event) => {
-                    if (this.visible && this.$refs.container && !this.$refs.container.contains(event.target) && !this.isTargetClicked(event)) {
-                        this.visible = false;
+                    if (this.overlayVisible && this.$refs.container && !this.$refs.container.contains(event.target) && !this.isTargetClicked(event)) {
+                        this.hide();
                     }
                 };
                 document.addEventListener('click', this.outsideClickListener);
@@ -120,8 +129,8 @@ export default {
         bindResizeListener() {
             if (!this.resizeListener) {
                 this.resizeListener = () => {
-                    if (this.visible) {
-                        this.visible = false;
+                    if (this.overlayVisible) {
+                        this.hide();
                     }
                 };
                 window.addEventListener('resize', this.resizeListener);
@@ -151,12 +160,21 @@ export default {
                 else
                     document.getElementById(this.appendTo).removeChild(this.$refs.container);
             }
+        },
+        beforeDestroy() {
+            this.restoreAppend();
+            this.unbindResizeListener();
+            this.unbindOutsideClickListener();
+            this.target = null;
+        },
+        visible(item) {
+            return (typeof item.visible === 'function' ? item.visible() : item.visible !== false);
         }
     },
     computed: {
         containerClass() {
             return ['p-menu p-component', {
-                'p-menu-dynamic p-menu-overlay': this.popup
+                'p-menu-overlay': this.popup
             }]
         }
     },
@@ -165,3 +183,28 @@ export default {
     }
 }
 </script>
+
+<style>
+.p-menu-overlay {
+    position: absolute;
+}
+
+.p-menu ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.p-menu .p-menuitem-link {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    overflow: hidden;
+    position: relative;
+}
+
+.p-menu .p-menuitem-text {
+    line-height: 1;
+}
+</style>

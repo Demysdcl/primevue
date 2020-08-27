@@ -2,12 +2,12 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 <CodeHighlight lang="javascript">
 import InputSwitch from 'primevue/inputswitch';
 </CodeHighlight>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>Two-way binding to a boolean property is defined using the standard v-model directive.</p>
 <CodeHighlight>
 &lt;InputSwitch v-model="checked" /&gt;
@@ -35,8 +35,8 @@ export default {
 }
 </CodeHighlight>
 
-				<h3>Properties</h3>
-                <p>Any attribute such as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
+				<h5>Properties</h5>
+                <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -72,11 +72,17 @@ export default {
                                 <td>false</td>
                                 <td>When present, it specifies that the component should be disabled.</td>
                             </tr>
+                            <tr>
+                                <td>ariaLabelledBy</td>
+                                <td>string</td>
+                                <td>null</td>
+                                <td>Establishes relationships between the component and label(s) where its value should be one or more element IDs.</td>
+                            </tr>
 						</tbody>
 					</table>
 				</div>
 
-				<h3>Events</h3>
+				<h5>Events</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -116,7 +122,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -143,7 +149,7 @@ export default {
 					</table>
 				</div>
 
-				<h3>Dependencies</h3>
+				<h5>Dependencies</h5>
 				<p>None.</p>
 			</TabPanel>
 
@@ -155,11 +161,9 @@ export default {
 <template v-pre>
 &lt;h3&gt;Basic&lt;/h3&gt;
 &lt;InputSwitch v-model="checked1" /&gt;
-&lt;p style="font-weight: bold"&gt;{{checked1}}&lt;/p&gt;
 
 &lt;h3&gt;Preselection&lt;/h3&gt;
 &lt;InputSwitch v-model="checked2" /&gt;
-&lt;p style="font-weight: bold"&gt;{{checked2}}&lt;/p&gt;
 </template>
 </CodeHighlight>
 

@@ -8,31 +8,33 @@
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Severities</h3>
-            <Message severity="success">Order Submitted</Message>
-            <Message severity="info">PrimeVue Rocks</Message>
-            <Message severity="warn">There are unsaved changes</Message>
-            <Message severity="error">Validation Failed</Message>
+            <div class="card">
+                <h5>Severities</h5>
+                <Message severity="success">Success Message Content</Message>
+                <Message severity="info">Info Message Content</Message>
+                <Message severity="warn">Warning Message Content</Message>
+                <Message severity="error">Error Message Content</Message>
 
-            <h3>Dynamic</h3>
-            <Button label="Show" @click="addMessages()" />
-            <Button label="Clear" @click="removeMessages()" class="p-button-secondary"/>
-            <transition-group name="p-messages" tag="div">
-                <Message v-for="msg of messages" :severity="msg.severity" :key="msg.content">{{msg.content}}</Message>
-            </transition-group>
+                <h5>Dynamic</h5>
+                <Button label="Show" @click="addMessages()" />
+                <Button label="Clear" @click="removeMessages()" class="p-button-secondary"/>
+                <transition-group name="p-messages" tag="div">
+                    <Message v-for="msg of messages" :severity="msg.severity" :key="msg.content">{{msg.content}}</Message>
+                </transition-group>
 
-            <h3>Auto Dismiss</h3>
-            <Message severity="warn" :life="10000" :sticky="false">This message will hide in 10 seconds.</Message>
+                <h5>Auto Dismiss</h5>
+                <Message severity="warn" :life="10000" :sticky="false">This message will hide in 10 seconds.</Message>
 
-            <h3>Validation Message</h3>
-            <div class="p-grid">
-                <div class="p-col-12">
-                    <InputText placeholder="Username" class="p-error" />
-                    <ValidationMessage>Field is required</ValidationMessage>
+                <h5>Validation Message</h5>
+                <div class="p-formgroup-inline" style="margin-bottom:.5rem">
+                    <Label for="username" class="p-sr-only">Username</Label>
+                    <InputText id="username" placeholder="Username" class="p-invalid" />
+                    <InlineMessage>Username is required</InlineMessage>
                 </div>
-                <div class="p-col-12">
-                    <InputText placeholder="Email" class="p-error" :closable="false" />
-                    <ValidationMessage />
+                <div class="p-formgroup-inline">
+                    <Label for="email" class="p-sr-only">email</Label>
+                    <InputText id="email" placeholder="Email" class="p-invalid" />
+                    <InlineMessage />
                 </div>
             </div>
         </div>
@@ -71,10 +73,10 @@ export default {
 
 <style scoped>
 button.p-button {
-    margin-right: .5em;
+    margin-right: .5rem;
 }
 
 .p-inputtext {
-    margin-right: .25em;
+    margin-right: .5rem;
 }
 </style>

@@ -3,25 +3,31 @@
         <div class="content-section introduction">
             <div class="feature-intro">
                 <h1>Panel</h1>
-                <p>Panel is a grouping component with the optional content toggle feature.</p>
+                <p>Panel is a container with the optional content toggle feature.</p>
             </div>
         </div>
 
         <div class="content-section implementation">
-            <h3 class="first">Regular</h3>
-            <Panel header="Godfather I">
-                The story begins as Don Vito Corleone, the head of a New York Mafia family, oversees his daughter's wedding. 
-                His beloved son Michael has just come home from the war, but does not intend to become part of his father's business. 
-                Through Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family, 
-                kind and benevolent to those who give respect, but given to ruthless violence whenever anything stands against the good of the family.
+            <h5>Regular</h5>
+            <Panel header="Header">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                    cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
             </Panel>
 
-            <h3>Toggleable</h3>
-            <Panel header="Godfather I" :toggleable="true">
-                The story begins as Don Vito Corleone, the head of a New York Mafia family, oversees his daughter's wedding. 
-                His beloved son Michael has just come home from the war, but does not intend to become part of his father's business. 
-                Through Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family, 
-                kind and benevolent to those who give respect, but given to ruthless violence whenever anything stands against the good of the family.
+            <h5>Advanced</h5>
+            <Panel header="Header" :toggleable="true">
+                <template #icons>
+                    <button class="p-panel-header-icon p-link" @click="toggle">
+                        <span class="pi pi-cog"></span>
+                    </button>
+                    <Menu id="config_menu" ref="menu" :model="items" :popup="true" />
+                </template>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                    cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
             </Panel>
         </div>
 
@@ -32,8 +38,59 @@
 import PanelDoc from './PanelDoc';
 
 export default {
+    data() {
+        return {
+            items: [
+                {
+                    label: 'Options',
+                    items: [{
+                        label: 'Update',
+                        icon: 'pi pi-refresh',
+                        command: () => {
+                            this.$toast.add({severity:'success', summary:'Updated', detail:'Data Updated', life: 3000});
+                        }
+                    },
+                    {
+                        label: 'Delete',
+                        icon: 'pi pi-times',
+                        command: () => {
+                            this.$toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000});
+                        }
+                    }
+                ]},
+                {
+                    label: 'Navigate',
+                    items: [{
+                        label: 'Vue Website',
+                        icon: 'pi pi-external-link',
+                        url: 'https://vuejs.org/'
+                    },
+                    {
+                        label: 'Router',
+                        icon: 'pi pi-upload',
+                        to: '/fileupload'
+                    }
+                ]}
+            ]
+        }
+    },
+    methods: {
+        toggle(event) {
+            this.$refs.menu.toggle(event);
+        },
+        save() {
+            this.$toast.add({severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000});
+        }
+    },
     components: {
         'PanelDoc': PanelDoc
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.p-panel p {
+    line-height: 1.5;
+    margin: 0;
+}
+</style>

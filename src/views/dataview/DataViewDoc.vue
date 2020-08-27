@@ -2,15 +2,15 @@
 	<div class="content-section documentation">
 		<TabView>
 			<TabPanel header="Documentation">
-				<h3>Import</h3>
+				<h5>Import</h5>
 				<CodeHighlight lang="javascript">
 import DataView from 'primevue/dataview';
 				</CodeHighlight>
 
-                <h3>PrimeFlex</h3>
-                <p>DataView utilizes PrimeFlex library so it needs to be installed before getting started. Refer to <router-link to="/theming">FlexGrid</router-link> documentation for details.</p>
+                <h5>PrimeFlex</h5>
+                <p>DataView utilizes PrimeFlex library so it needs to be installed before getting started. Refer to <router-link to="/flexgrid">FlexGrid</router-link> documentation for details.</p>
 
-				<h3>Getting Started</h3>
+				<h5>Getting Started</h5>
 				<p>DataView requires a collection of items as its value and one or more templates depending on the layout mode e.g. list and grid. Throughout the samples, a car interface having vin, brand, year and color properties are used to define an object to be displayed by the dataview. Cars are loaded by a CarService that connects to a server to fetch the cars.</p>
 <CodeHighlight lang="js">
 <template v-pre>
@@ -31,37 +31,33 @@ export default {
 </template>
 </CodeHighlight>
 
-				<h3>Layouts</h3>
+				<h5>Layouts</h5>
 				<p>DataView has two layout modes; <i>list</i> and <i>grid</i> where a separate template is used to render an item in each mode. In list mode name of the template is "list" whereas
 					in grid mode it is "grid".</p>
 				<p>Note that there is no restriction to use both layouts at the same time, you may configure only one layout using the layout property with the corresponding template.</p>
 <CodeHighlight>
 <template v-pre>
-&lt;template #list="slotProps" &gt;
-	&lt;div class="p-col-12 car-details" style="padding: 2em; border-bottom: 1px solid #d9d9d9"&gt;
-		&lt;div class="p-grid"&gt;
-			&lt;div class="p-col-12 p-md-3"&gt;
-				&lt;img :src="'demo/images/car/' + slotProps.data.brand + '.png'" :alt="slotProps.data.brand"/&gt;
-			&lt;/div&gt;
-			&lt;div class="p-col-12 p-md-8 car-data"&gt;
-				&lt;div&gt;Vin: &lt;b&gt;{{slotProps.data.vin}}&lt;/b&gt;&lt;/div&gt;
-				&lt;div&gt;Year: &lt;b&gt;{{slotProps.data.year}}&lt;/b&gt;&lt;/div&gt;
-				&lt;div&gt;Brand: &lt;b&gt;{{slotProps.data.brand}}&lt;/b&gt;&lt;/div&gt;
-				&lt;div&gt;Color: &lt;b&gt;{{slotProps.data.color}}&lt;/b&gt;&lt;/div&gt;
-			&lt;/div&gt;
-
-			&lt;div class="p-col-12 p-md-1 search-icon" style="margin-top: 40px"&gt;
-				&lt;Button icon="pi pi-search"&gt;&lt;/Button&gt;
-			&lt;/div&gt;
-		&lt;/div&gt;
-	&lt;/div&gt;
+&lt;template #list="slotProps"&gt;
+	&lt;div class="p-col-12"&gt;
+        &lt;div class="car-details"&gt;
+            &lt;div&gt;
+                &lt;img :src="'demo/images/car/' + slotProps.data.brand + '.png'" :alt="slotProps.data.brand"/&gt;
+                &lt;div class="p-grid"&gt;
+                    &lt;div class="p-col-12"&gt;Vin: &lt;b&gt;&#123;&#123;slotProps.data.vin&#125;&#125;&lt;/b&gt;&lt;/div&gt;
+                    &lt;div class="p-col-12"&gt;Year: &lt;b&gt;&#123;&#123;slotProps.data.year&#125;&#125;&lt;/b&gt;&lt;/div&gt;
+                    &lt;div class="p-col-12"&gt;Brand: &lt;b&gt;&#123;&#123;slotProps.data.brand&#125;&#125;&lt;/b&gt;&lt;/div&gt;
+                    &lt;div class="p-col-12"&gt;Color: &lt;b&gt;&#123;&#123;slotProps.data.color&#125;&#125;&lt;/b&gt;&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;Button icon="pi pi-search"&gt;&lt;/Button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
 &lt;/template&gt;
 &lt;template #grid="slotProps"&gt;
 	&lt;div style="padding: .5em" class="p-col-12 p-md-3"&gt;
 		&lt;Panel :header="slotProps.data.vin" style="text-align: center"&gt;
 			&lt;img :src="'demo/images/car/' + slotProps.data.brand + '.png'" :alt="slotProps.data.brand"/&gt;
 			&lt;div class="car-detail"&gt;{{slotProps.data.year}} - {{slotProps.data.color}}&lt;/div&gt;
-			&lt;hr class="ui-widget-content" style="border-top: 0" /&gt;
 			&lt;Button icon="pi pi-search"&gt;&lt;/Button&gt;
 		&lt;/Panel&gt;
 	&lt;/div&gt;
@@ -69,20 +65,20 @@ export default {
 </template>
 </CodeHighlight>
 
-				<h3>Sections</h3>
+				<h5>Sections</h5>
 				<p>Header and Footer are the two templates that are capable of displaying custom content.</p>
 <CodeHighlight>
 &lt;template #header&gt;Header Content&lt;/template&gt;
 &lt;template #footer&gt;Footer Content&lt;/template&gt;
 </CodeHighlight>
 
-                <h3>Empty Message</h3>
+                <h5>Empty Message</h5>
                 <p>Where there is no data to display, the optional <i>empty</i> template can be used to display information.</p>
 <CodeHighlight>
 &lt;template #empty&gt;No records found.&lt;/template&gt;
 </CodeHighlight>
 
-				<h3>DataViewLayoutOptions</h3>
+				<h5>DataViewLayoutOptions</h5>
 				<p>When both layout modes are enabled in DataView, a UI element would be necessary to let the user toggle between the view. DataViewLayoutOptions is a helper component
 					to display a buttonset to choose the layout mode in DataView. Location of the DataViewLayoutOptions should be inside the DataView component. If you prefer a different UI element
 					you can create your own that updates the layout property of the DataView.
@@ -104,7 +100,7 @@ export default {
 </template>
 </CodeHighlight>
 
-				<h3>Paginator</h3>
+				<h5>Paginator</h5>
 				<p>Pagination is enabled by setting paginator property to true, rows attribute defines the number of rows per page and pageLinks specify the the number
 					of page links to display. To customize the left and right side of the paginators, use <i>paginatorLeft</i> and <i>paginatorRight</i> templates.</p>
 <CodeHighlight>
@@ -126,7 +122,7 @@ export default {
 </template>
 </CodeHighlight>
 
-				<h3>Sorting</h3>
+				<h5>Sorting</h5>
 				<p><i>sortField</i> and <i>sortOrder</i> properties are available for the sorting functionality, for flexibility there is no built-in UI available so that a custom UI can be used for the sorting element.
 					Here is an example that uses a dropdown where simply updating the sortField-sortOrder bindings of the DataView initiates sorting.</p>
 <CodeHighlight>
@@ -197,7 +193,7 @@ export default {
 </template>
 </CodeHighlight>
 
-                <h3>Lazy Loading</h3>
+                <h5>Lazy Loading</h5>
                 <p>Lazy loading is useful to deal with huge datasets, in order to implement lazy loading use the pagination and utilize the <i>page</i> callback to load your data from the backend.
                 Pagination in this case needs to display the logical number of records bound to the <i>totalRecords</i> property so that paginator can display itself according to the total records although you'd only
                 need to load the data of the current page.</p>
@@ -236,7 +232,7 @@ export default {
 </template>
 </CodeHighlight>
 
-				<h3>Properties</h3>
+				<h5>Properties</h5>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
 						<thead>
@@ -342,7 +338,7 @@ export default {
 					</table>
 				</div>
 
-                <h3>Events</h3>
+                <h5>Events</h5>
                 <div class="doc-tablewrapper">
                     <table class="doc-table">
                         <thead>
@@ -358,7 +354,7 @@ export default {
                                 <td>event.page: New page number <br/>
                                     event.first: Index of first record <br/>
                                     event.rows: Number of rows to display in new page <br/>
-                                    event.pageCount: Total number of pages 
+                                    event.pageCount: Total number of pages
                                 </td>
                                 <td>Callback to invoke when page changes, the event object contains information about the new state.</td>
                             </tr>
@@ -366,7 +362,7 @@ export default {
                     </table>
                 </div>
 
-				<h3>Styling</h3>
+				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
 					<table class="doc-table">
@@ -401,62 +397,76 @@ export default {
                                 <td>p-dataview-content</td>
                                 <td>Container of items.</td>
                             </tr>
+                             <tr>
+                                <td>p-dataview-emptymessage</td>
+                                <td>Empty message element.</td>
+                            </tr>
 						</tbody>
 					</table>
 
-					<h3>Dependencies</h3>
+					<h5>Dependencies</h5>
 					<p>None.</p>
 				</div>
 			</TabPanel>
 
 			<TabPanel header="Source">
-				<a href="https://github.com/primefaces/primereact/tree/master/src/showcase/dataview" class="btn-viewsource" target="_blank" rel="noopener noreferrer">
+				<a href="https://github.com/primefaces/primevue/tree/master/src/showcase/dataview" class="btn-viewsource" target="_blank" rel="noopener noreferrer">
 					<span>View on GitHub</span>
 				</a>
 <CodeHighlight>
 <template v-pre>
-&lt;DataView :value="cars" :layout="layout" paginatorPosition="both" :paginator="true" :rows="20" :sortOrder="sortOrder" :sortField="sortField"&gt;
+&lt;DataView :value="products" :layout="layout" :paginator="true" :rows="9" :sortOrder="sortOrder" :sortField="sortField"&gt;
     &lt;template #header&gt;
         &lt;div class="p-grid p-nogutter"&gt;
             &lt;div class="p-col-6" style="text-align: left"&gt;
-                &lt;Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label" placeholder="Sort By" @change="onSortChange($event)"/&gt;
+                &lt;Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label" placeholder="Sort By Price" @change="onSortChange($event)"/&gt;
             &lt;/div&gt;
             &lt;div class="p-col-6" style="text-align: right"&gt;
                 &lt;DataViewLayoutOptions v-model="layout" /&gt;
             &lt;/div&gt;
         &lt;/div&gt;
     &lt;/template&gt;
-    &lt;template #list="slotProps" &gt;
-        &lt;div class="p-col-12 car-details" style="padding: 2em; border-bottom: 1px solid #d9d9d9"&gt;
-            &lt;div class="p-grid"&gt;
-                &lt;div class="p-col-12 p-md-3"&gt;
-                    &lt;img :src="'demo/images/car/' + slotProps.data.brand + '.png'" :alt="slotProps.data.brand"/&gt;
+
+    &lt;template #list="slotProps"&gt;
+        &lt;div class="p-col-12"&gt;
+            &lt;div class="product-list-item"&gt;
+                &lt;img :src="'demo/images/product/' + slotProps.data.image" :alt="slotProps.data.name"/&gt;
+                &lt;div class="product-list-detail"&gt;
+                    &lt;div class="product-name"&gt;{{slotProps.data.name}}&lt;/div&gt;
+                    &lt;div class="product-description"&gt;{{slotProps.data.description}}&lt;/div&gt;
+                    &lt;Rating :value="slotProps.data.rating" :readonly="true" :cancel="false"&gt;&lt;/Rating&gt;
+                    &lt;i class="pi pi-tag product-category-icon"&gt;&lt;/i&gt;&lt;span class="product-category"&gt;{{slotProps.data.category}}&lt;/span&gt;
                 &lt;/div&gt;
-                &lt;div class="p-col-12 p-md-8 car-details"&gt;
-                    &lt;div class="p-grid"&gt;
-                        &lt;div class="p-col-12"&gt;Vin: &lt;b&gt;{{slotProps.data.vin}}&lt;/b&gt;&lt;/div&gt;
-
-                        &lt;div class="p-col-12"&gt;Year: &lt;b&gt;{{slotProps.data.year}}&lt;/b&gt;&lt;/div&gt;
-
-                        &lt;div class="p-col-12"&gt;Brand: &lt;b&gt;{{slotProps.data.brand}}&lt;/b&gt;&lt;/div&gt;
-
-                        &lt;div class="p-col-12"&gt;Color: &lt;b&gt;{{slotProps.data.color}}&lt;/b&gt;&lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-                &lt;div class="p-col-12 p-md-1 search-icon" style="margin-top: 40px"&gt;
-                    &lt;Button icon="pi pi-search"&gt;&lt;/Button&gt;
+                &lt;div class="product-list-action"&gt;
+                    &lt;span class="product-price"&gt;${{slotProps.data.price}}&lt;/span&gt;
+                    &lt;Button icon="pi pi-shopping-cart" label="Add to Cart" :disabled="slotProps.data.inventoryStatus === 'OUTOFSTOCK'"&gt;&lt;/Button&gt;
+                    &lt;span :class="'product-badge status-'+slotProps.data.inventoryStatus.toLowerCase()"&gt;{{slotProps.data.inventoryStatus}}&lt;/span&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
     &lt;/template&gt;
+
     &lt;template #grid="slotProps"&gt;
-        &lt;div style="padding: .5em" class="p-col-12 p-md-3"&gt;
-            &lt;Panel :header="slotProps.data.vin" style="text-align: center"&gt;
-                &lt;img :src="'demo/images/car/' + slotProps.data.brand + '.png'" :alt="slotProps.data.brand"/&gt;
-                &lt;div class="car-detail"&gt;{{slotProps.data.year}} - {{slotProps.data.color}}&lt;/div&gt;
-                &lt;hr class="ui-widget-content" style="border-top: 0" /&gt;
-                &lt;Button icon="pi pi-search"&gt;&lt;/Button&gt;
-            &lt;/Panel&gt;
+        &lt;div class="p-col-12 p-md-4"&gt;
+            &lt;div class="product-grid-item card"&gt;
+                &lt;div class="product-grid-item-top"&gt;
+                    &lt;div&gt;
+                        &lt;i class="pi pi-tag product-category-icon"&gt;&lt;/i&gt;
+                        &lt;span class="product-category"&gt;{{slotProps.data.category}}&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;span :class="'product-badge status-'+slotProps.data.inventoryStatus.toLowerCase()"&gt;{{slotProps.data.inventoryStatus}}&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;div class="product-grid-item-content"&gt;
+                    &lt;img :src="'demo/images/product/' + slotProps.data.image" :alt="slotProps.data.name"/&gt;
+                    &lt;div class="product-name"&gt;{{slotProps.data.name}}&lt;/div&gt;
+                    &lt;div class="product-description"&gt;{{slotProps.data.description}}&lt;/div&gt;
+                    &lt;Rating :value="slotProps.data.rating" :readonly="true" :cancel="false"&gt;&lt;/Rating&gt;
+                &lt;/div&gt;
+                &lt;div class="product-grid-item-bottom"&gt;
+                    &lt;span class="product-price"&gt;${{slotProps.data.price}}&lt;/span&gt;
+                    &lt;Button icon="pi pi-shopping-cart" :disabled="slotProps.data.inventoryStatus === 'OUTOFSTOCK'"&gt;&lt;/Button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
         &lt;/div&gt;
     &lt;/template&gt;
 &lt;/DataView&gt;
@@ -464,29 +474,28 @@ export default {
 </CodeHighlight>
 
 <CodeHighlight lang="javascript">
-import CarService from '../../service/CarService';
+import ProductService from '../../service/ProductService';
 
 export default {
     data() {
         return {
-            cars: null,
-            layout: 'list',
+            products: null,
+            layout: 'grid',
             sortKey: null,
             sortOrder: null,
             sortField: null,
             sortOptions: [
-                {label: 'Newest First', value: '!year'},
-                {label: 'Oldest First', value: 'year'},
-                {label: 'Brand', value: 'brand'}
+                {label: 'Price High to Low', value: '!price'},
+                {label: 'Price Low to High', value: 'price'},
             ]
         }
     },
-    carService: null,
+    productService: null,
     created() {
-        this.carService = new CarService();
+        this.productService = new ProductService();
     },
     mounted() {
-        this.carService.getCarsLarge().then(data => this.cars = data);
+        this.productService.getProducts().then(data => this.products = data);
     },
     methods: {
         onSortChange(event){
@@ -505,12 +514,6 @@ export default {
             }
         }
     }
-}
-</CodeHighlight>
-
-<CodeHighlight lang="css">
-.p-dropdown {
-	width: 12em;
 }
 </CodeHighlight>
 			</TabPanel>

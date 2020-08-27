@@ -1,54 +1,48 @@
 <template>
-    <div class="p-picklist p-component p-picklist-responsive">
+    <div class="p-picklist p-component">
         <div class="p-picklist-buttons p-picklist-source-controls">
-            <div class="p-picklist-buttons-cell">
-                <PLButton type="button" icon="pi pi-angle-up" @click="moveUp($event, 0)"></PLButton>
-                <PLButton type="button" icon="pi pi-angle-double-up" @click="moveTop($event, 0)"></PLButton>
-                <PLButton type="button" icon="pi pi-angle-down" @click="moveDown($event, 0)"></PLButton>
-                <PLButton type="button" icon="pi pi-angle-double-down" @click="moveBottom($event, 0)"></PLButton>
-            </div>
+            <PLButton type="button" icon="pi pi-angle-up" @click="moveUp($event, 0)"></PLButton>
+            <PLButton type="button" icon="pi pi-angle-double-up" @click="moveTop($event, 0)"></PLButton>
+            <PLButton type="button" icon="pi pi-angle-down" @click="moveDown($event, 0)"></PLButton>
+            <PLButton type="button" icon="pi pi-angle-double-down" @click="moveBottom($event, 0)"></PLButton>
         </div>
         <div class="p-picklist-list-wrapper p-picklist-source-wrapper">
-            <div class="p-picklist-caption" v-if="$slots.sourceHeader">
+            <div class="p-picklist-header" v-if="$slots.sourceHeader">
                 <slot name="sourceHeader"></slot>
             </div>
-            <transition-group ref="sourceList" name="p-picklist-flip" tag="ul" class="p-picklist-list p-picklist-source" :style="listStyle">
+            <transition-group ref="sourceList" name="p-picklist-flip" tag="ul" class="p-picklist-list p-picklist-source" :style="listStyle" role="listbox" aria-multiselectable="multiple">
                 <template v-for="(item, i) of sourceList">
-                    <li tabindex="0" :key="getItemKey(item, i)" :class="['p-picklist-item', {'p-highlight': isSelected(item, 0)}]" 
-                        @click="onItemClick($event, item, i, 0)" @keydown="onItemKeyDown($event, item, i, 0)" @touchend="onItemTouchEnd">
+                    <li tabindex="0" :key="getItemKey(item, i)" :class="['p-picklist-item', {'p-highlight': isSelected(item, 0)}]" v-ripple
+                        @click="onItemClick($event, item, i, 0)" @keydown="onItemKeyDown($event, item, i, 0)" @touchend="onItemTouchEnd" role="option" :aria-selected="isSelected(item, 0)">
                         <slot name="item" :item="item" :index="i"> </slot>
                     </li>
                 </template>
             </transition-group>
         </div>
-        <div class="p-picklist-buttons">
-            <div class="p-picklist-buttons-cell">
-                <PLButton type="button" icon="pi pi-angle-right" @click="moveToTarget"></PLButton>
-                <PLButton type="button" icon="pi pi-angle-double-right" @click="moveAllToTarget"></PLButton>
-                <PLButton type="button" icon="pi pi-angle-left" @click="moveToSource"></PLButton>
-                <PLButton type="button" icon="pi pi-angle-double-left" @click="moveAllToSource"></PLButton>
-            </div>
+        <div class="p-picklist-buttons p-picklist-transfer-buttons">
+            <PLButton type="button" icon="pi pi-angle-right" @click="moveToTarget"></PLButton>
+            <PLButton type="button" icon="pi pi-angle-double-right" @click="moveAllToTarget"></PLButton>
+            <PLButton type="button" icon="pi pi-angle-left" @click="moveToSource"></PLButton>
+            <PLButton type="button" icon="pi pi-angle-double-left" @click="moveAllToSource"></PLButton>
         </div>
         <div class="p-picklist-list-wrapper p-picklist-target-wrapper">
-            <div class="p-picklist-caption" v-if="$slots.targetHeader">
+            <div class="p-picklist-header" v-if="$slots.targetHeader">
                 <slot name="targetHeader"></slot>
             </div>
-            <transition-group ref="targetList" name="p-picklist-flip" tag="ul" class="p-picklist-list p-picklist-target" :style="listStyle">
+            <transition-group ref="targetList" name="p-picklist-flip" tag="ul" class="p-picklist-list p-picklist-target" :style="listStyle" role="listbox" aria-multiselectable="multiple">
                 <template v-for="(item, i) of targetList">
-                    <li tabindex="0" :key="getItemKey(item, i)" :class="['p-picklist-item', {'p-highlight': isSelected(item, 1)}]" 
-                        @click="onItemClick($event, item, i, 1)" @keydown="onItemKeyDown($event, item, i, 1)" @touchend="onItemTouchEnd">
+                    <li tabindex="0" :key="getItemKey(item, i)" :class="['p-picklist-item', {'p-highlight': isSelected(item, 1)}]" v-ripple
+                        @click="onItemClick($event, item, i, 1)" @keydown="onItemKeyDown($event, item, i, 1)" @touchend="onItemTouchEnd" role="option" :aria-selected="isSelected(item, 1)">
                         <slot name="item" :item="item" :index="i"> </slot>
                     </li>
                 </template>
             </transition-group>
         </div>
         <div class="p-picklist-buttons p-picklist-target-controls">
-            <div class="p-picklist-buttons-cell">
-                <PLButton type="button" icon="pi pi-angle-up" @click="moveUp($event, 1)"></PLButton>
-                <PLButton type="button" icon="pi pi-angle-double-up" @click="moveTop($event, 1)"></PLButton>
-                <PLButton type="button" icon="pi pi-angle-down" @click="moveDown($event, 1)"></PLButton>
-                <PLButton type="button" icon="pi pi-angle-double-down" @click="moveBottom($event, 1)"></PLButton>
-            </div>
+            <PLButton type="button" icon="pi pi-angle-up" @click="moveUp($event, 1)"></PLButton>
+            <PLButton type="button" icon="pi pi-angle-double-up" @click="moveTop($event, 1)"></PLButton>
+            <PLButton type="button" icon="pi pi-angle-down" @click="moveDown($event, 1)"></PLButton>
+            <PLButton type="button" icon="pi pi-angle-double-down" @click="moveBottom($event, 1)"></PLButton>
         </div>
     </div>
 </template>
@@ -57,6 +51,7 @@
 import Button from '../button/Button';
 import ObjectUtils from '../utils/ObjectUtils';
 import DomHandler from '../utils/DomHandler';
+import Ripple from '../ripple/Ripple';
 
 export default {
     props: {
@@ -111,7 +106,7 @@ export default {
             if (this.d_selection && this.d_selection[listIndex]) {
                 let valueList = [...this.value[listIndex]];
                 let selectionList = this.d_selection[listIndex];
-                
+
                 for (let i = 0; i < selectionList.length; i++) {
                     let selectedItem = selectionList[i];
                     let selectedItemIndex = ObjectUtils.findIndexInList(selectedItem, valueList);
@@ -129,7 +124,7 @@ export default {
 
                 let value = [...this.value];
                 value[listIndex] = valueList;
-                           
+
                 this.reorderDirection = 'up';
                 this.$emit('input', value);
                 this.$emit('reorder', {
@@ -144,7 +139,7 @@ export default {
             if(this.d_selection) {
                 let valueList = [...this.value[listIndex]];
                 let selectionList = this.d_selection[listIndex];
-                
+
                 for (let i = 0; i < selectionList.length; i++) {
                     let selectedItem = selectionList[i];
                     let selectedItemIndex = ObjectUtils.findIndexInList(selectedItem, valueList);
@@ -174,7 +169,7 @@ export default {
             if(this.d_selection) {
                 let valueList = [...this.value[listIndex]];
                 let selectionList = this.d_selection[listIndex];
-                
+
                 for (let i = selectionList.length - 1; i >= 0; i--) {
                     let selectedItem = selectionList[i];
                     let selectedItemIndex = ObjectUtils.findIndexInList(selectedItem, valueList);
@@ -192,7 +187,7 @@ export default {
 
                 let value = [...this.value];
                 value[listIndex] = valueList;
-                
+
                 this.reorderDirection = 'down';
                 this.$emit('input', value);
                 this.$emit('reorder', {
@@ -206,7 +201,7 @@ export default {
             if (this.d_selection) {
                 let valueList = [...this.value[listIndex]];
                 let selectionList = this.d_selection[listIndex];
-                
+
                 for (let i = selectionList.length - 1; i >= 0; i--) {
                     let selectedItem = selectionList[i];
                     let selectedItemIndex = ObjectUtils.findIndexInList(selectedItem, valueList);
@@ -240,7 +235,7 @@ export default {
             if (selection) {
                 for (let i = 0; i < selection.length; i++) {
                     let selectedItem = selection[i];
-                    
+
                     if (ObjectUtils.findIndexInList(selectedItem, targetList) == -1) {
                         targetList.push(sourceList.splice(ObjectUtils.findIndexInList(selectedItem, sourceList),1)[0]);
                     }
@@ -298,7 +293,7 @@ export default {
             if (selection) {
                 for (let i = 0; i < selection.length; i++) {
                     let selectedItem = selection[i];
-                    
+
                     if (ObjectUtils.findIndexInList(selectedItem, sourceList) == -1) {
                         sourceList.push(targetList.splice(ObjectUtils.findIndexInList(selectedItem, targetList),1)[0]);
                     }
@@ -329,7 +324,7 @@ export default {
 
                 this.$emit('move-all-to-source', {
                     originalEvent: event,
-                    items: sourceList
+                    items: targetList
                 });
 
                 sourceList = [...sourceList, ...targetList];
@@ -358,12 +353,12 @@ export default {
 
             if (metaSelection) {
                 let metaKey = (event.metaKey || event.ctrlKey);
-                
+
                 if (selected && metaKey) {
                     _selection = selectionList.filter((val, index) => index !== selectedIndex);
                 }
                 else {
-                    _selection = (metaKey) ? selectionList ? [...selectionList] : [] : [];   
+                    _selection = (metaKey) ? selectionList ? [...selectionList] : [] : [];
                     _selection.push(item);
                 }
             }
@@ -390,9 +385,9 @@ export default {
         onItemTouchEnd() {
             this.itemTouched = true;
         },
-        onItemKeyDown(event, item, index) {
+        onItemKeyDown(event, item, index, listIndex) {
             let listItem = event.currentTarget;
-            
+
             switch(event.which) {
                 //down
                 case 40:
@@ -400,23 +395,23 @@ export default {
                     if (nextItem) {
                         nextItem.focus();
                     }
-                    
+
                     event.preventDefault();
                 break;
-                
+
                 //up
                 case 38:
                     var prevItem = this.findPrevItem(listItem);
                     if (prevItem) {
                         prevItem.focus();
                     }
-                    
+
                     event.preventDefault();
                 break;
-                
+
                 //enter
                 case 13:
-                    this.onItemClick(event, item, index);
+                    this.onItemClick(event, item, index, listIndex);
                     event.preventDefault();
                 break;
 
@@ -434,7 +429,7 @@ export default {
         },
         findPrevItem(item) {
             let prevItem = item.previousElementSibling;
-            
+
             if (prevItem)
                 return !DomHandler.hasClass(prevItem, 'p-picklist-item') ? this.findPrevItem(prevItem) : prevItem;
             else
@@ -448,19 +443,19 @@ export default {
                     case 'up':
                         DomHandler.scrollInView(listElement, listItems[0]);
                     break;
-                    
+
                     case 'top':
                         listElement.scrollTop = 0;
                     break;
-                    
+
                     case 'down':
                         DomHandler.scrollInView(listElement, listItems[listItems.length - 1]);
                     break;
-                    
+
                     case 'bottom':
                         listElement.scrollTop = listElement.scrollHeight;
                     break;
-                    
+
                     default:
                     break;
                 }
@@ -477,6 +472,9 @@ export default {
     },
     components: {
         'PLButton': Button
+    },
+    directives: {
+        'ripple': Ripple
     }
 }
 </script>
@@ -484,72 +482,35 @@ export default {
 <style>
 .p-picklist {
     display: flex;
-    flex-wrap: wrap;
-}
-
-.p-picklist-buttons,
-.p-picklist-list-wrapper {
-    flex: 0 0 auto;
 }
 
 .p-picklist-buttons {
-    padding: 0 .25em;
-    width: 10%;
-    align-self: center;
-}
-
-.p-picklist-buttons .p-button.p-button-icon-only {
-    display: block;
-    margin-bottom: 0.25em;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .p-picklist-list-wrapper {
-    width: 35%;
+    flex: 1 1 50%;
 }
 
 .p-picklist-list {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    overflow:auto;
-    height: 12.5em;
-}
-
-.p-picklist-caption {
-    text-align: center;
-	padding: .5em .75em;
-    border-bottom: 0 none;
+    overflow: auto;
+    min-height: 12rem;
+    max-height: 24rem;
 }
 
 .p-picklist-item {
-    margin: 1px;
-    padding: .125em;
     cursor: pointer;
-    border: 0 none;
-    font-weight: inherit;
+    overflow: hidden;
+    position: relative;
 }
 
 .p-picklist-item.p-picklist-flip-enter-active.p-picklist-flip-enter-to,
 .p-picklist-item.p-picklist-flip-leave-active.p-picklist-flip-leave-to {
     transition: none !important;
 }
-
-@media (max-width: 767px) {
-    .p-picklist-buttons {
-        width: 100%;
-        text-align: center;
-    }
-
-    .p-picklist-list-wrapper {
-        width: 100%;
-    }
-    
-    .p-picklist-buttons .p-button.p-button-icon-only {
-        display: inline-block;
-        width: 20%;
-        margin-right: .25em;
-    }
-}
-
 </style>
