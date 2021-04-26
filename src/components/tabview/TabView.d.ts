@@ -1,8 +1,16 @@
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 
-export declare class TabView extends Vue {
-    $emit(eventName: 'tab-change', e: { originalEvent: Event, tab: any }): this;
+interface TabViewProps {
+    activeIndex?: number;
+}
+
+declare class TabView {
+    $props: TabViewProps;
+    $emit(eventName: 'tab-change', e: { originalEvent: Event, index: number }): this;
+    $emit(eventName: 'tab-click', e: { originalEvent: Event, index: number }): this;
     $slots: {
         '': VNode[];
     }
 }
+
+export default TabView;

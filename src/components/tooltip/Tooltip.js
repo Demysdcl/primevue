@@ -1,5 +1,4 @@
-import UniqueComponentId from '../utils/UniqueComponentId';
-import DomHandler from '../utils/DomHandler';
+import {UniqueComponentId,DomHandler,ConnectedOverlayScrollHandler,ZIndexUtils} from 'primevue/utils';
 
 function bindEvents(el) {
     const modifiers = el.$_ptooltipModifiers;
@@ -24,6 +23,22 @@ function unbindEvents(el) {
         el.removeEventListener('mouseenter', onMouseEnter);
         el.removeEventListener('mouseleave', onMouseLeave);
         el.removeEventListener('click', onClick);
+    }
+}
+
+function bindScrollListener(el) {
+    if (!el.$_ptooltipScrollHandler) {
+        el.$_ptooltipScrollHandler = new ConnectedOverlayScrollHandler(el, function() {
+            hide(el);
+        });
+    }
+
+    el.$_ptooltipScrollHandler.bindScrollListener();
+}
+
+function unbindScrollListener(el) {
+    if (el.$_ptooltipScrollHandler) {
+        el.$_ptooltipScrollHandler.unbindScrollListener();
     }
 }
 
@@ -55,16 +70,20 @@ function show(el) {
     let tooltipElement = create(el);
     align(el);
     DomHandler.fadeIn(tooltipElement, 250);
-    tooltipElement.style.zIndex = ++DomHandler.zindex;
 
     window.addEventListener('resize', function onWindowResize() {
         hide(el);
         this.removeEventListener('resize', onWindowResize);
     });
+
+    bindScrollListener(el);
+    ZIndexUtils.set('tooltip', tooltipElement, el.$_ptooltipZIndex);
 }
 
 function hide(el) {
     remove(el);
+    unbindScrollListener(el);
+    ZIndexUtils.clear(el);
 }
 
 function getTooltipElement(el) {
@@ -216,20 +235,36 @@ function isOutOfBounds(el) {
     return (targetLeft + width > viewport.width) || (targetLeft < 0) || (targetTop < 0) || (targetTop + height > viewport.height);
 }
 
+function getTarget(el) {
+    return DomHandler.hasClass(el, 'p-inputwrapper') ? DomHandler.findSingle(el, 'input'): el;
+}
+
 const Tooltip = {
-    bind(el, options) {
-        el.$_ptooltipModifiers = options.modifiers;
-        el.$_ptooltipValue = options.value;
-        bindEvents(el);
+    beforeMount(el, options) {
+        let target = getTarget(el);
+        target.$_ptooltipModifiers = options.modifiers;
+        target.$_ptooltipValue = options.value;
+        target.$_ptooltipZIndex = options.instance.$primevue && options.instance.$primevue.config && options.instance.$primevue.config.zIndex.tooltip;
+        bindEvents(target);
     },
-    unbind(el) {
-        remove(el);
-        unbindEvents(el);
+    unmounted(el) {
+        let target = getTarget(el);
+        remove(target);
+        unbindEvents(target);
+
+        if (target.$_ptooltipScrollHandler) {
+            target.$_ptooltipScrollHandler.destroy();
+            target.$_ptooltipScrollHandler = null;
+        }
+
+        ZIndexUtils.clear(el);
     },
-    update(el, options) {
-        el.$_ptooltipModifiers = options.modifiers;
-        el.$_ptooltipValue = options.value;
-    }
+    updated(el, options) {
+        let target = getTarget(el);
+        target.$_ptooltipModifiers = options.modifiers;
+        target.$_ptooltipValue = options.value;
+    },
+
 };
 
 export default Tooltip;

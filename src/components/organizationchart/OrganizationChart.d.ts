@@ -1,11 +1,15 @@
-import Vue, {VNode} from 'vue';
+import { VNode } from 'vue';
 
-export declare class OrganizationChart extends Vue {
+interface OrganizationChartProps {
     value?: any;
     selectionKeys?: any;
     selectionMode?: string;
     collapsedKeys?: any;
     collapsible?: boolean;
+}
+
+declare class OrganizationChart {
+    $props: OrganizationChartProps;
     $emit(eventName: 'node-select', node: any): this;
     $emit(eventName: 'node-unselect', node: any): this;
     $emit(eventName: 'node-expand', node: any): this;
@@ -14,3 +18,5 @@ export declare class OrganizationChart extends Vue {
         [key: string]: VNode[];
     }
 }
+
+export default OrganizationChart;

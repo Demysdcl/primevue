@@ -1,12 +1,13 @@
 <template>
     <ul ref="element" :class="containerClass" role="'menubar' : 'menu'" aria-orientation="horizontal">
-        <template v-for="(item, i) of model">
-            <li :class="getItemClass(item)" :style="item.style" v-if="visible(item) && !item.separator" :key="item.label + i"
+        <template v-for="(item, i) of model" :key="item.label + i.toString()">
+            <li :class="getItemClass(item)" :style="item.style" v-if="visible(item) && !item.separator" 
                 @mouseenter="onItemMouseEnter($event, item)" role="none">
-                <router-link v-if="item.to && !item.disabled" :to="item.to" :class="getLinkClass(item)" v-ripple
-                    @click.native="onItemClick($event, item)" @keydown.native="onItemKeyDown($event, item)" role="menuitem">
-                    <span :class="['p-menuitem-icon', item.icon]"></span>
-                    <span class="p-menuitem-text">{{item.label}}</span>
+                <router-link v-if="item.to && !item.disabled" :to="item.to" custom v-slot="{navigate, href}">
+                     <a :href="href" @click="onItemClick($event, item, navigate)" :class="getLinkClass(item)" v-ripple @keydown="onItemKeyDown($event, item)" role="menuitem">
+                        <span :class="['p-menuitem-icon', item.icon]"></span>
+                        <span class="p-menuitem-text">{{item.label}}</span>
+                     </a>
                 </router-link>
                 <a v-else :href="item.url" :class="getLinkClass(item)" :target="item.target" :aria-haspopup="item.items != null" :aria-expanded="item === activeItem"
                     @click="onItemClick($event, item)" @keydown="onItemKeyDown($event, item)" role="menuitem" :tabindex="item.disabled ? null : '0'" v-ripple>
@@ -17,16 +18,17 @@
                 <sub-menu :model="item.items" v-if="visible(item) && item.items" :key="item.label + '_sub_'"
                     @leaf-click="onLeafClick" @keydown-item="onChildItemKeyDown" :parentActive="item === activeItem" />
             </li>
-            <li class="p-menu-separator" :style="item.style" v-if="visible(item) && item.separator" :key="'separator' + i" role="separator"></li>
+            <li :class="['p-menu-separator', item.class]" :style="item.style" v-if="visible(item) && item.separator" :key="'separator' + i.toString()" role="separator"></li>
         </template>
     </ul>
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
-import Ripple from '../ripple/Ripple';
+import {DomHandler} from 'primevue/utils';
+import Ripple from 'primevue/ripple';
 
 export default {
+    emits: ['leaf-click', 'keydown-item'],
     name: 'sub-menu',
     props: {
         model: {
@@ -64,7 +66,7 @@ export default {
             this.bindDocumentClickListener();
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.unbindDocumentClickListener();
     },
     methods: {
@@ -83,14 +85,10 @@ export default {
                 this.activeItem = item;
             }
         },
-        onItemClick(event, item) {
+        onItemClick(event, item, navigate) {
             if (item.disabled) {
                 event.preventDefault();
                 return;
-            }
-
-            if (!item.url && !item.to) {
-                event.preventDefault();
             }
 
             if (item.command) {
@@ -109,6 +107,10 @@ export default {
 
             if (!item.items) {
                 this.onLeafClick();
+            }
+
+            if (item.to && navigate) {
+                navigate(event);
             }
         },
         onLeafClick() {

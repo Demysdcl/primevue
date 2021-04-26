@@ -1,20 +1,7 @@
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 
-export interface LocaleSettings {
-    firstDayOfWeek?: number;
-    dayNames: string[];
-    dayNamesShort: string[];
-    dayNamesMin: string[];
-    monthNames: string[];
-    monthNamesShort: string[];
-    today: string;
-    clear: string;
-    dateFormat: string;
-    weekHeader?: string;
-}
-
-export declare class Calendar extends Vue {
-    value?: Date | Date[];
+interface CalendarProps {
+    modelValue?: Date | Date[];
     selectionMode?: string;
     dateFormat?: string;
     inline?: boolean;
@@ -29,7 +16,6 @@ export declare class Calendar extends Vue {
     yearNavigator?: boolean;
     yearRange?: string;
     panelClass?: string;
-    panelStyle?: string;
     minDate?: Date;
     maxDate?: Date;
     disabledDates?: Date[];
@@ -51,23 +37,25 @@ export declare class Calendar extends Vue {
     timeSeparator?: string;
     showWeek?: boolean;
     manualInput?: boolean;
-    locale?: LocaleSettings;
-    ariaLabelledBy?: string;
     appendTo?: string;
+    inputStyle?: any;
+    inputClass?: string;
+}
+
+declare class Calendar {
+    $props: CalendarProps;
     $emit(eventName: 'show'): this;
     $emit(eventName: 'hide'): this;
     $emit(eventName: 'month-change', e: { month: number, year: number }): this;
     $emit(eventName: 'year-change', e: { month: number, year: number }): this;
     $emit(eventName: 'date-select', value: Date): this;
-    $emit(eventName: 'input', value: Date): this;
     $emit(eventName: 'today-click', value: Date): this;
     $emit(eventName: 'clear-click', event: Event): this;
-    $emit(eventName: 'focus', event: Event): this;
-    $emit(eventName: 'blur', event: Event): this;
-    $emit(eventName: 'keydown', event: Event): this;
     $slots: {
         header: VNode[];
         date: VNode[];
         footer: VNode[];
     };
 }
+
+export default Calendar;

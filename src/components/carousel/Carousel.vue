@@ -1,6 +1,6 @@
 <template>
 	<div :id="id" :class="['p-carousel p-component', {'p-carousel-vertical': isVertical(), 'p-carousel-horizontal': !isVertical()}]">
-		<div class="p-carousel-header" v-if="$scopedSlots.header">
+		<div class="p-carousel-header" v-if="$slots.header">
 			<slot name="header"></slot>
 		</div>
 		<div :class="contentClasses">
@@ -41,23 +41,24 @@
 				</button>
 			</div>
 			<ul :class="indicatorsContentClasses">
-				<li v-for="(indicator, i) of totalIndicators" :key="'p-carousel-indicator-' + i" :class="['p-carousel-indicator', {'p-highlight': d_page === i}]">
+				<li v-for="(indicator, i) of totalIndicators" :key="'p-carousel-indicator-' + i.toString()" :class="['p-carousel-indicator', {'p-highlight': d_page === i}]">
 					<button class="p-link" @click="onIndicatorClick($event, i)" type="button" />
 				</li>
 			</ul>
 		</div>
-		<div class="p-carousel-footer" v-if="$scopedSlots.footer">
+		<div class="p-carousel-footer" v-if="$slots.footer">
 			<slot name="footer"></slot>
 		</div>
 	</div>
 </template>
 
 <script>
-import UniqueComponentId from '../utils/UniqueComponentId';
-import DomHandler from '../utils/DomHandler';
-import Ripple from '../ripple/Ripple';
+import {UniqueComponentId} from 'primevue/utils';
+import {DomHandler} from 'primevue/utils';
+import Ripple from 'primevue/ripple';
 
 export default {
+	emits: ['update:page'],
 	props: {
 		value: null,
 		page: {
@@ -335,7 +336,8 @@ export default {
         `;
 
 			if (this.responsiveOptions) {
-				this.responsiveOptions.sort((data1, data2) => {
+				let _responsiveOptions = [...this.responsiveOptions];
+				_responsiveOptions.sort((data1, data2) => {
 					const value1 = data1.breakpoint;
 					const value2 = data2.breakpoint;
 					let result = null;
@@ -354,8 +356,8 @@ export default {
 					return -1 * result;
 				});
 
-				for (let i = 0; i < this.responsiveOptions.length; i++) {
-					let res = this.responsiveOptions[i];
+				for (let i = 0; i < _responsiveOptions.length; i++) {
+					let res = _responsiveOptions[i];
 
 					innerHTML += `
                     @media screen and (max-width: ${res.breakpoint}) {
@@ -463,7 +465,7 @@ export default {
 			this.startAutoplay();
 		}
 	},
-	beforeDestroy() {
+	beforeUnmount() {
 		if (this.responsiveOptions) {
 			this.unbindDocumentListeners();
 		}

@@ -1,11 +1,11 @@
 <template>
-	<button :class="containerClass" v-on="$listeners" type="button" v-ripple>
+	<button :class="containerClass" type="button" v-ripple>
 		<span class="p-paginator-icon pi pi-angle-left"></span>
 	</button>
 </template>
 
 <script>
-import Ripple from '../ripple/Ripple';
+import Ripple from 'primevue/ripple';
 
 export default {
     computed: {

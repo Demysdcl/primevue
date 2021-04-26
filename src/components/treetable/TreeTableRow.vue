@@ -1,10 +1,10 @@
 <template>
     <tr :class="containerClass" @click="onClick" @keydown="onKeyDown" @touchend="onTouchEnd" :style="node.style" tabindex="0">
-        <td v-for="(col,i) of columns" :key="col.columnKey||col.field||i" :style="col.bodyStyle" :class="col.bodyClass">
-            <button type="button" class="p-treetable-toggler p-link" @click="toggle" v-if="col.expander" :style="togglerStyle" tabindex="-1" v-ripple>
+        <td v-for="(col,i) of columns" :key="columnProp(col, 'columnKey')||columnProp(col, 'field')||i" :style="columnProp(col, 'bodyStyle')" :class="columnProp(col, 'bodyClass')">
+            <button type="button" class="p-treetable-toggler p-link" @click="toggle" v-if="columnProp(col, 'expander')" :style="togglerStyle" tabindex="-1" v-ripple>
                 <i :class="togglerIcon"></i>
             </button>
-            <div class="p-checkbox p-treetable-checkbox p-component" @click="toggleCheckbox" v-if="checkboxSelectionMode && col.expander" role="checkbox" :aria-checked="checked">
+            <div class="p-checkbox p-treetable-checkbox p-component" @click="toggleCheckbox" v-if="checkboxSelectionMode && columnProp(col, 'expander')" role="checkbox" :aria-checked="checked">
                 <div class="p-hidden-accessible">
                     <input type="checkbox" @focus="onCheckboxFocus" @blur="onCheckboxBlur" />
                 </div>
@@ -12,20 +12,25 @@
                     <span :class="checkboxIcon"></span>
                 </div>
             </div>
-            <TTColumnSlot :node="node" :column="col" type="body" v-if="col.$scopedSlots.body" />
-            <template v-else><span>{{resolveFieldData(node.data, col.field)}}</span></template>
+            <component :is="col.children.body" :node="node" :column="col" v-if="col.children && col.children.body" />
+            <template v-else><span>{{resolveFieldData(node.data, columnProp(col, 'field'))}}</span></template>
         </td>
     </tr>
+    <template v-if="expanded && node.children && node.children.length">
+        <sub-ttnode v-for="childNode of node.children" :key="childNode.key" :columns="columns" :node="childNode" :parentNode="node"  :level="level + 1"
+                        :expandedKeys="expandedKeys" :selectionMode="selectionMode" :selectionKeys="selectionKeys" :indentation="indentation"
+                        @node-toggle="$emit('node-toggle', $event)" @node-click="$emit('node-click', $event)" @checkbox-change="onCheckboxChange"></sub-ttnode>
+    </template>
 </template>
 
 <script>
-import ObjectUtils from '../utils/ObjectUtils';
-import DomHandler from '../utils/DomHandler';
-import TreeTableColumnSlot from './TreeTableColumnSlot';
-import Ripple from '../ripple/Ripple';
+import {ObjectUtils} from 'primevue/utils';
+import {DomHandler} from 'primevue/utils';
+import Ripple from 'primevue/ripple';
 
 export default {
     name: 'sub-ttnode',
+    emits: ['node-click', 'node-toggle', 'checkbox-change','nodeClick', 'nodeToggle', 'checkboxChange'],
     props: {
         node: {
             type: null,
@@ -54,6 +59,10 @@ export default {
         level: {
             type: Number,
             default: 0
+        },
+        indentation: {
+            type: Number,
+            default: 1
         }
     },
     data() {
@@ -63,6 +72,9 @@ export default {
     },
     nodeTouched: false,
     methods: {
+        columnProp(col, prop) {
+            return col.props ? ((col.type.props[prop].type === Boolean && col.props[prop] === '') ? true : col.props[prop]) : null;
+        },
         resolveFieldData(rowData, field) {
             return ObjectUtils.resolveFieldData(rowData, field);
         },
@@ -198,6 +210,39 @@ export default {
         },
         onCheckboxBlur() {
             this.checkboxFocused = false;
+        },
+        onCheckboxChange(event) {
+            let check = event.check;
+            let _selectionKeys = {...event.selectionKeys};
+            let checkedChildCount = 0;
+            let childPartialSelected = false;
+
+            for(let child of this.node.children) {
+                if(_selectionKeys[child.key] && _selectionKeys[child.key].checked)
+                    checkedChildCount++;
+                else if(_selectionKeys[child.key] && _selectionKeys[child.key].partialChecked)
+                    childPartialSelected = true;
+            }
+
+            if(check && checkedChildCount === this.node.children.length) {
+                _selectionKeys[this.node.key] = {checked: true, partialChecked: false};
+            }
+            else {
+                if (!check) {
+                    delete _selectionKeys[this.node.key];
+                }
+
+                if(childPartialSelected || (checkedChildCount > 0 && checkedChildCount !== this.node.children.length))
+                    _selectionKeys[this.node.key] = {checked: false, partialChecked: true};
+                else
+                    _selectionKeys[this.node.key] = {checked: false, partialChecked: false};
+            }
+
+            this.$emit('checkbox-change', {
+                node: event.node,
+                check: event.check,
+                selectionKeys: _selectionKeys
+            });
         }
     },
     computed: {
@@ -223,7 +268,7 @@ export default {
         },
         togglerStyle() {
             return {
-                marginLeft: this.level * 16 + 'px',
+                marginLeft: this.level * this.indentation + 'rem',
                 visibility: this.leaf ? 'hidden' : 'visible'
             };
         },
@@ -245,9 +290,6 @@ export default {
         partialChecked() {
             return this.selectionKeys ? this.selectionKeys[this.node.key] && this.selectionKeys[this.node.key].partialChecked: false;
         }
-    },
-    components: {
-        'TTColumnSlot': TreeTableColumnSlot
     },
     directives: {
         'ripple': Ripple

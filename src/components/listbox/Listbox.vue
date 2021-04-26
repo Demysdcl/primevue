@@ -1,5 +1,6 @@
 <template>
     <div class="p-listbox p-component">
+        <slot name="header" :value="modelValue" :options="visibleOptions"></slot>
         <div class="p-listbox-header" v-if="filter">
             <div class="p-listbox-filter-container">
                 <input type="text" class="p-listbox-filter p-inputtext p-component" v-model="filterValue" :placeholder="filterPlaceholder" @input="onFilterChange">
@@ -8,29 +9,51 @@
         </div>
         <div class="p-listbox-list-wrapper" :style="listStyle">
             <ul class="p-listbox-list" role="listbox" aria-multiselectable="multiple">
-                <li v-for="(option, i) of visibleOptions" :tabindex="isOptionDisabled(option) ? null : '0'" :class="['p-listbox-item', {'p-highlight': isSelected(option), 'p-disabled': isOptionDisabled(option)}]" v-ripple
-                    :aria-label="getOptionLabel(option)" :key="getOptionRenderKey(option)" @click="onOptionSelect($event, option)" @touchend="onOptionTouchEnd()" @keydown="onOptionKeyDown($event, option)" role="option" :aria-selected="isSelected(option)">
-                    <slot name="option" :option="option" :index="i">
-                        {{getOptionLabel(option)}}
-                    </slot>
+                <template v-if="!optionGroupLabel">
+                    <li v-for="(option, i) of visibleOptions" :tabindex="isOptionDisabled(option) ? null : '0'" :class="['p-listbox-item', {'p-highlight': isSelected(option), 'p-disabled': isOptionDisabled(option)}]" v-ripple
+                        :key="getOptionRenderKey(option)" @click="onOptionSelect($event, option)" @touchend="onOptionTouchEnd()" @keydown="onOptionKeyDown($event, option)" role="option" :aria-label="getOptionLabel(option)" :aria-selected="isSelected(option)" >
+                        <slot name="option" :option="option" :index="i">{{getOptionLabel(option)}} </slot>
+                    </li>
+                </template>
+                <template v-else>
+                    <template v-for="(optionGroup, i) of visibleOptions" :key="getOptionGroupRenderKey(optionGroup)">
+                        <li  class="p-listbox-item-group" >
+                            <slot name="optiongroup" :option="optionGroup" :index="i">{{getOptionGroupLabel(optionGroup)}}</slot>
+                        </li>
+                        <li v-for="(option, i) of getOptionGroupChildren(optionGroup)" :tabindex="isOptionDisabled(option) ? null : '0'" :class="['p-listbox-item', {'p-highlight': isSelected(option), 'p-disabled': isOptionDisabled(option)}]" v-ripple
+                            :key="getOptionRenderKey(option)" @click="onOptionSelect($event, option)" @touchend="onOptionTouchEnd()" @keydown="onOptionKeyDown($event, option)" role="option" :aria-label="getOptionLabel(option)" :aria-selected="isSelected(option)" >
+                            <slot name="option" :option="option" :index="i">{{getOptionLabel(option)}}</slot>
+                        </li>
+                    </template>
+                </template>
+                <li v-if="filterValue && (!visibleOptions || (visibleOptions && visibleOptions.length === 0))" class="p-listbox-empty-message">
+                    <slot name="emptyfilter">{{emptyFilterMessageText}}</slot>
+                </li>
+                <li v-else-if="(!options || (options && options.length === 0))" class="p-listbox-empty-message">
+                    <slot name="empty">{{emptyMessageText}}</slot>
                 </li>
             </ul>
         </div>
+        <slot name="footer" :value="modelValue" :options="visibleOptions"></slot>
     </div>
 </template>
 
 <script>
-import ObjectUtils from '../utils/ObjectUtils';
-import DomHandler from '../utils/DomHandler';
-import Ripple from '../ripple/Ripple';
+import {ObjectUtils} from 'primevue/utils';
+import {DomHandler} from 'primevue/utils';
+import {FilterService} from 'primevue/api';
+import Ripple from 'primevue/ripple';
 
 export default {
+    emits: ['update:modelValue', 'change', 'filter'],
     props: {
-        value: null,
+        modelValue: null,
         options: Array,
         optionLabel: null,
         optionValue: null,
         optionDisabled: null,
+        optionGroupLabel: null,
+        optionGroupChildren: null,
 		listStyle: null,
         disabled: Boolean,
         dataKey: null,
@@ -38,7 +61,23 @@ export default {
         metaKeySelection: Boolean,
         filter: Boolean,
         filterPlaceholder: String,
-        filterLocale: String
+        filterLocale: String,
+        filterMatchMode: {
+            type: String,
+            default: 'contains'
+        },
+        filterFields: {
+            type: Array,
+            default: null
+        },
+        emptyFilterMessage: {
+            type: String,
+            default: null
+        },
+        emptyMessage: {
+            type: String,
+            default: null
+        }
     },
     optionTouched: false,
     data() {
@@ -58,6 +97,15 @@ export default {
         },
         isOptionDisabled(option) {
             return this.optionDisabled ? ObjectUtils.resolveFieldData(option, this.optionDisabled) : false;
+        },
+        getOptionGroupRenderKey(optionGroup) {
+            return ObjectUtils.resolveFieldData(optionGroup, this.optionGroupLabel);
+        },
+        getOptionGroupLabel(optionGroup) {
+            return ObjectUtils.resolveFieldData(optionGroup, this.optionGroupLabel);
+        },
+        getOptionGroupChildren(optionGroup) {
+            return ObjectUtils.resolveFieldData(optionGroup, this.optionGroupChildren);
         },
         onOptionSelect(event, option) {
             if (this.disabled || this.isOptionDisabled(option)) {
@@ -125,7 +173,7 @@ export default {
                     valueChanged = true;
                 }
                 else {
-                    value = (metaKey) ? this.value || [] : [];
+                    value = (metaKey) ? this.modelValue || [] : [];
                     value = [...value, this.getOptionValue(option)];
                     valueChanged = true;
                 }
@@ -134,7 +182,7 @@ export default {
                 if (selected)
                     value = this.removeOption(option);
                 else
-                    value = [...this.value || [], this.getOptionValue(option)];
+                    value = [...this.modelValue || [], this.getOptionValue(option)];
 
                 valueChanged = true;
             }
@@ -148,8 +196,8 @@ export default {
             let optionValue = this.getOptionValue(option);
 
             if (this.multiple) {
-                if (this.value) {
-                    for (let val of this.value) {
+                if (this.modelValue) {
+                    for (let val of this.modelValue) {
                         if (ObjectUtils.equals(val, optionValue, this.equalityKey)) {
                             selected = true;
                             break;
@@ -158,16 +206,16 @@ export default {
                 }
             }
             else {
-                selected = ObjectUtils.equals(this.value, optionValue, this.equalityKey);
+                selected = ObjectUtils.equals(this.modelValue, optionValue, this.equalityKey);
             }
 
             return selected;
         },
         removeOption(option) {
-            return this.value.filter(val => !ObjectUtils.equals(val, this.getOptionValue(option), this.equalityKey));
+            return this.modelValue.filter(val => !ObjectUtils.equals(val, this.getOptionValue(option), this.equalityKey));
         },
         updateModel(event, value) {
-            this.$emit('input', value);
+            this.$emit('update:modelValue', value);
             this.$emit('change', {originalEvent: event, value: value});
         },
         onOptionKeyDown(event, option) {
@@ -205,7 +253,7 @@ export default {
             let nextItem = item.nextElementSibling;
 
             if (nextItem)
-                return DomHandler.hasClass(nextItem, 'p-disabled') ? this.findNextOption(nextItem) : nextItem;
+                return DomHandler.hasClass(nextItem, 'p-disabled') || DomHandler.hasClass(nextItem, 'p-listbox-item-group') ? this.findNextItem(nextItem) : nextItem;
             else
                 return null;
         },
@@ -213,7 +261,7 @@ export default {
             let prevItem = item.previousElementSibling;
 
             if (prevItem)
-                return DomHandler.hasClass(prevItem, 'p-disabled') ? this.findPrevItem(prevItem) : prevItem;
+                return DomHandler.hasClass(prevItem, 'p-disabled') || DomHandler.hasClass(prevItem, 'p-listbox-item-group') ? this.findPrevItem(prevItem) : prevItem;
             else
                 return null;
         },
@@ -223,13 +271,36 @@ export default {
     },
     computed: {
         visibleOptions() {
-            if (this.filterValue)
-                return this.options.filter(option => this.getOptionLabel(option).toLocaleLowerCase(this.filterLocale).indexOf(this.filterValue.toLocaleLowerCase(this.filterLocale)) > -1);
-            else
+            if (this.filterValue) {
+                if (this.optionGroupLabel) {
+                    let filteredGroups = [];
+                    for (let optgroup of this.options) {
+                        let filteredSubOptions = FilterService.filter(this.getOptionGroupChildren(optgroup), this.searchFields, this.filterValue, this.filterMatchMode, this.filterLocale);
+                        if (filteredSubOptions && filteredSubOptions.length) {
+                            filteredGroups.push({...optgroup, ...{items: filteredSubOptions}});
+                        }
+                    }
+                    return filteredGroups
+                }
+                else {
+                    return FilterService.filter(this.options, this.searchFields, this.filterValue, 'contains', this.filterLocale);
+                }
+            }
+            else {
                 return this.options;
+            }          
         },
         equalityKey() {
             return this.optionValue ? null : this.dataKey;
+        },
+        searchFields() {
+            return this.filterFields || [this.optionLabel];
+        },
+        emptyFilterMessageText() {
+            return this.emptyFilterMessage || this.$primevue.config.locale.emptyFilterMessage;
+        },
+        emptyMessageText() {
+            return this.emptyMessage || this.$primevue.config.locale.emptyMessage;
         }
     },
     directives: {
@@ -253,6 +324,10 @@ export default {
     cursor: pointer;
     position: relative;
     overflow: hidden;
+}
+
+.p-listbox-item-group {
+    cursor: auto;
 }
 
 .p-listbox-filter-container {

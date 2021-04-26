@@ -1,15 +1,16 @@
 <template>
-    <button :class="buttonClass" v-on="$listeners" type="button" v-ripple>
+    <button :class="buttonClass" type="button" v-ripple :disabled="disabled">
         <slot>
+            <span v-if="loading && !icon" :class="iconClass"></span>
             <span v-if="icon" :class="iconClass"></span>
             <span class="p-button-label">{{label||'&nbsp;'}}</span>
-            <span class="p-badge" v-if="badge" :class="badgeClass">{{badge}}</span>
+            <span v-if="badge" :class="badgeStyleClass">{{badge}}</span>
         </slot>
     </button>
 </template>
 
 <script>
-import Ripple from '../ripple/Ripple';
+import Ripple from 'primevue/ripple';
 
 export default {
     props: {
@@ -29,6 +30,14 @@ export default {
         badgeClass: {
             type: String,
             default: null
+        },
+        loading: {
+            type: Boolean,
+            default: false
+        },
+        loadingIcon: {
+            type: String,
+            default: 'pi pi-spinner pi-spin'
         }
     },
     computed: {
@@ -37,12 +46,14 @@ export default {
                 'p-button p-component': true,
                 'p-button-icon-only': this.icon && !this.label,
                 'p-button-vertical': (this.iconPos === 'top' || this.iconPos === 'bottom') && this.label,
-                'p-disabled': this.disabled
+                'p-disabled': this.$attrs.disabled || this.loading,
+                'p-button-loading': this.loading,
+                'p-button-loading-label-only': this.loading && !this.icon && this.label
             }
         },
         iconClass() {
             return [
-                this.icon,
+                this.loading ? 'p-button-loading-icon ' + this.loadingIcon : this.icon,
                 'p-button-icon',
                 {
                     'p-button-icon-left': this.iconPos === 'left' && this.label,
@@ -51,6 +62,15 @@ export default {
                     'p-button-icon-bottom': this.iconPos === 'bottom' && this.label
                 }
             ]
+        },
+        badgeStyleClass() {
+            return [
+                'p-badge p-component', this.badgeClass, {
+                'p-badge-no-gutter': this.badge && String(this.badge).length === 1
+            }]
+        },
+        disabled() {
+            return this.$attrs.disabled || this.loading;
         }
     },
     directives: {

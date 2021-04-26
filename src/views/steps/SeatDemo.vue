@@ -1,13 +1,13 @@
 <template>
     <div class="stepsdemo-content">
         <Card>
-           <template slot="title">
+           <template v-slot:title>
                 Seat Information
             </template>
-            <template slot="subtitle">
+            <template v-slot:subtitle>
                 Choose your seat
             </template>
-            <template slot="content">
+            <template v-slot:content>
                 <div class="p-fluid p-formgrid p-grid">
                     <div class="p-field p-col-12 p-md-6">
                         <label for="class">Class</label>
@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </template>
-            <template slot="footer">
+            <template v-slot:footer>
                 <div class="p-grid p-nogutter p-justify-between">
                     <Button label="Back" @click="prevPage()" icon="pi pi-angle-left" />
                     <Button label="Next" @click="nextPage()" icon="pi pi-angle-right" iconPos="right" />
@@ -68,10 +68,10 @@ export default {
             }
         },
         nextPage() {
-            this.$emit('nextPage', {formData: {class: this.selectedClass.name, vagon: this.selectedVagon.vagon, seat: this.selectedSeat.seat}, pageIndex: 1});
+            this.$emit('next-page', {formData: {class: this.selectedClass.name, vagon: this.selectedVagon.vagon, seat: this.selectedSeat.seat}, pageIndex: 1});
         },
         prevPage() {
-            this.$emit('prevPage', {pageIndex: 1});
+            this.$emit('prev-page', {pageIndex: 1});
         }
     }
 }

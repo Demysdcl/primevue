@@ -1,80 +1,128 @@
 <template>
     <div>
         <div class="content-section documentation">
+            <Message severity="warn">This guide is for Vue 3 and PrimeVue 3, visit <a href="https://www.primefaces.org/primevue/showcase-v2">PrimeVue 2.x website</a> if you are using Vue 2.</Message>
+
             <h1>Setup</h1>
             <p>PrimeVue is a rich set of open source native components for Vue.</p>
+
+            <h5>Video Tutorial</h5>
+            <p>Watch the video tutorial that goes through the steps documented on this guide.</p>
+            <div class="video-container">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/cGTXuyqIwMA" frameborder="0" allowfullscreen></iframe>
+            </div>
 
             <h5>Download</h5>
             <p>PrimeVue is available at <a href="https://www.npmjs.com/package/primevue">npm</a>, if you have an existing application run the following commands to download PrimeVue and PrimeIcons to your project.</p>
 
-<CodeHighlight lang="js">
-npm install primevue --save
+<pre v-code.script><code>
+npm install primevue@^3.3.5 --save
 npm install primeicons --save
-</CodeHighlight>
 
-            <h5>PrimeFlex</h5>
-            <p>PrimeFlex is a CSS utility library featuring various helpers such as a grid system, flexbox, spacing, elevation and more. Although it is not required, it is highly
-                recommended to add PrimeFlex as it is likely to need such utilities when developing applications.</p>
-<CodeHighlight lang="js">
-npm install primeflex --save
-</CodeHighlight>
+</code></pre>
 
             <h5>Module Loader</h5>
-            <p>This is the recommended way if your application uses <a href="https://cli.vuejs.org/">vue-cli</a> or has a webpack based build with <a href="https://github.com/vuejs/vue-loader">vue-loader</a> configured.
-            Import the components as .vue files for seamless integration within your project where path of each component is available at the "import" section of a component documentation.</p>
+            <p>This is the recommended way if your application uses <a href="https://cli.vuejs.org">Vue CLI</a>, <a href="https://vitejs.dev">Vite</a> or has a webpack based build with <a href="https://github.com/vuejs/vue-loader">vue-loader</a> configured.</p>
 
-<CodeHighlight lang="js">
-//import ComponentName from 'primevue/componentname';
+            <p>Begin with installing PrimeVue. This command only sets up the core configuration like locale and does not register any component.</p>
+<pre v-code.script><code>
+import {createApp} from 'vue';
+import App from './App.vue';
+import PrimeVue from 'primevue/config';
+const app = createApp(App);
 
+app.use(PrimeVue);
+
+</code></pre>
+
+            <p>Then import and register a component from the library. Import path is available in the documentation of the corresponding component.</p>
+<pre v-code.script><code>
+import {createApp} from 'vue';
+import App from './App.vue';
+import PrimeVue from 'primevue/config';
 import Dialog from 'primevue/dialog';
-</CodeHighlight>
+const app = createApp(App);
 
-            <p>In the next step, register the component with the tag name you'd like to use.</p>
-<CodeHighlight lang="js">
-Vue.component('Dialog', Dialog);
-</CodeHighlight>
+app.use(PrimeVue);
 
-            <p>Then you'll be able to utilize the component in your application.</p>
-<CodeHighlight>
+app.component('Dialog', Dialog);
+
+</code></pre>
+
+            <p>Finally you'll be able to utilize the component in your application.</p>
+<pre v-code><code>
 &lt;Dialog&gt;&lt;/Dialog&gt;
-</CodeHighlight>
+
+</code></pre>
+
+            <h5>Single File Components</h5>
+            <p>SFC files are available in the npm distribution and if you'd like to use SFCs directly, add <i>/sfc</i> as a suffix when referencing an import path. This will instruct your bundler to process the *.vue files
+                in your local build instead of using the compiled output. One use case for this approach is optimizing for SSR by removing whitespaces.</p>
+
+<pre v-code.script><code>
+import Dialog from 'primevue/dialog/sfc';
+
+</code></pre>
 
             <h5>Script Tag</h5>
-            <p>Other alternative is utilizing the components directly within the browser with UMD packages.</p>
-<CodeHighlight>
-&lt;meta charset="utf-8"&gt;
-&lt;title&gt;calendar demo&lt;/title&gt;
-&lt;link href="https://unpkg.com/primevue/resources/themes/saga-blue/theme.css " rel="stylesheet"&gt;
-&lt;link href="https://unpkg.com/primevue/resources/primevue.min.css " rel="stylesheet"&gt;
-&lt;link href="https://unpkg.com/primeicons/primeicons.css " rel="stylesheet"&gt;
-&lt;script src="https://unpkg.com/vue"&gt;&lt;/script&gt;
-&lt;script src="https://unpkg.com/primevue/components/calendar/calendar.umd.min.js"&gt;&lt;/script&gt;
+            <p>Other alternative is utilizing the components directly within the browser with the <i>iife</i> build. Note that PrimeVue does not provide a <i>umd</i> build.</p>
+<pre v-code><code><template v-pre>
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8"&gt;
+        &lt;title&gt;PrimeVue Demo&lt;/title&gt;
+        &lt;link href="https://unpkg.com/primevue/resources/themes/saga-blue/theme.css" rel="stylesheet"&gt;
+        &lt;link href="https://unpkg.com/primevue/resources/primevue.min.css" rel="stylesheet"&gt;
+        &lt;link href="https://unpkg.com/primeicons/primeicons.css" rel="stylesheet"&gt;
 
-&lt;div id="app"&gt;
-  &lt;p-calendar&gt;&lt;/p-calendar&gt;
-&lt;/div&gt;
+        &lt;script src="https://unpkg.com/vue@next"&gt;&lt;/script&gt;
+        &lt;script src="https://unpkg.com/primevue/inputtext/inputtext.min.js"&gt;&lt;/script&gt;
+    &lt;/head&gt;
 
-&lt;script&gt;
-new Vue({
-  components: {
-    'p-calendar': calendar
-  }
-}).$mount('#app')
-&lt;/script&gt;
-</CodeHighlight>
+    &lt;body&gt;
+        &lt;div id="app"&gt;
+            &lt;p-inputtext v-model="val"&gt;&lt;/p-inputtext&gt;
+            &lt;h6&gt;{{val}}&lt;/h6&gt;
+        &lt;/div&gt;
+
+        &lt;script&gt;
+            const {createApp, ref} = Vue;
+
+            const App = {
+                setup() {
+                    const val = ref(null);
+
+                    return {
+                        val
+                    };
+                },
+                components: {
+                    'p-inputtext': primevue.inputtext
+                } 
+            };
+
+            createApp(App).mount("#app");
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</template>
+</code></pre>
 
             <h5>Dependencies</h5>
             <p>Majority of PrimeVue components (95%) are native and there are some exceptions having 3rd party dependencies such as Quill for Editor.</p>
             <p>In addition, components require PrimeIcons library for icons.</p>
 
-<CodeHighlight lang="js">
+            <h6>Mandatory</h6>
+<pre v-code.script><code>
 dependencies: {
-    "vue": "^2.6.10",
+    "vue": "^3.0.0",
     "primeicons": "^4.0.0"
 }
-</CodeHighlight>
 
-            <p>Here is the list of components with 3rd party dependencies.</p>
+</code></pre>
+
+            <h6>Optional</h6>
+            <p>Here is the list of components with 3rd party dependencies. Documentation of each component has a dependencies section as well.</p>
             <div class="doc-tablewrapper">
                 <table class="doc-table">
                     <thead>
@@ -94,7 +142,7 @@ dependencies: {
                         </tr>
                         <tr>
                             <td>FullCalendar</td>
-                            <td>FullCalendar 4.0.2+.</td>
+                            <td>FullCalendar 5.4.0+.</td>
                         </tr>
                         <tr>
                             <td>PrimeFlex</td>
@@ -108,15 +156,16 @@ dependencies: {
             <p>The css dependencies are as follows, note that you may change the theme with another one of your choice. If you are using a bundler such as webpack with a css loader you
                 may import them to your main application component.</p>
 
-<CodeHighlight lang="js">
+<pre v-code.script><code>
 primevue/resources/themes/saga-blue/theme.css       //theme
 primevue/resources/primevue.min.css                 //core css
 primeicons/primeicons.css                           //icons
-</CodeHighlight>
+
+</code></pre>
 
             <h5>Free Themes</h5>
-            <p>PrimeVue ships with 32 free themes to choose from.</p>
-<CodeHighlight lang="css">
+            <p>PrimeVue ships with various free themes to choose from.</p>
+<pre v-code.css><code>
 primevue/resources/themes/bootstrap4-light-blue/theme.css
 primevue/resources/themes/bootstrap4-light-purple/theme.css
 primevue/resources/themes/bootstrap4-dark-blue/theme.css
@@ -129,6 +178,7 @@ primevue/resources/themes/mdc-light-indigo/theme.css
 primevue/resources/themes/mdc-light-deeppurple/theme.css
 primevue/resources/themes/mdc-dark-indigo/theme.css
 primevue/resources/themes/mdc-dark-deeppurple/theme.css
+primevue/resources/themes/fluent-light/theme.css
 primevue/resources/themes/saga-blue/theme.css
 primevue/resources/themes/saga-green/theme.css
 primevue/resources/themes/saga-orange/theme.css
@@ -150,55 +200,104 @@ primevue/resources/themes/luna-blue/theme.css
 primevue/resources/themes/luna-green/theme.css
 primevue/resources/themes/luna-pink/theme.css
 primevue/resources/themes/rhea/theme.css
-</CodeHighlight>
+
+</code></pre>
+
+            <h5>PrimeFlex</h5>
+            <p>PrimeFlex is a CSS utility library featuring various helpers such as a grid system, flexbox, spacing, elevation and more. Although it is not required, it is highly
+                recommended to add PrimeFlex as it is likely to need such utilities when developing applications. View the <router-link to="/primeflex">PrimeFlex</router-link> section for the installation.</p>
 
             <h5>Ripple</h5>
             <p>Ripple is an optional animation for the supported components such as buttons. It is disabled by default and needs to be enabled at
-                your app's entry file (e.g. main.js) using the <i>$primevue</i> instance variable.
+                your app's entry file (e.g. main.js) during the PrimeVue setup.
             </p>
-<CodeHighlight class="language-javascript">
-Vue.prototype.$primevue = {ripple: true};
-</CodeHighlight>
+<pre v-code.script><code>
+import {createApp} from 'vue';
+import PrimeVue from 'primevue/config';
+const app = createApp(App);
 
-            <h5>Quickstart</h5>
-            <p>An <a href="https://github.com/primefaces/primevue-quickstart">example application</a> based on vue-cli is available at github.</p>
+app.use(PrimeVue, {ripple: true});
+
+</code></pre>
+
+            <h5>ZIndex Layering</h5>
+            <p>ZIndexes are managed automatically to make sure layering of overlay components work seamlessly when combining multiple components. Still there may be cases where you'd like to configure
+            the configure default values such as a custom layout where header section is fixed. In a case like this, dropdown needs to be displayed below the application header but a modal dialog should be displayed above. PrimeVue configuration
+            offers the <i>zIndex</i> property to customize the default values for components categories. Default values are described below and can be customized when setting up PrimeVue.</p>
+<pre v-code.script><code>
+import {createApp} from 'vue';
+import PrimeVue from 'primevue/config';
+const app = createApp(App);
+
+app.use(PrimeVue, {
+    zIndex: {
+        modal: 1100,        //dialog, sidebar
+        overlay: 1000,      //dropdown, overlaypanel
+        menu: 1000,         //overlay menus
+        tooltip: 1100       //tooltip
+    }
+});
+
+</code></pre>
+            <h5>Locale</h5>
+            <p>PrimeVue provides a Locale API to support i18n and l7n, visit the <router-link to="/locale">Locale</router-link> documentation for more information.</p>
+
+            <h5>Quickstart with Vue CLI</h5>
+            <p>An <a href="https://github.com/primefaces/primevue-quickstart">example application</a> based on Vue CLI is available at github.</p>
+
+            <h5>Quickstart with Vite</h5>
+            <p>A <a href="https://github.com/primefaces/primevue-quickstart-vite">starter application</a> is also provided for Vite users.</p>
 
             <h5>Typescript</h5>
-            <p>Typescript is fully supported as type definition files are provided in the npm package of PrimeVue. A sample <a href="https://github.com/primefaces/primevue-typescript-quickstart">typescript-primevue</a> application is available as well at github.</p>
-
-            <h5>Nuxt.js Integration</h5>
-            <p>PrimeVue can easily be added to a Nuxt.js with the following steps.</p>
-            <p><strong>1)</strong> Add primevue.js to the plugins folder with the components you'd like to use.</p>
-<CodeHighlight class="language-javascript">
-import Vue from 'vue';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import Toast from 'primevue/toast';
-import ToastService from 'primevue/toastservice';
-
-Vue.use(ToastService);
-
-Vue.component('InputText', InputText);
-Vue.component('Button', Button);
-Vue.component('Toast', Toast);
-</CodeHighlight>
-
-            <p><strong>2)</strong> Add requires CSS dependencies and the plugin configuration in nuxt.config.js.</p>
-<CodeHighlight class="language-javascript">
-css: [
-    {src: 'primevue/resources/primevue.min.css'},
-    {src: 'primevue/resources/themes/saga-blue/theme.css'},
-    {src: 'primeicons/primeicons.css'},
-  ],
-plugins: [
-    {src:'~/plugins/primevue.js', mode: 'client'}
-]
-</CodeHighlight>
-
-            <p>That is all, for a complete example please refer to the <a href="https://github.com/primefaces/primevue-nuxtjs-quickstart">primevue-nuxtjs-quickstart</a> sample.</p>
-
+            <p>Typescript is fully supported as type definition files are provided in the npm package of PrimeVue. A sample <a href="https://github.com/primefaces/primevue-typescript-quickstart">typescript-primevue</a> application with Vue CLI is available as at github.</p>
+            <h5>Browser Support</h5>
+            <div class="doc-tablewrapper">
+                <table class="doc-table browsers">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="p-d-flex p-ai-center">
+                                    <img src="../../assets/images//browsers/edge.svg" alt="edge" style="width: 1.5rem;" class="p-mr-2">
+                                    IE / Edge
+                                </div>
+                            </th>
+                            <th>
+                                <div class="p-d-flex p-ai-center">
+                                    <img src="../../assets/images/browsers/firefox.svg" alt="firefox" style="width: 1.5rem;" class="p-mr-2">
+                                    Firefox
+                                </div>
+                            </th>
+                            <th>
+                                <div class="p-d-flex p-ai-center">
+                                    <img src="../../assets/images/browsers/chrome.svg" alt="chrome" style="width: 1.5rem;" class="p-mr-2">
+                                    Chrome
+                                </div>
+                            </th>
+                            <th>
+                                <div class="p-d-flex p-ai-center">
+                                    <img src="../../assets/images/browsers/safari.svg" alt="safari" style="width: 1.5rem;" class="p-mr-2">
+                                    Safari
+                                </div>
+                            </th>
+                            <th>
+                                <div class="p-d-flex p-ai-center">
+                                    <img src="../../assets/images/browsers/opera.svg" alt="opera" style="width: 1.5rem;" class="p-mr-2">
+                                    Opera
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>IE11, Edge</td>
+                            <td>Last 2 versions</td>
+                            <td>Last 2 versions</td>
+                            <td>Last 2 versions</td>
+                            <td>Last 2 versions</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </template>
-
-<script>

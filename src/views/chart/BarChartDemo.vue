@@ -5,6 +5,7 @@
                 <h1>BarChart</h1>
                 <p>A bar chart or bar graph is a chart that presents grouped data with rectangular bars with lengths proportional to the values that they represent.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -35,23 +36,25 @@
 
 <script>
 import BarChartDoc from './BarChartDoc';
-import EventBus from '@/EventBus';
+import EventBus from '@/AppEventBus';
 
 export default {
+    themeChangeListener: null,
     mounted() {
-        EventBus.$on('change-theme', event => {
+        this.themeChangeListener = (event) => {
             if (event.dark)
                 this.applyDarkTheme();
             else
                 this.applyLightTheme();
-        });
+        };
+        EventBus.on('change-theme', this.themeChangeListener);
 
         if (this.isDarkTheme()) {
             this.applyDarkTheme();
         }
     },
-    beforeDestroy() {
-        EventBus.$off('change-theme');
+    beforeUnmount() {
+        EventBus.off('change-theme', this.themeChangeListener);
     },
     data() {
         return {

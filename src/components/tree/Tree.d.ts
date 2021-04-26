@@ -1,6 +1,6 @@
-import Vue, {VNode} from 'vue';
+import { VNode } from 'vue';
 
-export declare class Tree extends Vue {
+interface TreeProps {
     value?: any;
     expandedKeys?: any;
     selectionKeys?: any;
@@ -13,6 +13,10 @@ export declare class Tree extends Vue {
     filterMode?: string;
     filterPlaceholder?: string;
     filterLocale?: string;
+}
+
+declare class Tree {
+    $props: TreeProps;
     $emit(eventName: 'node-select', node: any): this;
     $emit(eventName: 'node-unselect', node: any): this;
     $emit(eventName: 'node-expand', node: any): this;
@@ -21,3 +25,5 @@ export declare class Tree extends Vue {
         [key: string]: VNode[];
     }
 }
+
+export default Tree;

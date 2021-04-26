@@ -1,7 +1,11 @@
-import Vue from 'vue';
-
-export declare class ProgressSpinner extends Vue {
+interface ProgressSpinnerProps {
     strokeWidth?: string;
     fill?: string;
     animationDuration?: string;
 }
+
+declare class ProgressSpinner {
+    $props: ProgressSpinnerProps;
+}
+
+export default ProgressSpinner;

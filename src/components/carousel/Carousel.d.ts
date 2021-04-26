@@ -1,7 +1,7 @@
-import Vue, {VNode} from 'vue';
+import { VNode } from 'vue';
 
-export declare class Carousel extends Vue {
-	value?: any;
+interface CarouselProps {
+    value?: any;
 	page?: number;
 	numVisible?: number;
 	numScroll?: number;
@@ -13,9 +13,15 @@ export declare class Carousel extends Vue {
 	contentClass?: string;
 	circular?: boolean;
 	autoplayInterval?: number;
+}
+
+declare class Carousel {
+	$props: CarouselProps;
 	$slots: {
 		item: VNode[];
 		header: VNode[];
 		footer: VNode[];
 	}
 }
+
+export default Carousel;

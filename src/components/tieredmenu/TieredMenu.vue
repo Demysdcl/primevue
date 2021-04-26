@@ -1,16 +1,20 @@
 <template>
-    <transition name="p-connected-overlay" @enter="onEnter" @leave="onLeave">
-        <div ref="container" :class="containerClass" v-if="popup ? visible : true">
-            <TieredMenuSub :model="model" :root="true" :popup="popup" @leaf-click="onLeafClick"/>
-        </div>
-    </transition>
+    <Teleport :to="appendTo" :disabled="!popup">
+        <transition name="p-connected-overlay" @enter="onEnter" @leave="onLeave" @after-leave="onAfterLeave">
+            <div :ref="containerRef" :class="containerClass" v-if="popup ? visible : true" v-bind="$attrs" @click="onOverlayClick">
+                <TieredMenuSub :model="model" :root="true" :popup="popup" @leaf-click="onLeafClick"/>
+            </div>
+        </transition>
+    </Teleport>
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
-import TieredMenuSub from './TieredMenuSub';
+import {ConnectedOverlayScrollHandler,DomHandler,ZIndexUtils} from 'primevue/utils';
+import OverlayEventBus from 'primevue/overlayeventbus';
+import TieredMenuSub from './TieredMenuSub.vue';
 
 export default {
+    inheritAttrs: false,
     props: {
         popup: {
             type: Boolean,
@@ -22,7 +26,7 @@ export default {
         },
         appendTo: {
             type: String,
-            default: null
+            default: 'body'
         },
         autoZIndex: {
             type: Boolean,
@@ -34,18 +38,28 @@ export default {
         }
     },
     target: null,
+    container: null,
     outsideClickListener: null,
+    scrollHandler: null,
     resizeListener: null,
     data() {
         return {
             visible: false
         };
     },
-    beforeDestroy() {
-        this.restoreAppend();
+    beforeUnmount() {
         this.unbindResizeListener();
         this.unbindOutsideClickListener();
+
+        if (this.scrollHandler) {
+            this.scrollHandler.destroy();
+            this.scrollHandler = null;
+        }
         this.target = null;
+        if (this.container && this.autoZIndex) {
+            ZIndexUtils.clear(this.container);
+        }
+        this.container = null;
     },
     methods: {
         itemClick(event) {
@@ -69,27 +83,34 @@ export default {
         hide() {
             this.visible = false;
         },
-        onEnter() {
-            this.appendContainer();
+        onEnter(el) {
             this.alignOverlay();
             this.bindOutsideClickListener();
             this.bindResizeListener();
+            this.bindScrollListener();
 
             if (this.autoZIndex) {
-                this.$refs.container.style.zIndex = String(this.baseZIndex + DomHandler.generateZIndex());
+                ZIndexUtils.set('menu', el, this.baseZIndex + this.$primevue.config.zIndex.menu);
             }
         },
         onLeave() {
             this.unbindOutsideClickListener();
             this.unbindResizeListener();
+            this.unbindScrollListener();
+        },
+        onAfterLeave(el) {
+            if (this.autoZIndex) {
+                ZIndexUtils.clear(el);
+            }
         },
         alignOverlay() {
-            DomHandler.absolutePosition(this.$refs.container, this.target);
+            DomHandler.absolutePosition(this.container, this.target);
+            this.container.style.minWidth = DomHandler.getOuterWidth(this.target) + 'px';
         },
         bindOutsideClickListener() {
             if (!this.outsideClickListener) {
                 this.outsideClickListener = (event) => {
-                    if (this.visible && this.$refs.container && !this.$refs.container.contains(event.target) && !this.isTargetClicked(event)) {
+                    if (this.visible && this.container && !this.container.contains(event.target) && !this.isTargetClicked(event)) {
                         this.hide();
                     }
                 };
@@ -100,6 +121,22 @@ export default {
             if (this.outsideClickListener) {
                 document.removeEventListener('click', this.outsideClickListener);
                 this.outsideClickListener = null;
+            }
+        },
+        bindScrollListener() {
+            if (!this.scrollHandler) {
+                this.scrollHandler = new ConnectedOverlayScrollHandler(this.target, () => {
+                    if (this.visible) {
+                        this.hide();
+                    }
+                });
+            }
+
+            this.scrollHandler.bindScrollListener();
+        },
+        unbindScrollListener() {
+            if (this.scrollHandler) {
+                this.scrollHandler.unbindScrollListener();
             }
         },
         bindResizeListener() {
@@ -121,26 +158,19 @@ export default {
         isTargetClicked() {
             return this.target && (this.target === event.target || this.target.contains(event.target));
         },
-        appendContainer() {
-            if (this.appendTo) {
-                if (this.appendTo === 'body')
-                    document.body.appendChild(this.$refs.container);
-                else
-                    document.getElementById(this.appendTo).appendChild(this.$refs.container);
-            }
-        },
-        restoreAppend() {
-            if (this.$refs.container && this.appendTo) {
-                if (this.appendTo === 'body')
-                    document.body.removeChild(this.$refs.container);
-                else
-                    document.getElementById(this.appendTo).removeChild(this.$refs.container);
-            }
-        },
         onLeafClick() {
             if (this.popup) {
                 this.hide();
             }
+        },
+        containerRef(el) {
+            this.container = el;
+        },
+        onOverlayClick(event) {
+            OverlayEventBus.emit('overlay-click', {
+                originalEvent: event,
+                target: this.target
+            });
         }
     },
     computed: {

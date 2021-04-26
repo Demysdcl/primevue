@@ -1,39 +1,35 @@
 <template>
-	<div class="content-section documentation">
-		<TabView>
-			<TabPanel header="Documentation">
-				<h5>Import</h5>
-<CodeHighlight lang="javascript">
+	<AppDoc name="FullCalendarDemo" :sources="sources" :service="['EventService']" :data="['events']" github="fullcalendar/FullCalendarDemo.vue"
+        :dependencies="{'@fullcalendar/core': '5.4.0', '@fullcalendar/daygrid': '5.4.0', '@fullcalendar/interaction': '5.4.0', '@fullcalendar/timegrid': '5.4.0'}" component="FullCalendar">
+        <h5>Import</h5>
+<pre v-code.script><code>
 import FullCalendar from 'primevue/fullcalendar';
-</CodeHighlight>
 
-				<h5>Getting Started</h5>
-				<p>FullCalendar is a wrapper around on <a href="https://fullcalendar.io/docs/v4">FullCalendar 4.0.0+</a> so fullcalendar needs to be included in your project.
-                For a complete documentation and samples please refer to the <a href="https://fullcalendar.io/">fullcalendar website</a>.</p>
-<CodeHighlight>
+</code></pre>
+
+		<h5>Getting Started</h5>
+		<p>FullCalendar is a wrapper around on <a href="https://fullcalendar.io/docs/v4">FullCalendar 5.4.0+</a> so fullcalendar needs to be included in your project.
+        For a complete documentation and samples please refer to the <a href="https://fullcalendar.io/">fullcalendar website</a>.</p>
+<pre v-code><code>
 npm install @fullcalendar/core --save
-</CodeHighlight>
 
-                <p>FullCalendar is plugin based so install the plugins you require and define them with the options property.</p>
-<CodeHighlight>
+</code></pre>
+
+        <p>FullCalendar is plugin based so install the plugins you require and define them with the options property.</p>
+<pre v-code><code>
 npm install @fullcalendar/daygrid --save
 npm install @fullcalendar/timegrid --save
 npm install @fullcalendar/interaction --save
-</CodeHighlight>
 
-                <p>Include the core style and the styles of the plugins that you use in your application.</p>
-<CodeHighlight>
-import '@fullcalendar/core/main.min.css';
-import '@fullcalendar/daygrid/main.min.css';
-import '@fullcalendar/timegrid/main.min.css';
-</CodeHighlight>
+</code></pre>
 
-				<p>Events should be an array and defined using the events property.</p>
-<CodeHighlight>
+		<p>Events should be an array and defined using the events property.</p>
+<pre v-code><code>
 &lt;FullCalendar :events="events" /&gt;
-</CodeHighlight>
 
-<CodeHighlight lang="js">
+</code></pre>
+
+<pre v-code.script><code>
 export default {
 	data() {
 		return {
@@ -75,10 +71,11 @@ export default {
 		};
 	}
 }
-</CodeHighlight>
 
-				<p>In a real application, it is likely to populate the events by making a remote call, when the events are updated, the component will detect the change and render them.</p>
-<CodeHighlight lang="js">
+</code></pre>
+
+		<p>In a real application, it is likely to populate the events by making a remote call, when the events are updated, the component will detect the change and render them.</p>
+<pre v-code.script><code>
 import axios from 'axios';
 
 export default class EventService {
@@ -86,10 +83,12 @@ export default class EventService {
 	getEvents() {
 		return axios.get('demo/data/events.json').then(res => res.data.data);
 	}
-}
-</CodeHighlight>
 
-<CodeHighlight lang="js">
+}
+
+</code></pre>
+
+<pre v-code.script><code>
 import EventService from '../../service/EventService';
 
 export default {
@@ -106,15 +105,17 @@ export default {
 		this.eventService.getEvents().then(data => this.events = data);
 	}
 }
-</CodeHighlight>
 
-				<h5>Options</h5>
-				<p>FullCalendar has a long list of customization parameters that can be defined with the options property. Example below customizes the plugins, header and editable properties.</p>
-<CodeHighlight>
+</code></pre>
+
+		<h5>Options</h5>
+		<p>FullCalendar has a long list of customization parameters that can be defined with the options property. Example below customizes the plugins, header and editable properties.</p>
+<pre v-code><code>
 &lt;FullCalendar :events="events" :options="options" /&gt;
-</CodeHighlight>
 
-<CodeHighlight lang="js">
+</code></pre>
+
+<pre v-code.script><code>
 import EventService from '../../service/EventService';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -125,8 +126,8 @@ export default {
         return {
             options: {
                 plugins:[dayGridPlugin, timeGridPlugin, interactionPlugin],
-                defaultDate: '2019-01-01',
-                header: {
+                initialDate: '2019-01-01',
+                headerToolbar: {
                     left: 'prev,next',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
@@ -144,18 +145,19 @@ export default {
         this.eventService.getEvents().then(data => this.events = data);
     }
 }
-</CodeHighlight>
 
-				<h5>Callbacks</h5>
-				<p>Callbacks of the FullCalendar such as dateClick are also defined with the options property.</p>
-<CodeHighlight lang="js">
+</code></pre>
+
+		<h5>Callbacks</h5>
+		<p>Callbacks of the FullCalendar such as dateClick are also defined with the options property.</p>
+<pre v-code.script><code>
 export default {
      data() {
         return {
             options: {
                 plugins:[dayGridPlugin, timeGridPlugin, interactionPlugin],
-                defaultDate: '2019-01-01',
-                header: {
+                initialDate: '2019-01-01',
+                headerToolbar: {
                     left: 'prev,next',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
@@ -168,61 +170,67 @@ export default {
         };
     }
 }
-</CodeHighlight>
 
-				<h5>Properties</h5>
-				<div class="doc-tablewrapper">
-					<table class="doc-table">
-						<thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>Description</th>
-                            </tr>
-						</thead>
-						<tbody>
-                            <tr>
-                                <td>events</td>
-                                <td>array</td>
-                                <td>An array of events to display.</td>
-                            </tr>
-                            <tr>
-                                <td>options</td>
-                                <td>Object</td>
-                                <td>A configuration object to define properties of FullCalendar.</td>
-                            </tr>
-						</tbody>
-					</table>
-				</div>
+</code></pre>
 
-				<h5>Dependencies</h5>
-                <p><a href="https://fullcalendar.io/docs/v4">FullCalendar 4.0.0+</a></p>
+		<h5>Properties</h5>
+		<div class="doc-tablewrapper">
+			<table class="doc-table">
+				<thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+				</thead>
+				<tbody>
+                    <tr>
+                        <td>events</td>
+                        <td>array</td>
+                        <td>An array of events to display.</td>
+                    </tr>
+                    <tr>
+                        <td>options</td>
+                        <td>Object</td>
+                        <td>A configuration object to define properties of FullCalendar.</td>
+                    </tr>
+				</tbody>
+			</table>
+		</div>
 
-			</TabPanel>
-
-			<TabPanel header="Source">
-				<a href="https://github.com/primefaces/primevue/tree/master/src/views/fullcalendar" class="btn-viewsource" target="_blank" rel="noopener noreferrer">
-					<span>View on GitHub</span>
-				</a>
-<CodeHighlight>
-<template v-pre>
-&lt;FullCalendar :events="events" :options="options" /&gt;
+		<h5>Dependencies</h5>
+        <p><a href="https://fullcalendar.io/docs/v4">FullCalendar 4.0.0+</a></p>
+    </AppDoc>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
-import EventService from '../../service/EventService';
+<script>
+export default {
+	data() {
+		return {
+			sources: {
+				'options-api': {
+                    tabName: 'Options API Source',
+					content: `
+<template>
+    <div>
+        <FullCalendar :events="events" :options="options" />
+    </div>
+</template>
+
+<script>
+import '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import EventService from './service/EventService';
 
 export default {
     data() {
         return {
             options: {
                 plugins:[dayGridPlugin, timeGridPlugin, interactionPlugin],
-                defaultDate: '2019-01-01',
-                header: {
+                initialDate : '2017-02-01',
+                headerToolbar: {
                     left: 'prev,next',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
@@ -240,8 +248,69 @@ export default {
         this.eventService.getEvents().then(data => this.events = data);
     }
 }
-</CodeHighlight>
-			</TabPanel>
-		</TabView>
-	</div>
+<\\/script>
+
+<style scoped>
+@media screen and (max-width: 960px) {
+    ::v-deep(.fc-header-toolbar) {
+        display: flex;
+        flex-wrap: wrap;
+    }
+}
+</style>`
+				},
+                'composition-api': {
+                    tabName: 'Composition API Source',
+					content: `
+<template>
+    <div>
+        <FullCalendar :events="events" :options="options" />
+    </div>
 </template>
+
+<script>
+import { ref, onMounted } from 'vue';
+import '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import EventService from './service/EventService';
+
+export default {
+    setup() {
+        onMounted(() => {
+            eventService.value.getEvents().then(data => events.value = data);
+        })
+
+        const options =  ref({
+            plugins:[dayGridPlugin, timeGridPlugin, interactionPlugin],
+            initialDate : '2017-02-01',
+            headerToolbar: {
+                left: 'prev,next',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            editable: true
+        });
+        const events =  ref(null);
+        const eventService = ref(new EventService());
+
+        return { options, events, eventService };
+    }
+}
+<\\/script>
+
+<style scoped>
+@media screen and (max-width: 960px) {
+    ::v-deep(.fc-header-toolbar) {
+        display: flex;
+        flex-wrap: wrap;
+    }
+}
+</style>`
+				}
+			}
+		}
+	}
+}
+</script>

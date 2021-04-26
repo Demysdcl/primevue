@@ -5,6 +5,7 @@
                 <h1>TreeTable - Responsive</h1>
                 <p>TreeTable display can be optimized according for different screen sizes, this example demonstrates a demo where columns are stacked on small screens.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -26,30 +27,42 @@
             </div>
         </div>
 
-        <div class="content-section documentation">
-            <TabView>
-                <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;TreeTable :value="nodes" class="p-treetable-responsive"&gt;
-    &lt;template #header&gt;
-        Responsive
-    &lt;/template&gt;
-    &lt;Column field="name" header="Name" :expander="true"&gt;
-            &lt;template #body="slotProps"&gt;
-            &#123;&#123;slotProps.node.data.name&#125;&#125;
-            &lt;span class="sm-visible"&gt;&#123;&#123;slotProps.node.data.size&#125;&#125;&lt;/span&gt;
-            &lt;span class="sm-visible"&gt;&#123;&#123;slotProps.node.data.type&#125;&#125;&lt;/span&gt;
-        &lt;/template&gt;
-    &lt;/Column&gt;
-    &lt;Column field="size" header="Size" headerClass="sm-invisible" bodyClass="sm-invisible"&gt;&lt;/Column&gt;
-    &lt;Column field="type" header="Type" headerClass="sm-invisible" bodyClass="sm-invisible"&gt;&lt;/Column&gt;
-&lt;/TreeTable&gt;
+        <AppDoc name="TreeTableResponsiveDemo" :sources="sources" :service="['NodeService']" :data="['treetablenodes']" github="treetable/TreeTableResponsiveDemo.vue" />
+    </div>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
+<script>
 import NodeService from '../../service/NodeService';
+
+export default {
+    data() {
+        return {
+            nodes: null,
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+    <div>
+        <TreeTable :value="nodes" class="p-treetable-responsive">
+            <template #header>
+                Responsive
+            </template>
+            <Column field="name" header="Name" :expander="true">
+                <template #body="slotProps">
+                    {{slotProps.node.data.name}}
+                    <span class="sm-visible">{{slotProps.node.data.size}}</span>
+                    <span class="sm-visible">{{slotProps.node.data.type}}</span>
+                </template>
+            </Column>
+            <Column field="size" header="Size" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
+            <Column field="type" header="Type" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
+        </TreeTable>
+    </div>                    
+</template>
+
+<script>
+import NodeService from './service/NodeService';
 
 export default {
     data() {
@@ -65,40 +78,83 @@ export default {
         this.nodeService.getTreeTableNodes().then(data => this.nodes = data);
     }
 }
-</CodeHighlight>
+<\\/script>
 
-<CodeHighlight lang="css">
+<style scoped lang="scss">
 .sm-visible {
     display: none;
 }
 
 @media screen and (max-width: 40em) {
-    /deep/ {
-        .sm-invisible {
-            display: none;
-        }
+    ::v-deep(.sm-invisible) {
+        display: none;
+    }
 
-        .sm-visible {
-            display: inline;
-            margin-right: .5rem;
-        }
+    ::v-deep(.sm-visible) {
+        display: inline;
+        margin-right: .5rem;
     }
 }
-</CodeHighlight>
-
-                </TabPanel>
-            </TabView>
-        </div>
-    </div>
+</style>`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+    <div>
+        <TreeTable :value="nodes" class="p-treetable-responsive">
+            <template #header>
+                Responsive
+            </template>
+            <Column field="name" header="Name" :expander="true">
+                <template #body="slotProps">
+                    {{slotProps.node.data.name}}
+                    <span class="sm-visible">{{slotProps.node.data.size}}</span>
+                    <span class="sm-visible">{{slotProps.node.data.type}}</span>
+                </template>
+            </Column>
+            <Column field="size" header="Size" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
+            <Column field="type" header="Type" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
+        </TreeTable>
+    </div>                    
 </template>
 
 <script>
-import NodeService from '../../service/NodeService';
+import { ref, onMounted } from 'vue';
+import NodeService from './service/NodeService';
 
 export default {
-    data() {
-        return {
-            nodes: null
+    setup() {
+        onMounted(() => {
+            nodeService.value.getTreeTableNodes().then(data => nodes.value = data);
+        })
+
+        const nodes = ref();
+        const nodeService = ref(new NodeService());
+
+        return { nodes, nodeService }
+    }
+}
+<\\/script>
+
+<style scoped lang="scss">
+.sm-visible {
+    display: none;
+}
+
+@media screen and (max-width: 40em) {
+    ::v-deep(.sm-invisible) {
+        display: none;
+    }
+
+    ::v-deep(.sm-visible) {
+        display: inline;
+        margin-right: .5rem;
+    }
+}
+</style>`
+                }
+            }
         }
     },
     nodeService: null,
@@ -117,15 +173,13 @@ export default {
 }
 
 @media screen and (max-width: 40em) {
-    /deep/ {
-        .sm-invisible {
-            display: none;
-        }
+    ::v-deep(.sm-invisible) {
+        display: none;
+    }
 
-        .sm-visible {
-            display: inline;
-            margin-right: .5rem;
-        }
+    ::v-deep(.sm-visible) {
+        display: inline;
+        margin-right: .5rem;
     }
 }
 </style>

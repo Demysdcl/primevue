@@ -1,15 +1,19 @@
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 
-export declare class Dropdown extends Vue {
-    value?: any;
+interface DropdownProps {
+    modelValue?: any;
     options?: any[];
     optionLabel?: string;
     optionValue?: any;
     optionDisabled?: boolean;
+    optionGroupLabel?: string;
+    optionGroupChildren?: string;
     scrollHeight?: string;
     filter?: boolean;
     filterPlaceholder?: string;
     filterLocale?: string;
+    filterMatchMode?: string;
+    filterFields?: string[];
     editable?: boolean;
     placeholder?: string;
     disabled?: boolean;
@@ -19,6 +23,13 @@ export declare class Dropdown extends Vue {
     inputId?: string;
     ariaLabelledBy?: string;
     appendTo?: string;
+    emptyFilterMessage?: string;
+    emptyMessage?: string;
+    panelClass?: string;
+}
+
+declare class Dropdown {
+    $props: DropdownProps;
     $emit(eventName: 'input', value: string): this;
     $emit(eventName: 'change', e: { originalEvent: Event, value: string }): this;
     $emit(eventName: 'before-show'): this;
@@ -30,3 +41,5 @@ export declare class Dropdown extends Vue {
         option: VNode[];
     }
 }
+
+export default Dropdown;

@@ -1,7 +1,5 @@
-import Vue, { VNode } from 'vue';
-
-export declare class ColorPicker extends Vue {
-    value?: any;
+interface ColorPickerProps {
+    modelValue?: any;
     defaultColor?: any;
     inline?: boolean;
     format?: string;
@@ -10,5 +8,13 @@ export declare class ColorPicker extends Vue {
     autoZIndex?: boolean;
     baseZIndex?: number;
     ariaLabelledBy?: string;
+    panelClass?: string;
+    appendTo?: string;
+}
+
+declare class ColorPicker {
+    $props: ColorPickerProps;
     $emit(eventName: 'input', value: any): this;
 }
+
+export default ColorPicker;

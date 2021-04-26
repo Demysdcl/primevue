@@ -5,6 +5,7 @@
                 <h1>SplitButton</h1>
                 <p>SplitButton groups a set of commands in an overlay with a default command.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -13,13 +14,13 @@
                 <SplitButton label="Save" icon="pi pi-plus" @click="save" :model="items"></SplitButton>
 
                 <h5>Severities</h5>
-                <SplitButton label="Save" icon="pi pi-plus" :model="items"></SplitButton>
-                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-secondary"></SplitButton>
-                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-success"></SplitButton>
-                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-info"></SplitButton>
-                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-warning"></SplitButton>
-                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-help"></SplitButton>
-                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-danger"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-mb-2"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-secondary p-mb-2"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-success p-mb-2"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-info p-mb-2"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-warning p-mb-2"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-help p-mb-2"></SplitButton>
+                <SplitButton label="Save" icon="pi pi-plus" :model="items" class="p-button-danger p-mb-2"></SplitButton>
             </div>
         </div>
 
@@ -57,9 +58,7 @@ export default {
                 },
                 {   label: 'Upload',
                     icon: 'pi pi-upload',
-                    command: () => {
-                        window.location.hash = "/fileupload"
-                    }
+                    to: '/fileupload'
                 }
             ]
         }

@@ -4,27 +4,27 @@
             <span :class="advancedChooseButtonClass" @click="choose" @keydown.enter="choose" @focus="onFocus" @blur="onBlur" v-ripple tabindex="0">
                 <input ref="fileInput" type="file" @change="onFileSelect" :multiple="multiple" :accept="accept" :disabled="chooseDisabled" />
                 <span class="p-button-icon p-button-icon-left pi pi-fw pi-plus"></span>
-                <span class="p-button-label">{{chooseLabel}}</span>
+                <span class="p-button-label">{{chooseButtonLabel}}</span>
             </span>
-            <FileUploadButton :label="uploadLabel" icon="pi pi-upload" @click="upload" :disabled="uploadDisabled" />
-            <FileUploadButton :label="cancelLabel" icon="pi pi-times" @click="clear" :disabled="cancelDisabled" />
+            <FileUploadButton :label="uploadButtonLabel" icon="pi pi-upload" @click="upload" :disabled="uploadDisabled" v-if="showUploadButton" />
+            <FileUploadButton :label="cancelButtonLabel" icon="pi pi-times" @click="clear" :disabled="cancelDisabled" v-if="showCancelButton" />
         </div>
         <div ref="content" class="p-fileupload-content" @dragenter="onDragEnter" @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop">
             <FileUploadProgressBar :value="progress" v-if="hasFiles" />
             <FileUploadMessage v-for="msg of messages" severity="error" :key="msg">{{msg}}</FileUploadMessage>
             <div class="p-fileupload-files" v-if="hasFiles">
                 <div class="p-fileupload-row" v-for="(file, index) of files" :key="file.name + file.type + file.size">
-                    <div v-if="isImage(file)">
-                        <img role="presentation" :alt="file.name" :src="file.objectURL" :width="previewWidth" />
+                    <div>
+                        <img v-if="isImage(file)" role="presentation" :alt="file.name" :src="file.objectURL" :width="previewWidth" />
                     </div>
                     <div>{{file.name}}</div>
                     <div>{{formatSize(file.size)}}</div>
                     <div>
-                        <Button type="button" icon="pi pi-times" @click="remove(index)" />
+                        <FileUploadButton type="button" icon="pi pi-times" @click="remove(index)" />
                     </div>
                 </div>
             </div>
-            <div class="p-fileupload-empty" v-if="$scopedSlots.empty && !hasFiles">
+            <div class="p-fileupload-empty" v-if="$slots.empty && !hasFiles">
                 <slot name="empty"></slot>
             </div>
         </div>
@@ -40,13 +40,14 @@
 </template>
 
 <script>
-import Button from '../button/Button';
-import ProgressBar from '../progressbar/ProgressBar';
-import Message from '../message/Message';
-import DomHandler from '../utils/DomHandler';
-import Ripple from '../ripple/Ripple';
+import Button from 'primevue/button';
+import ProgressBar from 'primevue/progressbar';
+import Message from 'primevue/message';
+import {DomHandler} from 'primevue/utils';
+import Ripple from 'primevue/ripple';
 
 export default {
+    emits: ['select', 'uploader', 'before-upload', 'progress', 'upload', 'error', 'before-send', 'clear'],
     props: {
         name: {
             type: String,
@@ -102,27 +103,35 @@ export default {
         },
         chooseLabel: {
             type: String,
-            default: 'Choose'
+            default: null
         },
         uploadLabel: {
             type: String,
-            default: 'Upload'
+            default: null
         },
         cancelLabel: {
             type: String,
-            default: 'Cancel'
+            default: null
         },
         customUpload: {
             type: Boolean,
             default: false
+        },
+        showUploadButton: {
+            type: Boolean,
+            default: true
+        },
+        showCancelButton: {
+            type: Boolean,
+            default: true
         }
     },
     duplicateIEEvent: false,
-    uploadedFileCount: 0,
     data() {
         return {
-            files: null,
-            messages: null,
+            uploadedFileCount: 0,
+            files: [],
+            messages: [],
             focused: false,
             progress: null
         }
@@ -148,7 +157,7 @@ export default {
                 }
             }
 
-            this.$emit('select', {originalEvent: event, files: files});
+            this.$emit('select', {originalEvent: event, files: this.files});
 
             if (this.fileLimit) {
                 this.checkFileLimit();
@@ -238,7 +247,7 @@ export default {
             }
         },
         clear() {
-            this.files = null;
+            this.files = [];
             this.messages = null;
             this.$emit('clear');
 
@@ -348,11 +357,7 @@ export default {
         },
         checkFileLimit() {
             if (this.isFileLimitExceeded()) {
-                this.msgs.push({
-                    severity: 'error',
-                    summary: this.invalidFileLimitMessageSummary.replace('{0}', this.fileLimit.toString()),
-                    detail: this.invalidFileLimitMessageDetail.replace('{0}', this.fileLimit.toString())
-                });
+                this.messages.push(this.invalidFileLimitMessage.replace('{0}', this.fileLimit.toString()))
             }
         }
     },
@@ -384,7 +389,7 @@ export default {
             }];
         },
         basicChooseButtonLabel() {
-            return this.auto ? this.chooseLabel : (this.hasFiles ? this.files[0].name : this.chooseLabel);
+            return this.auto ? this.chooseButtonLabel : (this.hasFiles ? this.files[0].name : this.chooseButtonLabel);
         },
         hasFiles() {
             return this.files && this.files.length > 0;
@@ -397,6 +402,15 @@ export default {
         },
         cancelDisabled() {
             return this.disabled || !this.hasFiles;
+        },
+        chooseButtonLabel() {
+            return this.chooseLabel || this.$primevue.config.locale.choose;
+        },
+        uploadButtonLabel() {
+            return this.uploadLabel || this.$primevue.config.locale.upload;
+        },
+        cancelButtonLabel() {
+            return this.cancelLabel || this.$primevue.config.locale.cancel;
         }
     },
     components: {

@@ -5,6 +5,7 @@
                 <h1>DeferredContent</h1>
                 <p>DeferredContent postpones the loading the content that is initially not in the viewport until it becomes visible on scroll.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -21,7 +22,7 @@
                 </div>
 
                 <DeferredContent @load="onDataLoad">
-                    <DataTable :value="products">
+                    <DataTable :value="products" responsiveLayout="scroll">
                         <Column field="code" header="Code"></Column>
                         <Column field="name" header="Name"></Column>
                         <Column field="category" header="Category"></Column>

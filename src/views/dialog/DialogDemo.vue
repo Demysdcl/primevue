@@ -5,13 +5,14 @@
                 <h1>Dialog</h1>
                 <p>Dialog is a container to display content in an overlay window.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
             <div class="card">
                 <h5>Basic</h5>
                 <Button label="Show" icon="pi pi-external-link" @click="openBasic" />
-                <Dialog header="Header" :visible.sync="displayBasic" :style="{width: '50vw'}">
+                <Dialog header="Header" v-model:visible="displayBasic" :style="{width: '50vw'}">
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                         Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                         Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
@@ -23,7 +24,7 @@
                 </Dialog>
 
                 <Button label="Long Content" icon="pi pi-external-link" @click="openBasic2" />
-                <Dialog header="Header" :visible.sync="displayBasic2" :style="{width: '50vw'}">
+                <Dialog header="Header" v-model:visible="displayBasic2" :style="{width: '50vw'}">
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
                         ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
                         culpa qui officia deserunt mollit anim id est laborum.</p>
@@ -46,7 +47,7 @@
 
                 <h5>Modal</h5>
                 <Button label="Show" icon="pi pi-external-link" @click="openModal" />
-                <Dialog header="Header" :visible.sync="displayModal" :style="{width: '50vw'}" :modal="true">
+                <Dialog header="Header" v-model:visible="displayModal" :style="{width: '50vw'}" :modal="true">
                     <p class="p-m-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
                         laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                         Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
@@ -56,9 +57,22 @@
                     </template>
                 </Dialog>
 
+                <h5>Responsive</h5>
+                <Button label="Show" icon="pi pi-external-link" @click="openResponsive" />
+                <Dialog header="Header" v-model:visible="displayResponsive" :breakpoints="{'960px': '75vw'}" :style="{width: '50vw'}">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <template #footer>
+                        <Button label="No" icon="pi pi-times" @click="closeResponsive" class="p-button-text"/>
+                        <Button label="Yes" icon="pi pi-check" @click="closeResponsive" autofocus />
+                    </template>
+                </Dialog>
+
                 <h5>Confirmation</h5>
                 <Button label="Confirm" icon="pi pi-external-link" @click="openConfirmation" />
-                <Dialog header="Confirmation" :visible.sync="displayConfirmation" :style="{width: '350px'}" :modal="true">
+                <Dialog header="Confirmation" v-model:visible="displayConfirmation" :style="{width: '350px'}" :modal="true">
                     <div class="confirmation-content">
                         <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem" />
                         <span>Are you sure you want to proceed?</span>
@@ -71,7 +85,7 @@
 
                 <h5>Maximizable</h5>
                 <Button label="Show" icon="pi pi-external-link" @click="openMaximizable" />
-                <Dialog header="Header" :visible.sync="displayMaximizable" :style="{width: '50vw'}" :maximizable="true" :modal="true">
+                <Dialog header="Header" v-model:visible="displayMaximizable" :style="{width: '50vw'}" :maximizable="true" :modal="true">
                     <p class="p-m-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
                         laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                         Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
@@ -99,7 +113,7 @@
                     </div>
                 </div>
 
-                <Dialog header="Header" :visible.sync="displayPosition" :style="{width: '50vw'}" :position="position" :modal="true">
+                <Dialog header="Header" v-model:visible="displayPosition" :style="{width: '50vw'}" :position="position" :modal="true">
                    <p class="p-m-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
                         laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                         Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
@@ -124,6 +138,7 @@ export default {
             displayBasic: false,
             displayBasic2: false,
             displayModal: false,
+            displayResponsive: false,
             displayConfirmation: false,
             displayMaximizable: false,
             displayPosition: false,
@@ -142,6 +157,12 @@ export default {
         },
         closeBasic2() {
             this.displayBasic2 = false;
+        },
+        openResponsive() {
+            this.displayResponsive = true;
+        },
+        closeResponsive() {
+            this.displayResponsive = false;
         },
         openModal() {
             this.displayModal = true;

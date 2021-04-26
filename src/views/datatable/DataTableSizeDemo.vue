@@ -5,11 +5,12 @@
 				<h1>DataTable <span>Size</span></h1>
 				<p>In addition to a regular table, alternatives with alternative sizes are available.</p>
 			</div>
+            <AppDemoActions />
 		</div>
 
 		<div class="content-section implementation">
             <div class="card">
-                <DataTable :value="products" class="p-datatable-sm">
+                <DataTable :value="products" class="p-datatable-sm" responsiveLayout="scroll">
                     <template #header>
                         Small Table
                     </template>
@@ -21,7 +22,7 @@
             </div>
 
             <div class="card">
-                <DataTable :value="products">
+                <DataTable :value="products" responsiveLayout="scroll">
                     <template #header>
                         Normal Table
                     </template>
@@ -33,7 +34,7 @@
             </div>
 
             <div class="card">
-                <DataTable :value="products" class="p-datatable-lg">
+                <DataTable :value="products" class="p-datatable-lg" responsiveLayout="scroll">
                     <template #header>
                         Large Table
                     </template>
@@ -45,45 +46,64 @@
             </div>
 		</div>
 
-        <div class="content-section documentation">
-            <TabView>
-                <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;DataTable :value="products" class="p-datatable-sm"&gt;
-    &lt;template #header&gt;
-        Small Table
-    &lt;/template&gt;
-    &lt;Column field="code" header="Code"&gt;&lt;/Column&gt;
-    &lt;Column field="name" header="Name"&gt;&lt;/Column&gt;
-    &lt;Column field="category" header="Category"&gt;&lt;/Column&gt;
-    &lt;Column field="quantity" header="Quantity"&gt;&lt;/Column&gt;
-&lt;/DataTable&gt;
-
-&lt;DataTable :value="products"&gt;
-    &lt;template #header&gt;
-        Normal Table
-    &lt;/template&gt;
-    &lt;Column field="code" header="Code"&gt;&lt;/Column&gt;
-    &lt;Column field="name" header="Name"&gt;&lt;/Column&gt;
-    &lt;Column field="category" header="Category"&gt;&lt;/Column&gt;
-    &lt;Column field="quantity" header="Quantity"&gt;&lt;/Column&gt;
-&lt;/DataTable&gt;
-
-&lt;DataTable :value="products" class="p-datatable-lg"&gt;
-    &lt;template #header&gt;
-        Large Table
-    &lt;/template&gt;
-    &lt;Column field="code" header="Code"&gt;&lt;/Column&gt;
-    &lt;Column field="name" header="Name"&gt;&lt;/Column&gt;
-    &lt;Column field="category" header="Category"&gt;&lt;/Column&gt;
-    &lt;Column field="quantity" header="Quantity"&gt;&lt;/Column&gt;
-&lt;/DataTable&gt;
+        <AppDoc name="DataTableSizeDemo" :sources="sources" :service="['ProductService']" :data="['products-small']" github="datatable/DataTableSizeDemo.vue" />
+    
+	</div>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
+<script>
 import ProductService from '../../service/ProductService';
+
+export default {
+    data() {
+        return {
+            products: null,
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+	<div>
+        <div class="card">
+            <DataTable :value="products" class="p-datatable-sm" responsiveLayout="scroll">
+                <template #header>
+                    Small Table
+                </template>
+                <Column field="code" header="Code"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column field="category" header="Category"></Column>
+                <Column field="quantity" header="Quantity"></Column>
+            </DataTable>
+        </div>
+
+        <div class="card">
+            <DataTable :value="products" responsiveLayout="scroll">
+                <template #header>
+                    Normal Table
+                </template>
+                <Column field="code" header="Code"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column field="category" header="Category"></Column>
+                <Column field="quantity" header="Quantity"></Column>
+            </DataTable>
+        </div>
+
+        <div class="card">
+            <DataTable :value="products" class="p-datatable-lg" responsiveLayout="scroll">
+                <template #header>
+                    Large Table
+                </template>
+                <Column field="code" header="Code"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column field="category" header="Category"></Column>
+                <Column field="quantity" header="Quantity"></Column>
+            </DataTable>
+        </div>
+	</div>
+</template>
+
+<script>
+import ProductService from './service/ProductService';
 
 export default {
     data() {
@@ -99,20 +119,72 @@ export default {
         this.productService.getProductsSmall().then(data => this.products = data);
     }
 }
-</CodeHighlight>
-                </TabPanel>
-            </TabView>
+<\\/script>                  
+`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+	<div>
+        <div class="card">
+            <DataTable :value="products" class="p-datatable-sm" responsiveLayout="scroll">
+                <template #header>
+                    Small Table
+                </template>
+                <Column field="code" header="Code"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column field="category" header="Category"></Column>
+                <Column field="quantity" header="Quantity"></Column>
+            </DataTable>
+        </div>
+
+        <div class="card">
+            <DataTable :value="products" responsiveLayout="scroll">
+                <template #header>
+                    Normal Table
+                </template>
+                <Column field="code" header="Code"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column field="category" header="Category"></Column>
+                <Column field="quantity" header="Quantity"></Column>
+            </DataTable>
+        </div>
+
+        <div class="card">
+            <DataTable :value="products" class="p-datatable-lg" responsiveLayout="scroll">
+                <template #header>
+                    Large Table
+                </template>
+                <Column field="code" header="Code"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column field="category" header="Category"></Column>
+                <Column field="quantity" header="Quantity"></Column>
+            </DataTable>
         </div>
 	</div>
 </template>
 
 <script>
-import ProductService from '../../service/ProductService';
+import { ref, onMounted } from 'vue';
+import ProductService from './service/ProductService';
 
 export default {
-    data() {
-        return {
-            products: null
+    setup() {
+        onMounted(() => {
+            productService.value.getProductsSmall().then(data => products.value = data);
+        })
+
+        const products = ref();
+        const productService = ref(new ProductService());
+
+        return { products }
+    }
+}
+<\\/script>                  
+`
+                }
+            }
         }
     },
     productService: null,

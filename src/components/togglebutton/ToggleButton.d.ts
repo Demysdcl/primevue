@@ -1,12 +1,15 @@
-import Vue from 'vue';
-
-export declare class ToggleButton extends Vue {
+interface ToggleButtonProps {
     value?: boolean;
     onIcon?: string;
     offIcon?: string;
     onLabel?: string;
     offLabel?: string;
     iconPos?: string;
-    ariaLabelledBy?: string;
+}
+
+declare class ToggleButton {
+    $props: ToggleButtonProps;
     $emit(eventName: string, event: Event): this;
 }
+
+export default ToggleButton;

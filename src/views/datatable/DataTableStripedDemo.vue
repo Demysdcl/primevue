@@ -3,13 +3,14 @@
 		<div class="content-section introduction">
 			<div class="feature-intro">
 				<h1>DataTable <span>Striped Rows</span></h1>
-				<p>Adding <i>p-datatable-striped</i> displays striped rows.</p>
+				<p>Adding <i>stripedRows</i> displays rows with alternating colors.</p>
 			</div>
+            <AppDemoActions />
 		</div>
 
 		<div class="content-section implementation">
             <div class="card">
-                <DataTable :value="products" class="p-datatable-striped">
+                <DataTable :value="products" stripedRows responsiveLayout="scroll">
                     <Column field="code" header="Code"></Column>
                     <Column field="name" header="Name"></Column>
                     <Column field="category" header="Category"></Column>
@@ -18,22 +19,35 @@
             </div>
 		</div>
 
-        <div class="content-section documentation">
-            <TabView>
-                <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;DataTable :value="products" class="p-datatable-striped"&gt;
-    &lt;Column field="code" header="Code"&gt;&lt;/Column&gt;
-    &lt;Column field="name" header="Name"&gt;&lt;/Column&gt;
-    &lt;Column field="category" header="Category"&gt;&lt;/Column&gt;
-    &lt;Column field="quantity" header="Quantity"&gt;&lt;/Column&gt;
-&lt;/DataTable&gt;
-</template>
-</CodeHighlight>
+        <AppDoc name="DataTableStripedDemo" :sources="sources" :service="['ProductService']" :data="['products-small']" github="datatable/DataTableStripedDemo.vue" />
 
-<CodeHighlight lang="javascript">
+	</div>
+</template>
+
+<script>
 import ProductService from '../../service/ProductService';
+
+export default {
+    data() {
+        return {
+            products: null,
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+	<div>
+        <DataTable :value="products" stripedRows responsiveLayout="scroll">
+            <Column field="code" header="Code"></Column>
+            <Column field="name" header="Name"></Column>
+            <Column field="category" header="Category"></Column>
+            <Column field="quantity" header="Quantity"></Column>
+        </DataTable>
+	</div>
+</template>
+
+<script>
+import ProductService from './service/ProductService';
 
 export default {
     data() {
@@ -49,20 +63,43 @@ export default {
         this.productService.getProductsSmall().then(data => this.products = data);
     }
 }
-</CodeHighlight>
-                </TabPanel>
-            </TabView>
-        </div>
+<\\/script>                   
+`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+	<div>
+        <DataTable :value="products" stripedRows responsiveLayout="scroll">
+            <Column field="code" header="Code"></Column>
+            <Column field="name" header="Name"></Column>
+            <Column field="category" header="Category"></Column>
+            <Column field="quantity" header="Quantity"></Column>
+        </DataTable>
 	</div>
 </template>
 
 <script>
-import ProductService from '../../service/ProductService';
+import { ref, onMounted } from 'vue';
+import ProductService from './service/ProductService';
 
 export default {
-    data() {
-        return {
-            products: null
+    setup() {
+        onMounted(() => {
+            productService.value.getProductsSmall().then(data => products.value = data);
+        })
+
+        const products = ref();
+        const productService = ref(new ProductService());
+
+        return { products }
+    }
+}
+<\\/script>                   
+`
+                }
+            }
         }
     },
     productService: null,

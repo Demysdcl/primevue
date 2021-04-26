@@ -5,6 +5,7 @@
                 <h1>Tree <span>Lazy</span></h1>
                 <p>Lazy loading is handy when dealing with huge datasets. This example imitates a lazy loading case with timeouts.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -13,17 +14,30 @@
             </div>
         </div>
 
-        <div class="content-section documentation">
-            <TabView>
-                <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;Tree :value="nodes" @node-expand="onNodeExpand" :loading="loading"&gt;&lt;/Tree&gt;
+        <AppDoc name="TreeLazyDemo" :sources="sources" :service="['NodeService']" :data="['treenodes']" github="tree/TreeLazyDemo.vue" />
+    </div>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
+<script>
 import NodeService from '../../service/NodeService';
+
+export default {
+    data() {
+        return {
+            loading: false,
+            nodes: null,
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+    <div>
+        <Tree :value="nodes" @nodeExpand="onNodeExpand" :loading="loading"></Tree>
+    </div>                   
+</template>
+
+<script>
+import NodeService from './service/NodeService';
 
 export default {
     data() {
@@ -53,7 +67,7 @@ export default {
                     let _node = {...node};
                     _node.children = [];
 
-                    for (let i = 0; i &lt; 3; i++) {
+                    for (let i = 0; i < 3; i++) {
                         _node.children.push({
                             key: node.key + '-' + i,
                             label: 'Lazy ' + node.label + '-' + i
@@ -87,21 +101,85 @@ export default {
         }
     }
 }
-</CodeHighlight>
-                </TabPanel>
-            </TabView>
-        </div>
-    </div>
+<\\/script>
+`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+    <div>
+        <Tree :value="nodes" @nodeExpand="onNodeExpand" :loading="loading"></Tree>
+    </div>                   
 </template>
 
 <script>
-import NodeService from '../../service/NodeService';
+import { ref, onMounted } from 'vue';
+import NodeService from './service/NodeService';
 
 export default {
-    data() {
-        return {
-            loading: false,
-            nodes: null
+    setup() {
+        onMounted(() => {
+            loading.value = true;
+
+            setTimeout(() => {
+                nodes.value = initateNodes();
+                loading.value = false;
+            }, 2000);
+        })
+
+        const loading = ref(false);
+        const nodes = ref(null);
+        const nodeService = ref(new NodeService());
+        const onNodeExpand = (node) => {
+            if (!node.children) {
+                loading.value = true;
+
+                setTimeout(() => {
+                    let _node = {...node};
+                    _node.children = [];
+
+                    for (let i = 0; i < 3; i++) {
+                        _node.children.push({
+                            key: node.key + '-' + i,
+                            label: 'Lazy ' + node.label + '-' + i
+                        });
+                    }
+
+                    let _nodes = {...nodes.value}
+                    _nodes[parseInt(node.key, 10)] = _node;
+
+                    nodes.value = _nodes;
+                    loading.value = false;
+                }, 500);
+            }
+        };
+
+        const initateNodes = () => {
+            return [{
+                key: '0',
+                label: 'Node 0',
+                leaf: false
+            },
+            {
+                key: '1',
+                label: 'Node 1',
+                leaf: false
+            },
+            {
+                key: '2',
+                label: 'Node 2',
+                leaf: false
+            }];
+        }
+
+        return { loading, nodes, nodeService, onNodeExpand, initateNodes }
+    }
+}
+<\\/script>
+`
+                }
+            }
         }
     },
     nodeService: null,

@@ -22,11 +22,16 @@
 
             <p><a href="https://www.primefaces.org/designer/primevue">Designer</a> is the ultimate tool to create your own PrimeVue experience powered by a SASS based theme engine
                 with 500+ variables and a Visual Designer. PrimeVue only ships the generated CSS of <b>Material</b>, <b>Bootstrap</b>, <b>Saga</b>, <b>Vela</b>, <b>Arya</b> and legacy themes whereas Designer provides
-                full access to the whole SASS structure and the variables of these pre-built themes for easier customization.</p>
+                full access to the whole SASS structure and the variables of these pre-built themes for easier customization. In addition, designer provides exclusive premium themes to subscribers including Soho, Viva, Mira and Nano that are not available in core PrimeVue distribution.</p>
 
             <p>Whether you have your own style guide or just need a custom theme, Designer API is the right tool to design and bring them to existence.</p>
 
             <p>Visit <a href="https://www.primefaces.org/designer/primevue">Designer API HomePage</a> for more information and live demos.</p>
+
+            <div class="video-container p-text-center">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/7SqoSutntcE" frameborder="0" allowfullscreen></iframe>
+            </div>
+
             <a href="http://www.primefaces.org/designer/primevue" class="designer-image">
                 <img alt="PrimeVue Designer" src="../../assets/images/primevue-designer.jpg" style="width: 100%" />
             </a>
@@ -36,36 +41,40 @@
                 is easy as configuring the font size of your document. Code below sets the scale of the components based on 16px. If you reqire bigger or smaller components, just
                 change this variable and components will scale accordingly.</p>
 
-<CodeHighlight lang="css">
+<pre v-code.css><code>
 html {
     font-size: 16px;
 }
-</CodeHighlight>
+
+</code></pre>
 
             <p>Some commonly used components such as inputs, buttons and datatable also provide per component scaling with special classes. Components with specific scaling options
                 are documented in their own documentation.</p>
-<CodeHighlight>
+<pre v-code><code>
 &lt;InputText type="text" class="p-inputtext-sm" /&gt;
 &lt;Button label="Button" class="p-button-lg" /&gt;
-</CodeHighlight>
+
+</code></pre>
 
             <h5>Local Styling</h5>
             <p>Theming styles the components globally, in case you required to change the style of a certain component for a specific use case use the class property and override the defaults.
                 Example below changes the background of the panel. Note that this is only for local styling, if you require to change the background color of all the panels, a custom theme is a far better choice.</p>
-<CodeHighlight>
+<pre v-code><code>
 &lt;Panel header="Custom Header" class="dark-panel"/&gt;
-</CodeHighlight>
 
-<CodeHighlight>
+</code></pre>
+
+<pre v-code><code>
 &lt;style lang="scss" scoped&gt;
-/deep/ .dark-panel.p-panel {
+::v-deep(.dark-panel.p-panel) {
     .p-panel-titlebar {
         background: #212121;
     }
 
 }
 &lt;/style&gt;
-</CodeHighlight>
+
+</code></pre>
 
             <h5>Utility Classes</h5>
             <p>A couple of utility classes are provided as a solution to common requirements.</p>
@@ -99,13 +108,13 @@ html {
                                 <td>p-link</td>
                                 <td>Renders a button as a link.</td>
                             </tr>
-                            <tr>
+                             <tr>
                                 <td>p-error</td>
-                                <td>Applies the invalid theme color to a text.</td>
+                                <td>Indicates an error text.</td>
                             </tr>
                             <tr>
                                 <td>p-invalid</td>
-                                <td>Alias to p-error.</td>
+                                <td>Styles an form element as invalid.</td>
                             </tr>
                             <tr>
                                 <td>p-text-secondary</td>

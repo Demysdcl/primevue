@@ -1,7 +1,5 @@
-import Vue from 'vue';
-
-export declare class Slider extends Vue {
-    value?: number | any[];
+interface SliderProps {
+    modelValue?: number | any[];
     min?: number;
     max?: number;
     orientation?: string;
@@ -9,7 +7,12 @@ export declare class Slider extends Vue {
     range?: boolean;
     disabled?: boolean;
     ariaLabelledBy?: string;
-    $emit(eventName: 'input', value: any): this;
+}
+
+declare class Slider {
+    $props: SliderProps;
     $emit(eventName: 'change', value: any): this;
     $emit(eventName: 'slideend', e: {originalEvent: Event, values: any}): this;
 }
+
+export default Slider;

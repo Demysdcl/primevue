@@ -9,7 +9,7 @@
 
         <div class="content-section implementation">
             <div class="card">
-                <Galleria ref="galleria" :value="images" :activeIndex.sync="activeIndex" :numVisible="5" style="max-width: 640px;" :class="galleriaClass"
+                <Galleria ref="galleria" :value="images" v-model:activeIndex="activeIndex" :numVisible="5" containerStyle="max-width: 640px" :containerClass="galleriaClass"
                     :showThumbnails="showThumbnails" :showItemNavigators="true" :showItemNavigatorsOnHover="true"
                     :circular="true" :autoPlay="true" :transitionInterval="3000">
                     <template #item="slotProps">
@@ -38,9 +38,8 @@
         <div class="content-section documentation">
             <TabView>
                 <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;Galleria ref="galleria" :value="images" :activeIndex.sync="activeIndex" :numVisible="5" style="max-width: 640px;" :class="galleriaClass"
+<pre v-code><code><template v-pre>
+&lt;Galleria ref="galleria" :value="images" v-model:activeIndex="activeIndex" :numVisible="5" containerStyle="max-width: 640px" :containerClass="galleriaClass"
     :showThumbnails="showThumbnails" :showItemNavigators="true" :showItemNavigatorsOnHover="true"
     :circular="true" :autoPlay="true" :transitionInterval="3000"&gt;
     &lt;template #item="slotProps"&gt;
@@ -64,9 +63,9 @@
     &lt;/template&gt;
 &lt;/Galleria&gt;
 </template>
-</CodeHighlight>
+</code></pre>
 
-<CodeHighlight lang="javascript">
+<pre v-code.script><code>
 import PhotoService from '../../service/PhotoService';
 
 export default {
@@ -97,72 +96,72 @@ export default {
 		this.galleriaService.getImages().then(data => this.images = data);
     }
 }
-</CodeHighlight>
 
-<CodeHighlight lang="css">
-::v-deep {
-    .custom-galleria {
-        &.fullscreen {
-            display: flex;
-            flex-direction: column;
+</code></pre>
 
-            .p-galleria-content {
-                flex-grow: 1;
-                justify-content: center;
-            }
-        }
+<pre v-code.css><code>
+::v-deep(.custom-galleria) {
+    &.fullscreen {
+        display: flex;
+        flex-direction: column;
 
         .p-galleria-content {
-            position: relative;
+            flex-grow: 1;
+            justify-content: center;
         }
+    }
 
-        .p-galleria-thumbnail-wrapper {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-        }
+    .p-galleria-content {
+        position: relative;
+    }
 
-        .p-galleria-thumbnail-items-container {
-            width: 100%;
-        }
+    .p-galleria-thumbnail-wrapper {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
 
-        .custom-galleria-footer {
-            display: flex;
-            align-items: center;
-            background-color: rgba(0, 0, 0, .9);
+    .p-galleria-thumbnail-items-container {
+        width: 100%;
+    }
+
+    .custom-galleria-footer {
+        display: flex;
+        align-items: center;
+        background-color: rgba(0, 0, 0, .9);
+        color: #ffffff;
+
+        > button {
+            background-color: transparent;
             color: #ffffff;
+            border: 0 none;
+            border-radius: 0;
+            margin: .2rem 0;
 
-            > button {
-                background-color: transparent;
-                color: #ffffff;
-                border: 0 none;
-                border-radius: 0;
-                margin: .2rem 0;
+            &.fullscreen-button {
+                margin-left: auto;
+            }
 
-                &.fullscreen-button {
-                    margin-left: auto;
-                }
-
-                &:hover {
-                    background-color: rgba(255, 255, 255, 0.1);
-                }
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
             }
         }
+    }
 
-        .title-container {
-            > span {
-                font-size: .9rem;
-                padding-left: .829rem;
+    .title-container {
+        > span {
+            font-size: .9rem;
+            padding-left: .829rem;
 
-                &.title {
-                    font-weight: bold;
-                }
+            &.title {
+                font-weight: bold;
             }
         }
     }
 }
-</CodeHighlight>
+
+</code></pre>
                 </TabPanel>
             </TabView>
         </div>
@@ -259,64 +258,62 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::v-deep {
-    .custom-galleria {
-        &.fullscreen {
-            display: flex;
-            flex-direction: column;
-
-            .p-galleria-content {
-                flex-grow: 1;
-                justify-content: center;
-            }
-        }
+::v-deep(.custom-galleria) {
+    &.fullscreen {
+        display: flex;
+        flex-direction: column;
 
         .p-galleria-content {
-            position: relative;
+            flex-grow: 1;
+            justify-content: center;
         }
+    }
 
-        .p-galleria-thumbnail-wrapper {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-        }
+    .p-galleria-content {
+        position: relative;
+    }
 
-        .p-galleria-thumbnail-items-container {
-            width: 100%;
-        }
+    .p-galleria-thumbnail-wrapper {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
 
-        .custom-galleria-footer {
-            display: flex;
-            align-items: center;
-            background-color: rgba(0, 0, 0, .9);
+    .p-galleria-thumbnail-items-container {
+        width: 100%;
+    }
+
+    .custom-galleria-footer {
+        display: flex;
+        align-items: center;
+        background-color: rgba(0, 0, 0, .9);
+        color: #ffffff;
+
+        > button {
+            background-color: transparent;
             color: #ffffff;
+            border: 0 none;
+            border-radius: 0;
+            margin: .2rem 0;
 
-            > button {
-                background-color: transparent;
-                color: #ffffff;
-                border: 0 none;
-                border-radius: 0;
-                margin: .2rem 0;
+            &.fullscreen-button {
+                margin-left: auto;
+            }
 
-                &.fullscreen-button {
-                    margin-left: auto;
-                }
-
-                &:hover {
-                    background-color: rgba(255, 255, 255, 0.1);
-                }
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
             }
         }
+    }
 
-        .title-container {
-            > span {
-                font-size: .9rem;
-                padding-left: .829rem;
+    .title-container {
+        > span {
+            font-size: .9rem;
+            padding-left: .829rem;
 
-                &.title {
-                    font-weight: bold;
-                }
+            &.title {
+                font-weight: bold;
             }
         }
     }

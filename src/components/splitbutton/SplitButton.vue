@@ -1,7 +1,7 @@
 <template>
-    <div class="p-splitbutton p-component">
-        <PVSButton type="button" class="p-splitbutton-defaultbutton" :icon="icon" :label="label" @click="onClick" :disabled="disabled" :tabindex="tabindex" />
-        <PVSButton type="button" class="p-splitbutton-menubutton" icon="pi pi-chevron-down" @click="onDropdownButtonClick" :disabled="disabled"
+    <div :class="containerClass" :style="style">
+        <PVSButton type="button" class="p-splitbutton-defaultbutton" v-bind="$attrs" :icon="icon" :label="label" @click="onDefaultButtonClick" />
+        <PVSButton type="button" class="p-splitbutton-menubutton" icon="pi pi-chevron-down" @click="onDropdownButtonClick" :disabled="$attrs.disabled"
             aria-haspopup="true" :aria-controls="ariaId + '_overlay'"/>
         <PVSMenu :id="ariaId + '_overlay'" ref="menu" :model="model" :popup="true" :autoZIndex="autoZIndex"
             :baseZIndex="baseZIndex" :appendTo="appendTo" />
@@ -9,11 +9,12 @@
 </template>
 
 <script>
-import Button from '../button/Button';
-import Menu from '../menu/Menu';
-import UniqueComponentId from '../utils/UniqueComponentId';
+import Button from 'primevue/button';
+import Menu from 'primevue/menu';
+import {UniqueComponentId} from 'primevue/utils';
 
 export default {
+    inheritAttrs: false,
     props: {
         label: {
             type: String,
@@ -27,14 +28,6 @@ export default {
             type: Array,
             default: null
         },
-        disabled: {
-            type: Boolean,
-            default: false
-        },
-        tabindex: {
-            type: String,
-            default: null
-        },
         autoZIndex: {
             type: Boolean,
             default: true
@@ -45,20 +38,25 @@ export default {
         },
         appendTo: {
             type: String,
-            default: null
-        }
+            default: 'body'
+        },
+        class: null,
+        style: null
     },
     methods: {
-        onClick(event) {
-            this.$emit('click', event);
-        },
         onDropdownButtonClick() {
-            this.$refs.menu.toggle({currentTarget: this.$el, relativeAlign: this.appendTo == null});
+            this.$refs.menu.toggle({currentTarget: this.$el});
+        },
+        onDefaultButtonClick() {
+            this.$refs.menu.hide();
         }
     },
     computed: {
         ariaId() {
             return UniqueComponentId();
+        },
+        containerClass() {
+            return ['p-splitbutton p-component', this.class];
         }
     },
     components: {

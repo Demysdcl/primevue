@@ -1,17 +1,15 @@
 <template>
-	<div class="content-section documentation">
-		<TabView>
-			<TabPanel header="Documentation">
-				<h5>Import</h5>
-<CodeHighlight lang="javascript">
+	<AppDoc name="InplaceDemo" :sources="sources" :service="['ProductService']" :data="['products-small']" github="inplace/InplaceDemo.vue" >
+        <h5>Import</h5>
+<pre v-code.script><code>
 import Inplace from 'primevue/inplace';
-</CodeHighlight>
+
+</code></pre>
 
 				<h5>Getting Started</h5>
 				<p>Inplace requires <i>display</i> and <i>content</i> templates to define the content of each state.</p>
 
-<CodeHighlight>
-<template v-pre>
+<pre v-code><code><template v-pre>
 &lt;Inplace&gt;
     &lt;template #display&gt;
         &lt;span class="pi pi-search" style="vertical-align: middle"&gt;&lt;/span&gt;
@@ -22,12 +20,11 @@ import Inplace from 'primevue/inplace';
     &lt;/template&gt;
 &lt;/Inplace&gt;
 </template>
-</CodeHighlight>
+</code></pre>
 
                 <h5>Closable</h5>
                 <p><i>closable</i> property is handy within forms as it enables to switch back to output mode after editing is completed using a button displayed next to the form field.</p>
-<CodeHighlight>
-<template v-pre>
+<pre v-code><code><template v-pre>
 &lt;Inplace :closable="true"&gt;
     &lt;template #display&gt;
         &#123;&#123;text || 'Click to Edit'&#125;&#125;
@@ -37,12 +34,11 @@ import Inplace from 'primevue/inplace';
     &lt;/template&gt;
 &lt;/Inplace&gt;
 </template>
-</CodeHighlight>
+</code></pre>
 
 				<h5>Lazy Data</h5>
 				<p>Inplace allows lazy loading content so that the content gets initialized after getting opened instead of on load. Here is an example that loads, data of a table if the user decides to open the inplace.</p>
-<CodeHighlight>
-<template v-pre>
+<pre v-code><code><template v-pre>
 &lt;Inplace @open="loadData"&gt;
     &lt;template #display&gt;
         View Data
@@ -57,9 +53,9 @@ import Inplace from 'primevue/inplace';
     &lt;/template&gt;
 &lt;/Inplace&gt;
 </template>
-</CodeHighlight>
+</code></pre>
 
-<CodeHighlight lang="javascript">
+<pre v-code.script><code>
 import CarService from '../../service/CarService';
 
 export default {
@@ -78,7 +74,8 @@ export default {
         }
     }
 }
-</CodeHighlight>
+
+</code></pre>
 
 				<h5>Properties</h5>
                 <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
@@ -134,6 +131,28 @@ export default {
 					</table>
 				</div>
 
+                <h5>Slots</h5>
+				<div class="doc-tablewrapper">
+                    <table class="doc-table">
+						<thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Parameters</th>
+                            </tr>
+						</thead>
+						<tbody>
+                            <tr>
+                                <td>display</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>content</td>
+                                <td>-</td>
+                            </tr>
+						</tbody>
+					</table>
+                </div>
+
 				<h5>Styling</h5>
 				<p>Following is the list of structural style classes, for theming classes visit <router-link to="/theming">theming</router-link> page.</p>
 				<div class="doc-tablewrapper">
@@ -163,54 +182,59 @@ export default {
 
 				<h5>Dependencies</h5>
 				<p>None.</p>
-			</TabPanel>
-
-			<TabPanel header="Source">
-				<a href="https://github.com/primefaces/primevue/tree/master/src/views/inplace" class="btn-viewsource" target="_blank" rel="noopener noreferrer">
-					<span>View on GitHub</span>
-				</a>
-<CodeHighlight>
-<template v-pre>
-&lt;h3&gt;Input&lt;/h3&gt;
-&lt;Inplace :closable="true"&gt;
-    &lt;template #display&gt;
-        &#123;&#123;text || 'Click to Edit'&#125;&#125;
-    &lt;/template&gt;
-    &lt;template #content&gt;
-        &lt;InputText v-model="text" autoFocus /&gt;
-    &lt;/template&gt;
-&lt;/Inplace&gt;
-
-&lt;h3&gt;Image&lt;/h3&gt;
-&lt;Inplace&gt;
-    &lt;template #display&gt;
-        &lt;span className="pi pi-search" style="vertical-align: middle"&gt;&lt;/span&gt;
-        &lt;span style="margin-left:.5rem; vertical-align: middle"&gt;View Picture&lt;/span&gt;
-    &lt;/template&gt;
-    &lt;template #content&gt;
-        &lt;img src="demo/images/nature/nature1.jpg" /&gt;
-    &lt;/template&gt;
-&lt;/Inplace&gt;
-
-&lt;h3&gt;Lazy Data&lt;/h3&gt;
-&lt;Inplace @open="loadData"&gt;
-    &lt;template #display&gt;
-        View Data
-    &lt;/template&gt;
-    &lt;template #content&gt;
-        &lt;DataTable :value="products"&gt;
-            &lt;Column field="code" header="Code"&gt;&lt;/Column&gt;
-            &lt;Column field="name" header="Name"&gt;&lt;/Column&gt;
-            &lt;Column field="category" header="Category"&gt;&lt;/Column&gt;
-            &lt;Column field="quantity" header="Quantity"&gt;&lt;/Column&gt;
-        &lt;/DataTable&gt;
-    &lt;/template&gt;
-&lt;/Inplace&gt;
+    </AppDoc>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
-import ProductService from '../../service/ProductService';
+<script>
+export default {
+    data() {
+        return {
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+    <div>
+        <h5>Input</h5>
+        <Inplace :closable="true">
+            <template #display>
+                {{text || 'Click to Edit'}}
+            </template>
+            <template #content>
+                <InputText v-model="text" autoFocus />
+            </template>
+        </Inplace>
+
+        <h5>Image</h5>
+        <Inplace>
+            <template #display>
+                <span class="pi pi-search" style="vertical-align: middle"></span>
+                <span style="margin-left:.5rem; vertical-align: middle">View Picture</span>
+            </template>
+            <template #content>
+                <img src="https://www.primefaces.org/wp-content/uploads/2020/12/primevue-min.png" width="200" />
+            </template>
+        </Inplace>
+
+        <h5>Lazy Data</h5>
+        <Inplace @open="loadData">
+            <template #display>
+                View Data
+            </template>
+            <template #content>
+                <DataTable :value="products" responsiveLayout="scroll" >
+                    <Column field="code" header="Code"></Column>
+                    <Column field="name" header="Name"></Column>
+                    <Column field="category" header="Category"></Column>
+                    <Column field="quantity" header="Quantity"></Column>
+                </DataTable>
+            </template>
+        </Inplace>
+    </div>
+</template>
+
+<script>
+import ProductService from './service/ProductService';
 
 export default {
      data() {
@@ -229,8 +253,72 @@ export default {
         }
     }
 }
-</CodeHighlight>
-			</TabPanel>
-		</TabView>
-	</div>
+<\\/script>
+`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+    <div>
+        <h5>Input</h5>
+        <Inplace :closable="true">
+            <template #display>
+                {{text || 'Click to Edit'}}
+            </template>
+            <template #content>
+                <InputText v-model="text" autoFocus />
+            </template>
+        </Inplace>
+
+        <h5>Image</h5>
+        <Inplace>
+            <template #display>
+                <span class="pi pi-search" style="vertical-align: middle"></span>
+                <span style="margin-left:.5rem; vertical-align: middle">View Picture</span>
+            </template>
+            <template #content>
+                <img src="https://www.primefaces.org/wp-content/uploads/2020/12/primevue-min.png" width="200" />
+            </template>
+        </Inplace>
+
+        <h5>Lazy Data</h5>
+        <Inplace @open="loadData">
+            <template #display>
+                View Data
+            </template>
+            <template #content>
+                <DataTable :value="products" responsiveLayout="scroll" >
+                    <Column field="code" header="Code"></Column>
+                    <Column field="name" header="Name"></Column>
+                    <Column field="category" header="Category"></Column>
+                    <Column field="quantity" header="Quantity"></Column>
+                </DataTable>
+            </template>
+        </Inplace>
+    </div>
 </template>
+
+<script>
+import { ref } from 'vue';
+import ProductService from './service/ProductService';
+
+export default {
+    setup() {
+        const productService = ref(new ProductService());
+        const text = ref(null);
+        const products = ref(null);
+        const loadData = () => {
+            productService.value.getProductsSmall().then(data => products.value = data);
+        }
+
+        return { productService, text, products, loadData }
+    }
+}
+<\\/script>`
+                }
+            }
+        }
+    }
+}
+</script>

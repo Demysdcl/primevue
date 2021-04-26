@@ -1,9 +1,9 @@
 <template>
-   <div class="p-checkbox p-component" @click="onClick($event)">
+   <div :class="containerClass" @click="onClick($event)" :style="style">
        <div class="p-hidden-accessible">
-           <input ref="input" type="checkbox" :checked="value === true" v-bind="$attrs" @focus="onFocus()" @blur="onBlur()" :aria-labelledby="ariaLabelledBy">
+           <input ref="input" type="checkbox" :checked="modelValue === true" v-bind="$attrs" @focus="onFocus()" @blur="onBlur()">
         </div>
-        <div ref="box" :class="['p-checkbox-box', {'p-highlight': (value != null), 'p-disabled': $attrs.disabled, 'p-focus': focused}]" role="checkbox" :aria-checked="value === true">
+        <div ref="box" :class="['p-checkbox-box', {'p-highlight': (modelValue != null), 'p-disabled': $attrs.disabled, 'p-focus': focused}]" role="checkbox" :aria-checked="modelValue === true">
             <span :class="['p-checkbox-icon', icon]"></span>
         </div>
     </div>
@@ -12,9 +12,11 @@
 <script>
 export default {
     inheritAttrs: false,
+    emits: ['click', 'update:modelValue', 'change'],
     props: {
-        value: null,
-        ariaLabelledBy: String
+        modelValue: null,
+        class: null,
+        style: null
     },
     data() {
         return {
@@ -26,7 +28,7 @@ export default {
             if (!this.$attrs.disabled) {
                 let newValue;
 
-                switch (this.value) {
+                switch (this.modelValue) {
                     case true:
                         newValue = false;
                     break;
@@ -41,24 +43,22 @@ export default {
                 }
 
                 this.$emit('click', event);
-                this.$emit('input', newValue);
+                this.$emit('update:modelValue', newValue);
                 this.$emit('change', event);
                 this.$refs.input.focus();
             }
         },
-        onFocus(event) {
+        onFocus() {
             this.focused = true;
-            this.$emit('focus', event);
         },
-        onBlur(event) {
+        onBlur() {
             this.focused = false;
-            this.$emit('blur', event);
         }
     },
     computed: {
         icon() {
             let icon;
-            switch (this.value) {
+            switch (this.modelValue) {
                 case true:
                     icon = 'pi pi-check';
                 break;
@@ -73,6 +73,9 @@ export default {
             }
 
             return icon;
+        },
+        containerClass() {
+            return ['p-checkbox p-component', this.class, {'p-checkbox-checked': this.modelValue === true, 'p-checkbox-disabled': this.$attrs.disabled, 'p-checkbox-focused': this.focused}];
         }
     }
 }

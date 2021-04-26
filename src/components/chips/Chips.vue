@@ -1,15 +1,15 @@
 <template>
-    <div :class="containerClass">
+    <div :class="containerClass" :style="style">
         <ul :class="['p-inputtext p-chips-multiple-container', {'p-disabled': $attrs.disabled, 'p-focus': focused}]" @click="onWrapperClick()">
-            <li v-for="(val,i) of value" :key="`${i}_${val}`" class="p-chips-token">
+            <li v-for="(val,i) of modelValue" :key="`${i}_${val}`" class="p-chips-token">
                 <slot name="chip" :value="val">
                     <span class="p-chips-token-label">{{val}}</span>
                     <span class="p-chips-token-icon pi pi-times-circle" @click="removeItem($event, i)"></span>
                 </slot>
             </li>
             <li class="p-chips-input-token">
-                <input ref="input" type="text" @focus="onFocus($event)" @blur="onBlur($event)" :placeholder="placeholder" @input="inputValue = $event.target.value"
-                    @keydown="onKeyDown($event)" @paste="onPaste($event)" :disabled="$attrs.disabled || maxedOut" :aria-labelledby="ariaLabelledBy">
+                <input ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)" @input="onInput" @keydown="onKeyDown($event)" @paste="onPaste($event)"
+                     :disabled="$attrs.disabled || maxedOut">
             </li>
         </ul>
     </div>
@@ -17,8 +17,10 @@
 
 <script>
 export default {
+    inheritAttrs: false,
+    emits: ['update:modelValue', 'add', 'remove'],
     props: {
-        value: {
+        modelValue: {
             type: Array,
             default: null
         },
@@ -30,10 +32,6 @@ export default {
             type: String,
             default: null
         },
-        ariaLabelledBy: {
-            type: String,
-            default: null
-        },
         addOnBlur: {
             type: Boolean,
             default: null
@@ -42,10 +40,8 @@ export default {
             type: Boolean,
             default: true
         },
-        placeholder: {
-            type: String,
-            default: null
-        }
+        class: null,
+        style: null
     },
     data() {
         return {
@@ -57,16 +53,17 @@ export default {
         onWrapperClick() {
             this.$refs.input.focus();
         },
-        onFocus(event) {
+        onInput(event) {
+            this.inputValue = event.target.value;
+        },
+        onFocus() {
             this.focused = true;
-            this.$emit('focus', event);
         },
         onBlur(event) {
             this.focused = false;
             if (this.addOnBlur) {
                 this.addItem(event, event.target.value, false);
             }
-            this.$emit('blur', event);
         },
         onKeyDown(event) {
             const inputValue = event.target.value;
@@ -74,8 +71,8 @@ export default {
             switch(event.which) {
                 //backspace
                 case 8:
-                    if (inputValue.length === 0 && this.value && this.value.length > 0) {
-                        this.removeItem(event, this.value.length - 1);
+                    if (inputValue.length === 0 && this.modelValue && this.modelValue.length > 0) {
+                        this.removeItem(event, this.modelValue.length - 1);
                     }
                 break;
 
@@ -99,7 +96,7 @@ export default {
             if (this.separator) {
                 let pastedData = (event.clipboardData || window['clipboardData']).getData('Text');
                 if (pastedData) {
-                    let value = this.value || [];
+                    let value = this.modelValue || [];
                     let pastedValues = pastedData.split(this.separator);
                     pastedValues = pastedValues.filter(val => (this.allowDuplicate || value.indexOf(val) === -1));
                     value = [...value, ...pastedValues];
@@ -108,7 +105,7 @@ export default {
             }
         },
         updateModel(event, value, preventDefault) {
-            this.$emit('input', value);
+            this.$emit('update:modelValue', value);
             this.$emit('add', {
                 originalEvent: event,
                 value: value
@@ -122,7 +119,7 @@ export default {
         },
         addItem(event, item, preventDefault) {
             if (item && item.trim().length) {
-                let value = this.value ? [...this.value]: [];
+                let value = this.modelValue ? [...this.modelValue]: [];
                 if (this.allowDuplicate || value.indexOf(item) === -1) {
                     value.push(item);
                     this.updateModel(event, value, preventDefault);
@@ -134,9 +131,9 @@ export default {
                 return;
             }
 
-            let values = [...this.value];
+            let values = [...this.modelValue];
             const removedItem = values.splice(index, 1);
-            this.$emit('input', values);
+            this.$emit('update:modelValue', values);
             this.$emit('remove', {
                 originalEvent: event,
                 value: removedItem
@@ -145,11 +142,11 @@ export default {
     },
     computed: {
         maxedOut() {
-            return this.max && this.value && this.max === this.value.length;
+            return this.max && this.modelValue && this.max === this.modelValue.length;
         },
         containerClass() {
-            return ['p-chips p-component', {
-                'p-inputwrapper-filled': ((this.value && this.value.length) || (this.inputValue && this.inputValue.length)),
+            return ['p-chips p-component p-inputwrapper', this.class, {
+                'p-inputwrapper-filled': ((this.modelValue && this.modelValue.length) || (this.inputValue && this.inputValue.length)),
                 'p-inputwrapper-focus': this.focused
             }];
         }
@@ -170,6 +167,7 @@ export default {
     overflow: hidden;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .p-chips-token {

@@ -1,12 +1,17 @@
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 
-export declare class OverlayPanel extends Vue {
+interface OverlayPanelProps {
     ismissable?: boolean;
     showCloseIcon?: boolean;
     appendTo?: string;
     baseZIndex?: number;
     autoZIndex?: boolean;
     ariaCloseLabel?: string;
+    breakpoints?: {[key: string]: string};
+}
+
+declare class OverlayPanel {
+    $props: OverlayPanelProps;
     toggle(event: Event): void;
     show(event: Event, target?: any): void;
     hide(): void;
@@ -14,3 +19,5 @@ export declare class OverlayPanel extends Vue {
         '': VNode[];
     }
 }
+
+export default OverlayPanel;

@@ -93,15 +93,6 @@ export default class DomHandler {
         };
     }
 
-    static generateZIndex() {
-        this.zindex = this.zindex||999;
-        return ++this.zindex;
-    }
-
-    static getCurrentZIndex() {
-        return this.zindex;
-    }
-
     static index(element) {
         let children = element.parentNode.childNodes;
         let num = 0;
@@ -143,10 +134,14 @@ export default class DomHandler {
     }
 
     static hasClass(element, className) {
-        if (element.classList)
-            return element.classList.contains(className);
-        else
-            return new RegExp('(^| )' + className + '( |$)', 'gi').test(element.className);
+        if (element) {
+            if (element.classList)
+                return element.classList.contains(className);
+            else
+                return new RegExp('(^| )' + className + '( |$)', 'gi').test(element.className);
+        }
+        
+        return false;
     }
 
     static find(element, selector) {
@@ -245,6 +240,42 @@ export default class DomHandler {
         element.style.left = left + 'px';
     }
 
+    static getParents(element, parents = []) {
+        return element['parentNode'] === null ? parents : this.getParents(element.parentNode, parents.concat([element.parentNode]));
+    }
+
+    static getScrollableParents(element) {
+        let scrollableParents = [];
+
+        if (element) {
+            let parents = this.getParents(element);
+            const overflowRegex = /(auto|scroll)/;
+            const overflowCheck = (node) => {
+                let styleDeclaration = window['getComputedStyle'](node, null);
+                return overflowRegex.test(styleDeclaration.getPropertyValue('overflow')) || overflowRegex.test(styleDeclaration.getPropertyValue('overflowX')) || overflowRegex.test(styleDeclaration.getPropertyValue('overflowY'));
+            };
+
+            for (let parent of parents) {
+                let scrollSelectors = parent.nodeType === 1 && parent.dataset['scrollselectors'];
+                if (scrollSelectors) {
+                    let selectors = scrollSelectors.split(',');
+                    for (let selector of selectors) {
+                        let el = this.findSingle(parent, selector);
+                        if (el && overflowCheck(el)) {
+                            scrollableParents.push(el);
+                        }
+                    }
+                }
+
+                if (parent.nodeType !== 9 && overflowCheck(parent)) {
+                    scrollableParents.push(parent);
+                }
+            }
+        }
+
+        return scrollableParents;
+    }
+
     static getHiddenElementOuterHeight(element) {
         element.style.visibility = 'hidden';
         element.style.display = 'block';
@@ -320,8 +351,8 @@ export default class DomHandler {
     static appendChild(element, target) {
         if(this.isElement(target))
             target.appendChild(element);
-        else if(target.el && target.el.nativeElement)
-            target.el.nativeElement.appendChild(element);
+        else if(target.el && target.elElement)
+            target.elElement.appendChild(element);
         else
             throw new Error('Cannot append ' + target + ' to ' + element);
     }
@@ -423,10 +454,10 @@ export default class DomHandler {
     }
 
     static getFocusableElements(element) {
-        let focusableElements = DomHandler.find(element, `button:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]), 
-                [href][clientHeight][clientWidth]:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]), 
-                input:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]), select:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]), 
-                textarea:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]), [tabIndex]:not([tabIndex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]), 
+        let focusableElements = DomHandler.find(element, `button:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]),
+                [href][clientHeight][clientWidth]:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]),
+                input:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]), select:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]),
+                textarea:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]), [tabIndex]:not([tabIndex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden]),
                 [contenteditable]:not([tabIndex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])`
             );
 
@@ -448,5 +479,16 @@ export default class DomHandler {
                 this.hasClass(element, 'p-button') || this.hasClass(element.parentElement, 'p-button') ||
                 this.hasClass(element.parentElement, 'p-checkbox') || this.hasClass(element.parentElement, 'p-radiobutton')
         );
+    }
+
+    static applyStyle(element, style) {
+        if (typeof style === 'string') {
+            element.style.cssText = this.style;
+        }
+        else {
+            for (let prop in this.style) {
+                element.style[prop] = style[prop];
+            }
+        }
     }
 }

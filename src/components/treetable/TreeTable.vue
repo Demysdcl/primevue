@@ -1,20 +1,19 @@
 <template>
-    <div :class="containerClass">
-        <slot></slot>
+    <div :class="containerClass" data-scrollselectors=".p-treetable-scrollable-body">
         <div class="p-treetable-loading" v-if="loading">
             <div class="p-treetable-loading-overlay p-component-overlay">
                 <i :class="loadingIconClass"></i>
             </div>
         </div>
-        <div class="p-treetable-header" v-if="$scopedSlots.header">
+        <div class="p-treetable-header" v-if="$slots.header">
             <slot name="header"></slot>
         </div>
          <TTPaginator v-if="paginatorTop" :rows="d_rows" :first="d_first" :totalRecords="totalRecordsLength" :pageLinkSize="pageLinkSize" :template="paginatorTemplate" :rowsPerPageOptions="rowsPerPageOptions"
                 :currentPageReportTemplate="currentPageReportTemplate" class="p-paginator-top" @page="onPage($event)" :alwaysShow="alwaysShowPaginator">
-            <template #left v-if="$scopedSlots.paginatorLeft">
+            <template #left v-if="$slots.paginatorLeft">
                 <slot name="paginatorLeft"></slot>
             </template>
-            <template #right v-if="$scopedSlots.paginatorRight">
+            <template #right v-if="$slots.paginatorRight">
                 <slot name="paginatorRight"></slot>
             </template>
         </TTPaginator>
@@ -22,35 +21,33 @@
             <table ref="table">
                 <thead class="p-treetable-thead">
                     <tr>
-                        <th v-for="(col,i) of columns" :key="col.columnKey||col.field||i" :style="col.headerStyle" :class="getColumnHeaderClass(col)" @click="onColumnHeaderClick($event, col)"
-                            :tabindex="col.sortable ? '0' : null"  :aria-sort="getAriaSort(col)" @keydown="onColumnKeyDown($event, col)">
+                        <th v-for="(col,i) of columns" :key="columnProp(col, 'columnKey')||columnProp(col, 'field')||i" :style="columnProp(col, 'headerStyle')" :class="getColumnHeaderClass(col)" @click="onColumnHeaderClick($event, col)"
+                            :tabindex="columnProp(col, 'sortable') ? '0' : null"  :aria-sort="getAriaSort(col)" @keydown="onColumnKeyDown($event, col)">
                             <span class="p-column-resizer" @mousedown="onColumnResizeStart" v-if="resizableColumns"></span>
-                            <TTColumnSlot :column="col" type="header" v-if="col.$scopedSlots.header" />
-                            <span class="p-column-title" v-if="col.header">{{col.header}}</span>
-                            <span v-if="col.sortable" :class="getSortableColumnIcon(col)"></span>
+                            <component :is="col.children.header" :column="col" v-if="col.children && col.children.header" />
+                            <span class="p-column-title" v-if="columnProp(col, 'header')">{{columnProp(col, 'header')}}</span>
+                            <span v-if="columnProp(col, 'sortable')" :class="getSortableColumnIcon(col)"></span>
                             <span v-if="isMultiSorted(col)" class="p-sortable-column-badge">{{getMultiSortMetaIndex(col) + 1}}</span>
                         </th>
                     </tr>
                     <tr v-if="hasColumnFilter()">
-                        <template v-for="(col,i) of columns">
-                            <th :key="col.columnKey||col.field||i" :class="getFilterColumnHeaderClass(col)" :style="col.filterHeaderStyle">
-                                <TTColumnSlot :column="col" type="filter" v-if="col.$scopedSlots.filter" />
-                            </th>
-                        </template>
+                        <th  v-for="(col,i) of columns" :key="columnProp(col, 'columnKey')||columnProp(col, 'field')||i" :class="getFilterColumnHeaderClass(col)" :style="columnProp(col, 'filterHeaderStyle')">
+                            <component :is="col.children.filter" :column="col" v-if="col.children && col.children.filter"/>
+                        </th>
                     </tr>
                 </thead>
                 <tfoot class="p-treetable-tfoot" v-if="hasFooter">
                     <tr>
-                        <td v-for="(col,i) of columns" :key="col.columnKey||col.field||i" :style="col.footerStyle" :class="col.footerClass">
-                            <TTColumnSlot :column="col" type="footer" v-if="col.$scopedSlots.footer" />
-                            {{col.footer}}
+                        <td v-for="(col,i) of columns" :key="columnProp(col, 'columnKey')||columnProp(col, 'field')||i" :style="columnProp(col, 'footerStyle')" :class="columnProp(col, 'footerClass')">
+                            <component :is="col.children.footer" :column="col" v-if="col.children && col.children.footer" />
+                            {{columnProp(col, 'footer')}}
                         </td>
                     </tr>
                 </tfoot>
                 <tbody class="p-treetable-tbody">
                     <template v-if="!empty">
                         <TTRow v-for="node of dataToRender" :key="node.key" :columns="columns" :node="node" :level="0"
-                        :expandedKeys="d_expandedKeys" @node-toggle="onNodeToggle"
+                        :expandedKeys="d_expandedKeys" @node-toggle="onNodeToggle" :indentation="indentation"
                         :selectionMode="selectionMode" :selectionKeys="selectionKeys" @node-click="onNodeClick" @checkbox-change="onCheckboxChange"></TTRow>
                     </template>
                     <tr v-else class="p-treetable-emptymessage">
@@ -63,14 +60,14 @@
         </div>
         <TTPaginator v-if="paginatorBottom" :rows="d_rows" :first="d_first" :totalRecords="totalRecordsLength" :pageLinkSize="pageLinkSize" :template="paginatorTemplate" :rowsPerPageOptions="rowsPerPageOptions"
                 :currentPageReportTemplate="currentPageReportTemplate" class="p-paginator-bottom" @page="onPage($event)" :alwaysShow="alwaysShowPaginator">
-            <template #left v-if="$scopedSlots.paginatorLeft">
+            <template #left v-if="$slots.paginatorLeft">
                 <slot name="paginatorLeft"></slot>
             </template>
-            <template #right v-if="$scopedSlots.paginatorRight">
+            <template #right v-if="$slots.paginatorRight">
                 <slot name="paginatorRight"></slot>
             </template>
         </TTPaginator>
-        <div class="p-treetable-footer" v-if="$scopedSlots.footer">
+        <div class="p-treetable-footer" v-if="$slots.footer">
             <slot name="footer"></slot>
         </div>
         <div ref="resizeHelper" class="p-column-resizer-helper p-highlight" style="display: none"></div>
@@ -78,14 +75,14 @@
 </template>
 
 <script>
-import ObjectUtils from '../utils/ObjectUtils';
-import FilterUtils from '../utils/FilterUtils';
-import DomHandler from '../utils/DomHandler';
-import TreeTableColumnSlot from './TreeTableColumnSlot';
-import TreeTableRowLoader from './TreeTableRowLoader';
-import Paginator from '../paginator/Paginator';
+import {ObjectUtils,DomHandler} from 'primevue/utils';
+import {FilterService} from 'primevue/api';
+import TreeTableRow from './TreeTableRow.vue';
+import Paginator from 'primevue/paginator';
 
 export default {
+    emits: ['node-expand', 'node-collapse', 'update:expandedKeys', 'update:selectionKeys', 'node-select', 'node-unselect', 
+        'update:first', 'update:rows', 'page', 'update:sortField', 'update:sortOrder', 'update:multiSortMeta', 'sort', 'filter', 'column-resize-end'],
     props: {
         value: {
             type: null,
@@ -168,7 +165,7 @@ export default {
             default: false
         },
         sortField: {
-            type: String,
+            type: [String, Function],
             default: null
         },
         sortOrder: {
@@ -210,6 +207,14 @@ export default {
         columnResizeMode: {
             type: String,
             default: 'fit'
+        },
+        indentation: {
+            type: Number,
+            default: 1
+        },
+        showGridlines: {
+            type: Boolean,
+            default: false
         }
     },
     documentColumnResizeListener: null,
@@ -218,7 +223,6 @@ export default {
     resizeColumnElement: null,
     data() {
         return {
-            allChildren: null,
             d_expandedKeys: this.expandedKeys || {},
             d_first: this.first,
             d_rows: this.rows,
@@ -247,10 +251,10 @@ export default {
             this.d_multiSortMeta = newValue;
         }
     },
-    mounted() {
-        this.allChildren = this.$children;
-    },
     methods: {
+        columnProp(col, prop) {
+            return col.props ? ((col.type.props[prop].type === Boolean && col.props[prop] === '') ? true : col.props[prop]) : null;
+        },
         onNodeToggle(node) {
             const key = node.key;
 
@@ -370,31 +374,31 @@ export default {
             this.$emit('update:first', this.d_first);
         },
         isMultiSorted(column) {
-            return column.sortable && this.getMultiSortMetaIndex(column) > -1
+            return this.columnProp(column, 'sortable') && this.getMultiSortMetaIndex(column) > -1
         },
         isColumnSorted(column) {
-            if (column.sortable) {
-                return this.sortMode === 'single' ? (this.d_sortField === (column.field || column.sortField)) : this.getMultiSortMetaIndex(column) > -1;
+            if (this.columnProp(column, 'sortable')) {
+                return this.sortMode === 'single' ? (this.d_sortField === (this.columnProp(column, 'field') || this.columnProp(column, 'sortField'))) : this.getMultiSortMetaIndex(column) > -1;
             }
 
             return false;
         },
         getColumnHeaderClass(column) {
-            return [column.headerClass,
-                    {'p-sortable-column': column.sortable},
+            return [this.columnProp(column, 'headerClass'),
+                    {'p-sortable-column': this.columnProp(column, 'sortable')},
                     {'p-resizable-column': this.resizableColumns},
                     {'p-highlight': this.isColumnSorted(column)}
             ];
         },
         getFilterColumnHeaderClass(column) {
-            return ['p-filter-column', column.filterHeaderClass];
+            return ['p-filter-column', this.columnProp(column, 'filterHeaderClass')];
         },
         getSortableColumnIcon(column) {
             let sorted = false;
             let sortOrder = null;
 
             if (this.sortMode === 'single') {
-                sorted =  this.d_sortField === (column.field || column.sortField);
+                sorted =  this.d_sortField === (this.columnProp(column, 'field')|| this.columnProp(column, 'sortField'));
                 sortOrder = sorted ? this.d_sortOrder: 0;
             }
             else if (this.sortMode === 'multiple') {
@@ -418,7 +422,7 @@ export default {
 
             for (let i = 0; i < this.d_multiSortMeta.length; i++) {
                 let meta = this.d_multiSortMeta[i];
-                if (meta.field === (column.field || column.sortField)) {
+                if (meta.field === (this.columnProp(column, 'field')|| this.columnProp(column, 'sortField'))) {
                     index = i;
                     break;
                 }
@@ -427,9 +431,9 @@ export default {
             return index;
         },
         onColumnHeaderClick(event, column) {
-            if (column.sortable) {
+            if (this.columnProp(column, 'sortable')) {
                 const targetNode = event.target;
-                const columnField = column.sortField || column.field;
+                const columnField = this.columnProp(column, 'sortField') || this.columnProp(column, 'field');
 
                 if (DomHandler.hasClass(targetNode, 'p-sortable-column') || DomHandler.hasClass(targetNode, 'p-column-title')
                     || DomHandler.hasClass(targetNode, 'p-sortable-column-icon') || DomHandler.hasClass(targetNode.parentElement, 'p-sortable-column-icon')) {
@@ -557,13 +561,13 @@ export default {
 
                 for (let j = 0; j < this.columns.length; j++) {
                     let col = this.columns[j];
-                    let filterField = col.field;
+                    let filterField = this.columnProp(col, 'field');
 
                     //local
-                    if (Object.prototype.hasOwnProperty.call(this.filters, col.field)) {
-                        let filterMatchMode = col.filterMatchMode;
-                        let filterValue = this.filters[col.field];
-                        let filterConstraint = FilterUtils[filterMatchMode];
+                    if (Object.prototype.hasOwnProperty.call(this.filters, this.columnProp(col, 'field'))) {
+                        let filterMatchMode = this.columnProp(col, 'filterMatchMode') || 'startsWith';
+                        let filterValue = this.filters[this.columnProp(col, 'field')];
+                        let filterConstraint = FilterService.filters[filterMatchMode];
                         let paramsWithoutNode = {filterField, filterValue, filterConstraint, strict};
 
                         if ((strict && !(this.findFilteredNodes(copyNode, paramsWithoutNode) || this.isFilterMatched(copyNode, paramsWithoutNode))) ||
@@ -577,10 +581,10 @@ export default {
                     }
 
                     //global
-                    if (this.hasGlobalFilter && !globalMatch) {
+                    if (this.hasGlobalFilter() && !globalMatch) {
                         let copyNodeForGlobal = {...copyNode};
                         let filterValue = this.filters['global'];
-                        let filterConstraint = FilterUtils['contains'];
+                        let filterConstraint = FilterService.filters['contains'];
                         let globalFilterParamsWithoutNode = {filterField, filterValue, filterConstraint, strict};
 
                         if ((strict && (this.findFilteredNodes(copyNodeForGlobal, globalFilterParamsWithoutNode) || this.isFilterMatched(copyNodeForGlobal, globalFilterParamsWithoutNode))) ||
@@ -592,7 +596,7 @@ export default {
                 }
 
                 let matches = localMatch;
-                if (this.hasGlobalFilter) {
+                if (this.hasGlobalFilter()) {
                     matches = localMatch && globalMatch;
                 }
 
@@ -648,11 +652,11 @@ export default {
         },
         createLazyLoadEvent(event) {
             let filterMatchModes;
-            if (this.hasFilters) {
+            if (this.hasFilters()) {
                 filterMatchModes = {};
                 this.columns.forEach(col => {
-                    if (col.field) {
-                        filterMatchModes[col.field] = col.filterMatchMode;
+                    if (this.columnProp(col, 'field')) {
+                        filterMatchModes[col.props.field] = this.columnProp(col, 'filterMatchMode');
                     }
                 });
             }
@@ -756,7 +760,7 @@ export default {
             }
         },
         getAriaSort(column) {
-            if (column.sortable) {
+            if (this.columnProp(column, 'sortable')) {
                 const sortIcon = this.getSortableColumnIcon(column);
                 if (sortIcon[1]['pi-sort-amount-down'])
                     return 'descending';
@@ -772,13 +776,19 @@ export default {
         hasColumnFilter() {
             if (this.columns) {
                 for (let col of this.columns) {
-                    if (col.$scopedSlots.filter) {
+                    if (col.children && col.children.filter) {
                         return true;
                     }
                 }
             }
 
             return false;
+        },
+        hasFilters() {
+            return this.filters && Object.keys(this.filters).length > 0 && this.filters.constructor === Object;
+        },
+        hasGlobalFilter() {
+            return this.filters && Object.prototype.hasOwnProperty.call(this.filters, 'global');
         }
     },
     computed: {
@@ -788,13 +798,21 @@ export default {
                 'p-treetable-auto-layout': this.autoLayout,
                 'p-treetable-resizable': this.resizableColumns,
                 'p-treetable-resizable-fit': this.resizableColumns && this.columnResizeMode === 'fit',
+                'p-treetable-gridlines': this.showGridlines
             }];
         },
         columns() {
-            if (this.allChildren) {
-                return this.allChildren.filter(child =>  child.$options._propKeys.indexOf('columnKey') !== -1);
-            }
-            return [];
+            let cols = [];
+            let children = this.$slots.default();
+
+            children.forEach(child => {
+                if (child.dynamicChildren)
+                    cols = [...cols, ...child.children];
+                else if (child.type.name === 'column')
+                    cols.push(child);
+            });
+
+            return cols;
         },
         processedData() {
             if (this.lazy) {
@@ -811,7 +829,7 @@ export default {
                             data = this.sortMultiple(data);
                     }
 
-                    if (this.hasFilters) {
+                    if (this.hasFilters()) {
                         data = this.filter(data);
                     }
 
@@ -844,19 +862,13 @@ export default {
             let hasFooter = false;
 
             for (let col of this.columns) {
-                if (col.footer || col.$scopedSlots.footer) {
+                if (this.columnProp(col, 'footer')|| (col.children && col.children.footer)) {
                     hasFooter = true;
                     break;
                 }
             }
 
             return hasFooter;
-        },
-        hasFilters() {
-            return this.filters && Object.keys(this.filters).length > 0 && this.filters.constructor === Object;
-        },
-        hasGlobalFilter() {
-            return this.filters && Object.prototype.hasOwnProperty.call(this.filters, 'global');
         },
         paginatorTop() {
             return this.paginator && (this.paginatorPosition !== 'bottom' || this.paginatorPosition === 'both');
@@ -887,8 +899,7 @@ export default {
         }
     },
     components: {
-        'TTColumnSlot': TreeTableColumnSlot,
-        'TTRow': TreeTableRowLoader,
+        'TTRow': TreeTableRow,
         'TTPaginator': Paginator,
     }
 }

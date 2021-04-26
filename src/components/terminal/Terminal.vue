@@ -2,7 +2,7 @@
     <div class="p-terminal p-component" @click="onClick">
         <div v-if="welcomeMessage">{{welcomeMessage}}</div>
         <div class="p-terminal-content">
-            <div v-for="(command,i) of commands" :key="command.text + '_' + i">
+            <div v-for="(command,i) of commands" :key="command.text + i.toString()">
                 <span class="p-terminal-prompt">{{prompt}}</span>
                 <span class="p-terminal-command">{{command.text}}</span>
                 <div class="p-terminal-response">{{command.response}}</div>
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import TerminalService from './TerminalService';
+import TerminalService from 'primevue/terminalservice';
 
 export default {
     props: {
@@ -36,14 +36,14 @@ export default {
         }
     },
     mounted() {
-        TerminalService.$on('response', this.responseListener);
+        TerminalService.on('response', this.responseListener);
         this.$refs.input.focus();
     },
     updated() {
         this.$el.scrollTop = this.$el.scrollHeight;
     },
-    beforeDestroy() {
-        TerminalService.$off('response', this.responseListener);
+    beforeUnmount() {
+        TerminalService.off('response', this.responseListener);
     },
     methods: {
         onClick() {
@@ -52,7 +52,7 @@ export default {
         onKeydown(event) {
             if (event.keyCode === 13 && this.commandText) {
                 this.commands.push({text: this.commandText});
-                TerminalService.$emit('command', this.commandText);
+                TerminalService.emit('command', this.commandText);
                 this.commandText = '';
             }
         },

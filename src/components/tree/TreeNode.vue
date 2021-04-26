@@ -12,7 +12,8 @@
             </div>
             <span :class="icon"></span>
             <span class="p-treenode-label">
-                <TreeNodeTemplate :node="node" :template="templates[node.type]||templates['default']" />
+                <component :is="templates[node.type]||templates['default']" :node="node" v-if="templates[node.type]||templates['default']"/>
+                <template v-else>{{node.label}}</template>
             </span>
         </div>
         <ul class="p-treenode-children" role="group" v-if="hasChildren && expanded">
@@ -25,31 +26,11 @@
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
-import Ripple from '../ripple/Ripple';
-
-const TreeNodeTemplate = {
-    functional: true,
-    props: {
-        node: {
-            type: null,
-            default: null
-        },
-        template: {
-            type: null,
-            default: null
-        }
-    },
-    render(createElement, context) {
-        const content = context.props.template ? context.props.template({
-            'node': context.props.node
-        }): context.props.node.label;
-
-        return [content];
-    }
-};
+import {DomHandler} from 'primevue/utils';
+import Ripple from 'primevue/ripple';
 
 export default {
+    emits: ['node-toggle', 'node-click', 'checkbox-change'],
     name: 'sub-treenode',
     props: {
         node: {
@@ -82,7 +63,7 @@ export default {
             this.$emit('node-toggle', node);
         },
         onClick(event) {
-            if (DomHandler.hasClass(event.target, 'p-tree-toggler') || DomHandler.hasClass(event.target, 'p-tree-toggler-icon')) {
+            if (DomHandler.hasClass(event.target, 'p-tree-toggler') || DomHandler.hasClass(event.target.parentElement, 'p-tree-toggler')) {
                 return;
             }
 
@@ -195,7 +176,7 @@ export default {
             let checkedChildCount = 0;
             let childPartialSelected = false;
 
-            for(let child of this.node.children) {
+            for (let child of this.node.children) {
                 if(_selectionKeys[child.key] && _selectionKeys[child.key].checked)
                     checkedChildCount++;
                 else if(_selectionKeys[child.key] && _selectionKeys[child.key].partialChecked)
@@ -210,10 +191,10 @@ export default {
                     delete _selectionKeys[this.node.key];
                 }
 
-                if(childPartialSelected || (checkedChildCount > 0 && checkedChildCount !== this.node.children.length))
+                if (childPartialSelected || (checkedChildCount > 0 && checkedChildCount !== this.node.children.length))
                     _selectionKeys[this.node.key] = {checked: false, partialChecked: true};
                 else
-                    _selectionKeys[this.node.key] = {checked: false, partialChecked: false};
+                    delete _selectionKeys[this.node.key];
             }
 
             this.$emit('checkbox-change', {
@@ -309,9 +290,6 @@ export default {
         partialChecked() {
             return this.selectionKeys ? this.selectionKeys[this.node.key] && this.selectionKeys[this.node.key].partialChecked: false;
         }
-    },
-    components: {
-        'TreeNodeTemplate': TreeNodeTemplate
     },
     directives: {
         'ripple': Ripple

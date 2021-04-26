@@ -6,6 +6,7 @@
 
 <script>
 export default {
+    emits: ['load'],
     data() {
         return {
            loaded: false
@@ -19,7 +20,7 @@ export default {
                 this.bindScrollListener();
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.unbindScrollListener();
     },
     methods: {
@@ -58,9 +59,3 @@ export default {
     }
 }
 </script>
-
-
-
-    componentWillUnmount() {
-        this.unbindScrollListener();
-    }

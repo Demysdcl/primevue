@@ -5,13 +5,26 @@
                 <h1>MultiSelect</h1>
                 <p>MultiSelect is used to multiple values from a list of options.</p>
             </div>
-            <AppInputStyleSwitch />
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
             <div class="card">
                 <h5>Basic</h5>
-                <MultiSelect v-model="selectedCities" :options="cities" optionLabel="name" placeholder="Select a City" />
+                <MultiSelect v-model="selectedCities1" :options="cities" optionLabel="name" placeholder="Select Cities" />
+
+                <h5>Chips</h5>
+                <MultiSelect v-model="selectedCities2" :options="cities" optionLabel="name" placeholder="Select Cities" display="chip" />
+
+                <h5>Grouped</h5>
+                <MultiSelect v-model="selectedGroupedCities" :options="groupedCities" optionLabel="label"  optionGroupLabel="label" optionGroupChildren="items" placeholder="Select Cities">
+                    <template #optiongroup="slotProps">
+                        <div class="p-d-flex p-ai-center country-item">
+                            <img src="../../assets/images/flag_placeholder.png" :class="'flag flag-' + slotProps.option.code.toLowerCase()" width="18" />
+                            <div>{{slotProps.option.label}}</div>
+                        </div>
+                    </template>
+                </MultiSelect>
 
                 <h5>Advanced with Templating and Filtering</h5>
                 <MultiSelect v-model="selectedCountries" :options="countries" optionLabel="name" placeholder="Select Countries" :filter="true" class="multiselect-custom">
@@ -44,8 +57,10 @@ import MultiSelectDoc from './MultiSelectDoc';
 export default {
     data() {
         return {
-            selectedCities: null,
+            selectedCities1: null,
+            selectedCities2: null,
             selectedCountries: null,
+            selectedGroupedCities: null,
             cities: [
                 {name: 'New York', code: 'NY'},
                 {name: 'Rome', code: 'RM'},
@@ -64,7 +79,34 @@ export default {
                 {name: 'Japan', code: 'JP'},
                 {name: 'Spain', code: 'ES'},
                 {name: 'United States', code: 'US'}
-            ]
+            ],
+            groupedCities: [{
+                label: 'Germany', code: 'DE', 
+                items: [
+                    {label: 'Berlin', value: 'Berlin'},
+                    {label: 'Frankfurt', value: 'Frankfurt'},
+                    {label: 'Hamburg', value: 'Hamburg'},
+                    {label: 'Munich', value: 'Munich'}
+                ]
+            },
+            {
+                label: 'USA', code: 'US', 
+                items: [
+                    {label: 'Chicago', value: 'Chicago'},
+                    {label: 'Los Angeles', value: 'Los Angeles'},
+                    {label: 'New York', value: 'New York'},
+                    {label: 'San Francisco', value: 'San Francisco'}
+                ]
+            },
+            {
+                label: 'Japan', code: 'JP', 
+                items: [
+                    {label: 'Kyoto', value: 'Kyoto'},
+                    {label: 'Osaka', value: 'Osaka'},
+                    {label: 'Tokyo', value: 'Tokyo'},
+                    {label: 'Yokohama', value: 'Yokohama'}
+                ]
+            }]
         }
     },
     components: {
@@ -75,10 +117,10 @@ export default {
 
 <style lang="scss" scoped>
 .p-multiselect {
-    min-width: 15rem;
+    width: 18rem;
 }
 
-/deep/ .multiselect-custom {
+::v-deep(.multiselect-custom) {
     .p-multiselect-label:not(.p-placeholder) {
         padding-top: .25rem;
         padding-bottom: .25rem;
@@ -95,6 +137,12 @@ export default {
         img.flag {
             width: 17px;
         }
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .p-multiselect {
+        width: 100%;
     }
 }
 </style>

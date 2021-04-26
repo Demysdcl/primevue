@@ -11,8 +11,8 @@
                 <slot name="sourceHeader"></slot>
             </div>
             <transition-group ref="sourceList" name="p-picklist-flip" tag="ul" class="p-picklist-list p-picklist-source" :style="listStyle" role="listbox" aria-multiselectable="multiple">
-                <template v-for="(item, i) of sourceList">
-                    <li tabindex="0" :key="getItemKey(item, i)" :class="['p-picklist-item', {'p-highlight': isSelected(item, 0)}]" v-ripple
+                <template v-for="(item, i) of sourceList" :key="getItemKey(item, i)">
+                    <li tabindex="0" :class="['p-picklist-item', {'p-highlight': isSelected(item, 0)}]" v-ripple
                         @click="onItemClick($event, item, i, 0)" @keydown="onItemKeyDown($event, item, i, 0)" @touchend="onItemTouchEnd" role="option" :aria-selected="isSelected(item, 0)">
                         <slot name="item" :item="item" :index="i"> </slot>
                     </li>
@@ -30,8 +30,8 @@
                 <slot name="targetHeader"></slot>
             </div>
             <transition-group ref="targetList" name="p-picklist-flip" tag="ul" class="p-picklist-list p-picklist-target" :style="listStyle" role="listbox" aria-multiselectable="multiple">
-                <template v-for="(item, i) of targetList">
-                    <li tabindex="0" :key="getItemKey(item, i)" :class="['p-picklist-item', {'p-highlight': isSelected(item, 1)}]" v-ripple
+                <template v-for="(item, i) of targetList" :key="getItemKey(item, i)">
+                    <li tabindex="0" :class="['p-picklist-item', {'p-highlight': isSelected(item, 1)}]" v-ripple
                         @click="onItemClick($event, item, i, 1)" @keydown="onItemKeyDown($event, item, i, 1)" @touchend="onItemTouchEnd" role="option" :aria-selected="isSelected(item, 1)">
                         <slot name="item" :item="item" :index="i"> </slot>
                     </li>
@@ -48,14 +48,14 @@
 </template>
 
 <script>
-import Button from '../button/Button';
-import ObjectUtils from '../utils/ObjectUtils';
-import DomHandler from '../utils/DomHandler';
-import Ripple from '../ripple/Ripple';
+import Button from 'primevue/button';
+import {ObjectUtils,UniqueComponentId,DomHandler} from 'primevue/utils';
+import Ripple from 'primevue/ripple';
 
 export default {
+    emits: ['update:modelValue', 'reorder', 'update:selection', 'selection-change', 'move-to-target', 'move-to-source', 'move-all-to-target', 'move-all-to-source'],
     props: {
-        value: {
+        modelValue: {
             type: Array,
             default: () => [[],[]]
         },
@@ -74,10 +74,19 @@ export default {
         metaKeySelection: {
             type: Boolean,
             default: true
+        },
+        responsive: {
+            type: Boolean,
+            default: true
+        },
+        breakpoint: {
+            type: String,
+            default: '960px'
         }
     },
     itemTouched: false,
     reorderDirection: null,
+    styleElement: null,
     data() {
         return {
             d_selection: this.selection
@@ -88,6 +97,14 @@ export default {
             this.updateListScroll(this.$refs.sourceList.$el);
             this.updateListScroll(this.$refs.targetList.$el);
             this.reorderDirection = null;
+        }
+    },
+    beforeUnmount() {
+        this.destroyStyle();
+    },
+    mounted() {
+        if (this.responsive) {
+            this.createStyle();
         }
     },
     watch: {
@@ -104,7 +121,7 @@ export default {
         },
         moveUp(event, listIndex) {
             if (this.d_selection && this.d_selection[listIndex]) {
-                let valueList = [...this.value[listIndex]];
+                let valueList = [...this.modelValue[listIndex]];
                 let selectionList = this.d_selection[listIndex];
 
                 for (let i = 0; i < selectionList.length; i++) {
@@ -122,11 +139,11 @@ export default {
                     }
                 }
 
-                let value = [...this.value];
+                let value = [...this.modelValue];
                 value[listIndex] = valueList;
 
                 this.reorderDirection = 'up';
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
                 this.$emit('reorder', {
                     originalEvent: event,
                     value: value,
@@ -137,7 +154,7 @@ export default {
         },
         moveTop(event, listIndex) {
             if(this.d_selection) {
-                let valueList = [...this.value[listIndex]];
+                let valueList = [...this.modelValue[listIndex]];
                 let selectionList = this.d_selection[listIndex];
 
                 for (let i = 0; i < selectionList.length; i++) {
@@ -153,11 +170,11 @@ export default {
                     }
                 }
 
-                let value = [...this.value];
+                let value = [...this.modelValue];
                 value[listIndex] = valueList;
 
                 this.reorderDirection = 'top';
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
                 this.$emit('reorder', {
                     originalEvent: event,
                     value: value,
@@ -167,7 +184,7 @@ export default {
         },
         moveDown(event, listIndex) {
             if(this.d_selection) {
-                let valueList = [...this.value[listIndex]];
+                let valueList = [...this.modelValue[listIndex]];
                 let selectionList = this.d_selection[listIndex];
 
                 for (let i = selectionList.length - 1; i >= 0; i--) {
@@ -185,11 +202,11 @@ export default {
                     }
                 }
 
-                let value = [...this.value];
+                let value = [...this.modelValue];
                 value[listIndex] = valueList;
 
                 this.reorderDirection = 'down';
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
                 this.$emit('reorder', {
                     originalEvent: event,
                     value: value,
@@ -199,7 +216,7 @@ export default {
         },
         moveBottom(event, listIndex) {
             if (this.d_selection) {
-                let valueList = [...this.value[listIndex]];
+                let valueList = [...this.modelValue[listIndex]];
                 let selectionList = this.d_selection[listIndex];
 
                 for (let i = selectionList.length - 1; i >= 0; i--) {
@@ -215,11 +232,11 @@ export default {
                     }
                 }
 
-                let value = [...this.value];
+                let value = [...this.modelValue];
                 value[listIndex] = valueList;
 
                 this.reorderDirection = 'bottom';
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
                 this.$emit('reorder', {
                     originalEvent: event,
                     value: value,
@@ -229,8 +246,8 @@ export default {
         },
         moveToTarget(event) {
             let selection = this.d_selection && this.d_selection[0] ? this.d_selection[0] : null;
-            let sourceList = [...this.value[0]];
-            let targetList = [...this.value[1]];
+            let sourceList = [...this.modelValue[0]];
+            let targetList = [...this.modelValue[1]];
 
             if (selection) {
                 for (let i = 0; i < selection.length; i++) {
@@ -241,10 +258,10 @@ export default {
                     }
                 }
 
-                let value = [...this.value];
+                let value = [...this.modelValue];
                 value[0] = sourceList;
                 value[1] = targetList;
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
 
                 this.$emit('move-to-target', {
                     originalEvent: event,
@@ -260,9 +277,9 @@ export default {
             }
         },
         moveAllToTarget(event) {
-            if (this.value[0]) {
-                let sourceList = [...this.value[0]];
-                let targetList = [...this.value[1]];
+            if (this.modelValue[0]) {
+                let sourceList = [...this.modelValue[0]];
+                let targetList = [...this.modelValue[1]];
 
                 this.$emit('move-all-to-target', {
                     originalEvent: event,
@@ -272,10 +289,10 @@ export default {
                 targetList = [...targetList, ...sourceList];
                 sourceList = [];
 
-                let value = [...this.value];
+                let value = [...this.modelValue];
                 value[0] = sourceList;
                 value[1] = targetList;
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
 
                 this.d_selection[0] = [];
                 this.$emit('update:selection', this.d_selection);
@@ -287,8 +304,8 @@ export default {
         },
         moveToSource(event) {
             let selection = this.d_selection && this.d_selection[1] ? this.d_selection[1] : null;
-            let sourceList = [...this.value[0]];
-            let targetList = [...this.value[1]];
+            let sourceList = [...this.modelValue[0]];
+            let targetList = [...this.modelValue[1]];
 
             if (selection) {
                 for (let i = 0; i < selection.length; i++) {
@@ -299,10 +316,10 @@ export default {
                     }
                 }
 
-                let value = [...this.value];
+                let value = [...this.modelValue];
                 value[0] = sourceList;
                 value[1] = targetList;
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
 
                 this.$emit('move-to-source', {
                     originalEvent: event,
@@ -318,9 +335,9 @@ export default {
             }
         },
         moveAllToSource(event) {
-            if (this.value[1]) {
-                let sourceList = [...this.value[0]];
-                let targetList = [...this.value[1]];
+            if (this.modelValue[1]) {
+                let sourceList = [...this.modelValue[0]];
+                let targetList = [...this.modelValue[1]];
 
                 this.$emit('move-all-to-source', {
                     originalEvent: event,
@@ -330,10 +347,10 @@ export default {
                 sourceList = [...sourceList, ...targetList];
                 targetList = [];
 
-                let value = [...this.value];
+                let value = [...this.modelValue];
                 value[0] = sourceList;
                 value[1] = targetList;
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
 
                 this.d_selection[1] = [];
                 this.$emit('update:selection', this.d_selection);
@@ -460,14 +477,71 @@ export default {
                     break;
                 }
             }
+        },
+        createStyle() {
+			if (!this.styleElement) {
+                this.$el.setAttribute(this.attributeSelector, '');
+				this.styleElement = document.createElement('style');
+				this.styleElement.type = 'text/css';
+				document.head.appendChild(this.styleElement);
+
+                let innerHTML = `
+@media screen and (max-width: ${this.breakpoint}) {
+    .p-picklist[${this.attributeSelector}] {
+        flex-direction: column;
+    }
+
+    .p-picklist[${this.attributeSelector}] .p-picklist-buttons {
+        padding: var(--content-padding);
+        flex-direction: row;
+    }
+
+    .p-picklist[${this.attributeSelector}] .p-picklist-buttons .p-button {
+        margin-right: var(--inline-spacing);
+        margin-bottom: 0;
+    }
+
+    .p-picklist[${this.attributeSelector}] .p-picklist-buttons .p-button:last-child {
+        margin-right: 0;
+    }
+
+    .p-picklist[${this.attributeSelector}] .pi-angle-right:before {
+        content: "\\e930"
+    }
+
+    .p-picklist[${this.attributeSelector}] .pi-angle-double-right:before {
+        content: "\\e92c"
+    }
+
+    .p-picklist[${this.attributeSelector}] .pi-angle-left:before {
+        content: "\\e933"
+    }
+
+    .p-picklist[${this.attributeSelector}] .pi-angle-double-left:before {
+        content: "\\e92f"
+    }
+}
+`;
+                
+                this.styleElement.innerHTML = innerHTML;
+			}
+		},
+        destroyStyle() {
+            if (this.styleElement) {
+                document.head.removeChild(this.styleElement);
+                this.styleElement = null;
+            }
         }
     },
     computed: {
         sourceList() {
-            return this.value && this.value[0] ? this.value[0] : null;
+            return this.modelValue && this.modelValue[0] ? this.modelValue[0] : null;
         },
         targetList() {
-            return this.value && this.value[1] ? this.value[1] : null;
+            return this.modelValue && this.modelValue[1] ? this.modelValue[1] : null;
+        },
+        attributeSelector() {
+            return UniqueComponentId();
         }
     },
     components: {

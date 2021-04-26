@@ -1,6 +1,10 @@
-import Vue from 'vue';
-
-export declare class Toast extends Vue {
+interface ToastProps {
     group?: string;
     position?: string;
 }
+
+declare class Toast {
+    $props: ToastProps;
+}
+
+export default Toast;

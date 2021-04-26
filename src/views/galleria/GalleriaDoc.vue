@@ -3,23 +3,25 @@
 		<TabView>
 			<TabPanel header="Documentation">
 				<h5>Import</h5>
-<CodeHighlight lang="javascript">
+<pre v-code.script><code>
 import Galleria from 'primevue/galleria';
-</CodeHighlight>
+
+</code></pre>
 
 				<h5>Getting Started</h5>
 				<p>Galleria requires item template and a value as an array of objects.</p>
-<CodeHighlight>
+<pre v-code><code>
 &lt;Galleria :value="images"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" /&gt;
     &lt;/template&gt;
 &lt;/Galleria&gt;
-</CodeHighlight>
+
+</code></pre>
 
                 <p>For the rest of the documentation, sample data below would be return from an example service e.g. PhotoService.</p>
 <div style="overflow: auto; height: 400px">
-<CodeHighlight lang="js">
+<pre v-code.script><code>
 {
     "data":[
         {
@@ -114,10 +116,11 @@ import Galleria from 'primevue/galleria';
         }
     ]
 }
-</CodeHighlight>
+
+</code></pre>
 </div>
 
-<CodeHighlight lang="js">
+<pre v-code.script><code>
 import axios from 'axios'
 
 export default class PhotoService {
@@ -126,9 +129,10 @@ export default class PhotoService {
         return axios.get('demo/data/photos.json').then(res => res.data.data);
     }
 }
-</CodeHighlight>
 
-<CodeHighlight lang="js">
+</code></pre>
+
+<pre v-code.script><code>
 export default {
     data() {
         return {
@@ -143,12 +147,13 @@ export default {
         this.galleriaService.getImages().then(data => this.images = data);
     }
 }
-</CodeHighlight>
+
+</code></pre>
 
 				<h5>Items per page</h5>
                 <p>Number of items per page is defined using the <i>numVisible</i> property.</p>
 
-<CodeHighlight>
+<pre v-code><code>
 &lt;Galleria :value="images" :numVisible="5"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%" /&gt;
@@ -157,13 +162,14 @@ export default {
         &lt;img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt" /&gt;
     &lt;/template&gt;
 &lt;/Galleria&gt;
-</CodeHighlight>
+
+</code></pre>
 
 				<h5>Responsive</h5>
                 <p>For responsive design, <i>numVisible</i> can be defined using the <i>responsiveOptions</i> property which references an array of
                 objects whose breakpoint defines the max-width to apply the settings.</p>
 
-<CodeHighlight>
+<pre v-code><code>
 &lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%" /&gt;
@@ -172,9 +178,10 @@ export default {
         &lt;img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt" /&gt;
     &lt;/template&gt;
 &lt;/Galleria&gt;
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
+</code></pre>
+
+<pre v-code.script><code>
 responsiveOptions: [
     {
         breakpoint: '1024px',
@@ -189,12 +196,13 @@ responsiveOptions: [
         numVisible: 1
     }
 ]
-</CodeHighlight>
+
+</code></pre>
 
 				<h5>Header and Footer</h5>
                 <p>Custom content projection is available using the <i>header</i> and <i>footer</i> properties.</p>
-<CodeHighlight>
-&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" style="max-width: 640px"&gt;
+<pre v-code><code>
+&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 640px"&gt;
     &lt;template #header&gt;
         &lt;h1&gt;Header&lt;/h1&gt;
     &lt;/template&gt;
@@ -205,18 +213,20 @@ responsiveOptions: [
         &lt;h1&gt;Footer&lt;/h1&gt;
     &lt;/template&gt;
 &lt;/Galleria&gt;
-</CodeHighlight>
+
+</code></pre>
 
                 <h5>Indicators</h5>
                 <p>Indicators allow quick navigation between the items. Set <i>showIndicators</i> to display indicators which can be customized further
                 with the <i>changeItemOnIndicatorHover</i>, <i>showIndicatorsOnItem</i> and <i>indicatorsPosition</i> properties.</p>
-<CodeHighlight>
+<pre v-code><code>
 &lt;Galleria :value="images" :showIndicators="true"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" /&gt;
     &lt;/template&gt;
 &lt;/Galleria&gt;
-</CodeHighlight>
+
+</code></pre>
 
 				<h5>Properties</h5>
                 <p>Any property as style and class are passed to the main container element. Following are the additional properties to configure the component.</p>
@@ -438,9 +448,8 @@ responsiveOptions: [
 				<a href="https://github.com/primefaces/primevue/tree/master/src/views/galleria" class="btn-viewsource" target="_blank" rel="noopener noreferrer">
 					<span>View on GitHub</span>
 				</a>
-<CodeHighlight>
-<template v-pre>
-&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" style="max-width: 640px"&gt;
+<pre v-code><code><template v-pre>
+&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 640px"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%" /&gt;
     &lt;/template&gt;
@@ -449,9 +458,9 @@ responsiveOptions: [
     &lt;/template&gt;
 &lt;/Galleria&gt;
 </template>
-</CodeHighlight>
+</code></pre>
 
-<CodeHighlight lang="javascript">
+<pre v-code.script><code>
 import PhotoService from '../../service/PhotoService';
 
 export default {
@@ -482,7 +491,8 @@ export default {
 		this.galleriaService.getImages().then(data => this.images = data);
     }
 }
-</CodeHighlight>
+
+</code></pre>
 
 			</TabPanel>
 		</TabView>

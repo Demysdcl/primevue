@@ -5,12 +5,13 @@
                 <h1>ScrollPanel</h1>
                 <p>ScrollPanel is a cross browser, lightweight and themable alternative to native browser scrollbar.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
             <div class="card">
                 <div class="p-grid">
-                    <div class="p-col-12 p-md-4">
+                    <div class="p-col-12 p-md-4 p-p-5">
                         <ScrollPanel style="width: 100%; height: 200px">
                             <p>
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -27,7 +28,7 @@
                             </p>
                         </ScrollPanel>
                     </div>
-                    <div class="p-col-12 p-md-4">
+                    <div class="p-col-12 p-md-4 p-p-5">
                         <ScrollPanel style="width: 100%; height: 200px" class="custombar1">
                             <p>
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -44,7 +45,7 @@
                             </p>
                         </ScrollPanel>
                     </div>
-                    <div class="p-col-12 p-md-4">
+                    <div class="p-col-12 p-md-4 p-p-5">
                         <ScrollPanel style="width: 100%; height: 200px" class="custombar2">
                             <p style="width: 600px">
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -79,7 +80,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ .p-scrollpanel {
+::v-deep(.p-scrollpanel) {
     p {
         padding: .5rem;
         line-height: 1.5;
@@ -88,7 +89,7 @@ export default {
 
     &.custombar1 {
         .p-scrollpanel-wrapper {
-            border-right: 9px solid var(--layer-1);
+            border-right: 9px solid var(--surface-b);
         }
 
         .p-scrollpanel-bar {
@@ -104,22 +105,16 @@ export default {
 
     &.custombar2 {
         .p-scrollpanel-wrapper {
-            border-right: 9px solid var(--layer-1);
-            border-bottom: 9px solid var(--layer-1);
+            border-right: 9px solid var(--surface-b);
+            border-bottom: 9px solid var(--surface-b);
         }
 
         .p-scrollpanel-bar {
-            background-color: var(--layer-2);
+            background-color: var(--surface-d);
             border-radius: 0;
             opacity: 1;
             transition: background-color .2s;
         }
-    }
-}
-</style>
-
-<style scoped>
-.p-col-12 {
-    padding: 2rem;
+    }  
 }
 </style>

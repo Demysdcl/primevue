@@ -1,5 +1,9 @@
-import Vue from 'vue';
-
-export declare class PanelMenu extends Vue {
+interface PanelMenuProps {
     model?: any[];
 }
+
+declare class PanelMenu {
+    $props: PanelMenuProps;
+}
+
+export default PanelMenu;

@@ -1,4 +1,4 @@
-import DomHandler from '../utils/DomHandler';
+import {DomHandler} from 'primevue/utils';
 
 function bindEvents(el) {
     el.addEventListener('mousedown', onMouseDown);
@@ -62,13 +62,13 @@ function getInk(el) {
 }
 
 const Ripple = {
-    inserted(el, binding, vnode) {
-        if (vnode.context.$primevue && vnode.context.$primevue.ripple) {
+    mounted(el, binding) {
+        if (binding.instance.$primevue && binding.instance.$primevue.config && binding.instance.$primevue.config.ripple) {
             create(el);
             bindEvents(el);
         }
     },
-    unbind(el) {
+    unmounted(el) {
         remove(el);
     }
 };

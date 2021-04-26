@@ -1,16 +1,37 @@
 <template>
-    <input ref="input" type="password" :class="['p-inputtext p-component', {'p-filled': filled}]" v-on="listeners" :value="value" />
+    <div :class="containerClass" :style="style">
+        <PInputText ref="input" :class="inputFieldClass" :style="inputStyle" :type="inputType" :value="modelValue" @input="onInput" @focus="onFocus" @blur="onBlur" @keyup="onKeyUp" v-bind="$attrs" />
+        <i v-if="toggleMask" :class="toggleIconClass" @click="onMaskToggle" />
+        <Teleport :to="appendTarget" :disabled="appendDisabled">
+            <transition name="p-connected-overlay" @enter="onOverlayEnter" @leave="onOverlayLeave" @after-leave="onOverlayAfterLeave">
+                <div :ref="overlayRef" :class="panelStyleClass" v-if="overlayVisible" @click="onOverlayClick">
+                    <slot name="header"></slot>
+                    <slot name="content">
+                        <div class="p-password-meter">
+                            <div :class="strengthClass" :style="{'width': meter ? meter.width : ''}"></div>
+                        </div>
+                        <div className="p-password-info">{{infoText}}</div>
+                    </slot>
+                    <slot name="footer"></slot>
+                </div>
+            </transition>
+        </Teleport>
+    </div>
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
+import {ConnectedOverlayScrollHandler,DomHandler,ZIndexUtils} from 'primevue/utils';
+import OverlayEventBus from 'primevue/overlayeventbus';
+import InputText from 'primevue/inputtext';
 
 export default {
+    emits: ['update:modelValue'],
+    inheritAttrs: false,
     props: {
-        value: String,
+        modelValue: String,
         promptLabel: {
             type: String,
-            default: 'Enter a password'
+            default: null
         },
         mediumRegex: {
             type: String,
@@ -22,31 +43,89 @@ export default {
         },
         weakLabel: {
             type: String,
-            default: 'Weak'
+            default: null
         },
         mediumLabel: {
             type: String,
-            default: 'Medium'
+            default: null
         },
         strongLabel: {
             type: String,
-            default: 'Strong'
+            default: null
         },
         feedback: {
             type: Boolean,
             default: true
-        }
+        },
+        appendTo: {
+            type: String,
+            default: 'body'
+        },
+        toggleMask: {
+            type: Boolean,
+            default: false
+        },
+        inputClass: toString,
+        inputStyle: null,
+        style: null,
+        class: String,
+        panelClass: String
     },
-    panel: null,
-    meter: null,
-    info: null,
+    data() {
+        return {
+            overlayVisible: false,
+            meter: null,
+            infoText: null,
+            focused: false,
+            unmasked: false
+        };
+    },
     mediumCheckRegExp: null,
     strongCheckRegExp: null,
+    resizeListener: null,
+    scrollHandler: null,
+    overlay: null,
     mounted() {
+        this.infoText = this.promptText;
         this.mediumCheckRegExp = new RegExp(this.mediumRegex);
         this.strongCheckRegExp = new RegExp(this.strongRegex);
     },
+    beforeUnmount() {
+        this.unbindResizeListener();
+        if (this.scrollHandler) {
+            this.scrollHandler.destroy();
+            this.scrollHandler = null;
+        }
+
+        if (this.overlay) {
+            ZIndexUtils.clear(this.overlay);
+            this.overlay = null;
+        }
+    },
     methods: {
+        onOverlayEnter(el) {
+            ZIndexUtils.set('overlay', el, this.$primevue.config.zIndex.overlay);
+            this.alignOverlay();
+            this.bindScrollListener();
+            this.bindResizeListener();
+        },
+        onOverlayLeave() {
+            this.unbindScrollListener();
+            this.unbindResizeListener();
+            this.overlay = null;
+        },
+        onOverlayAfterLeave(el) {
+            ZIndexUtils.clear(el);
+        },
+        alignOverlay() {
+            if (this.appendDisabled) {
+                DomHandler.relativePosition(this.overlay, this.$refs.input.$el);
+            }
+            else {
+                this.overlay.style.minWidth = DomHandler.getOuterWidth(this.$refs.input.$el) + 'px';
+                DomHandler.absolutePosition(this.overlay, this.$refs.input.$el);
+            }
+        },
         testStrength(str) {
             let level = 0;
 
@@ -59,97 +138,189 @@ export default {
 
             return level;
         },
-        createPanel() {
-            this.panel = document.createElement('div');
-            this.panel.className = 'p-password-panel p-component p-password-panel-overlay p-connected-overlay';
-            this.meter = document.createElement('div');
-            this.meter.className = 'p-password-meter';
-            this.info = document.createElement('div');
-            this.info.className = 'p-password-info';
-            this.info.textContent = this.promptLabel;
+        onInput(event)  {
+             this.$emit('update:modelValue', event.target.value)
+        },
+        onFocus() {
+            this.focused = true;
+            if (this.feedback) {
+                this.overlayVisible = true;
+            }
+        },
+        onBlur() {
+            this.focused = false;
+            if (this.feedback) {
+                this.overlayVisible = false;
+            }
+        },
+        onKeyUp(event) {
+            if (this.feedback) {
+                let value = event.target.value;
+                let label = null;
+                let meter = null;
 
-            this.panel.style.minWidth = DomHandler.getOuterWidth(this.$refs.input) + 'px';
-            this.panel.appendChild(this.meter);
-            this.panel.appendChild(this.info);
-            document.body.appendChild(this.panel);
+                switch (this.testStrength(value)) {
+                    case 1:
+                        label = this.weakText;
+                        meter = {
+                            strength: 'weak',
+                            width: '33.33%'
+                        };
+                        break;
+
+                    case 2:
+                        label = this.mediumText;
+                        meter = {
+                            strength: 'medium',
+                            width: '66.66%'
+                        };
+                        break;
+
+                    case 3:
+                        label = this.strongText;
+                        meter = {
+                            strength: 'strong',
+                            width: '100%'
+                        };
+                        break;
+
+                    default:
+                        label = this.promptText;
+                        meter = null;
+                        break;
+                }
+
+                this.meter = meter;
+                this.infoText = label;
+
+                if (!this.overlayVisible) {
+                    this.overlayVisible = true;
+                }
+            }
+        },
+        bindScrollListener() {
+            if (!this.scrollHandler) {
+                this.scrollHandler = new ConnectedOverlayScrollHandler(this.$refs.input.$el, () => {
+                    if (this.overlayVisible) {
+                        this.overlayVisible = false;
+                    }
+                });
+            }
+
+            this.scrollHandler.bindScrollListener();
+        },
+        unbindScrollListener() {
+            if (this.scrollHandler) {
+                this.scrollHandler.unbindScrollListener();
+            }
+        },
+        bindResizeListener() {
+            if (!this.resizeListener) {
+                this.resizeListener = () => {
+                    if (this.overlayVisible) {
+                        this.overlayVisible = false;
+                    }
+                };
+                window.addEventListener('resize', this.resizeListener);
+            }
+        },
+        unbindResizeListener() {
+            if (this.resizeListener) {
+                window.removeEventListener('resize', this.resizeListener);
+                this.resizeListener = null;
+            }
+        },
+        overlayRef(el) {
+            this.overlay = el;
+        },
+        onMaskToggle() {
+            this.unmasked = !this.unmasked;
+        },
+        onOverlayClick(event) {
+            OverlayEventBus.emit('overlay-click', {
+                originalEvent: event,
+                target: this.$el
+            });
         }
     },
     computed: {
-        listeners() {
-            let vm = this;
-
-            return {
-                ...this.$listeners,
-                input: event => this.$emit('input', event.target.value),
-                focus: event => {
-                    if (this.feedback) {
-                        if (!this.panel) {
-                            this.createPanel();
-                        }
-
-                        vm.panel.style.zIndex = String(DomHandler.generateZIndex());
-                        vm.panel.style.display = 'block';
-                        setTimeout(() => {
-                            DomHandler.addClass(this.panel, 'p-connected-overlay-visible');
-                            DomHandler.removeClass(this.panel, 'p-connected-overlay-hidden');
-                        }, 1);
-                        DomHandler.absolutePosition(this.panel, this.$refs.input);
-                    }
-
-                    this.$emit('focus', event);
-                },
-                blur: event => {
-                    if (this.panel) {
-                        DomHandler.addClass(this.panel, 'p-connected-overlay-hidden');
-                        DomHandler.removeClass(this.panel, 'p-connected-overlay-visible');
-
-                        setTimeout(() => {
-                            vm.panel.style.display = 'none';
-                            DomHandler.removeClass(this.panel, 'p-connected-overlay-hidden');
-                        }, 150);
-                    }
-
-                    this.$emit('blur', event);
-                },
-                keyup: event => {
-                    if(this.panel) {
-                        let value = event.target.value;
-                        let label = null;
-                        let meterPos = null;
-
-                        switch (this.testStrength(value)) {
-                            case 1:
-                                label = this.weakLabel;
-                                meterPos = '0px -10px';
-                                break;
-
-                            case 2:
-                                label = this.mediumLabel;
-                                meterPos = '0px -20px';
-                                break;
-
-                            case 3:
-                                label = this.strongLabel;
-                                meterPos = '0px -30px';
-                                break;
-
-                            default:
-                                label = this.promptLabel;
-                                meterPos = '0px 0px';
-                                break;
-                        }
-
-                        vm.meter.style.backgroundPosition = meterPos;
-                        vm.info.textContent = label;
-                    }
-
-                    this.$emit('keyup', event);
-                }
-            };
+        containerClass() {
+            return ['p-password p-component p-inputwrapper', this.class, {
+                'p-inputwrapper-filled': this.filled,
+                'p-inputwrapper-focus': this.focused,
+                'p-input-icon-right': this.toggleMask
+            }];
+        },
+        inputFieldClass() {
+            return ['p-password-input', this.inputClass, {
+                'p-disabled': this.$attrs.disabled
+            }];
+        },
+        panelStyleClass() {
+            return ['p-password-panel p-component', this.panelClass];
+        },
+        toggleIconClass() {
+            return this.unmasked ? 'pi pi-eye-slash' : 'pi pi-eye';
+        },
+        strengthClass() {
+            return `p-password-strength ${this.meter ? this.meter.strength : ''}`;
+        },
+        inputType() {
+            return this.unmasked ? 'text' : 'password';
         },
         filled() {
-            return (this.value != null && this.value.toString().length > 0)
+            return (this.modelValue != null && this.modelValue.toString().length > 0)
+        },
+        weakText() {
+            return this.weakLabel || this.$primevue.config.locale.weak;
+        },
+        mediumText() {
+            return this.mediumLabel || this.$primevue.config.locale.medium;
+        },
+        strongText() {
+            return this.strongLabel || this.$primevue.config.locale.strong;
+        },
+        promptText() {
+            return this.promptLabel || this.$primevue.config.locale.passwordPrompt;
+        },
+        appendDisabled() {
+            return this.appendTo === 'self';
+        },
+        appendTarget() {
+            return this.appendDisabled ? null : this.appendTo;
         }
+    },
+    components: {
+        'PInputText': InputText
     }
 }
 </script>
+
+<style>
+.p-password {
+    position: relative;
+    display: inline-flex;
+}
+
+.p-password-panel {
+    position: absolute;
+}
+
+.p-password .p-password-panel {
+    min-width: 100%;
+}
+
+.p-password-meter {
+    height: 10px;
+}
+
+.p-password-strength {
+    height: 100%;
+    width: 0%;
+    transition: width 1s ease-in-out;
+}
+
+.p-fluid .p-password {
+    display: flex;
+}
+</style>

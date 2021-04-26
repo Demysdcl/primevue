@@ -11,7 +11,7 @@
             <span class="p-tree-filter-icon pi pi-search"></span>
         </div>
         <ul class="p-tree-container" role="tree">
-            <TreeNode v-for="node of valueToRender" :key="node.key" :node="node" :templates="$scopedSlots"
+            <TreeNode v-for="node of valueToRender" :key="node.key" :node="node" :templates="$slots"
                 :expandedKeys="d_expandedKeys" @node-toggle="onNodeToggle" @node-click="onNodeClick"
                 :selectionMode="selectionMode" :selectionKeys="selectionKeys" @checkbox-change="onCheckboxChange"></TreeNode>
         </ul>
@@ -19,10 +19,11 @@
 </template>
 
 <script>
-import TreeNode from './TreeNode';
-import ObjectUtils from '../utils/ObjectUtils';
+import TreeNode from './TreeNode.vue';
+import {ObjectUtils} from 'primevue/utils';
 
 export default {
+    emits: ['node-expand', 'node-collapse', 'update:expandedKeys', 'update:selectionKeys', 'node-select', 'node-unselect'],
     props: {
         value: {
             type: null,
@@ -104,7 +105,7 @@ export default {
             if (this.selectionMode != null && event.node.selectable !== false) {
                 const metaSelection = event.nodeTouched ? false : this.metaKeySelection;
                 const _selectionKeys = metaSelection ? this.handleSelectionWithMetaKey(event) : this.handleSelectionWithoutMetaKey(event);
-
+                
                 this.$emit('update:selectionKeys', _selectionKeys);
             }
         },

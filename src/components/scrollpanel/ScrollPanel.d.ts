@@ -1,7 +1,12 @@
-import Vue, {VNode} from 'vue';
+import { VNode } from 'vue';
 
-export declare class ScrollPanel extends Vue {
+interface ScrollPanelProps {}
+
+declare class ScrollPanel {
+    $props: ScrollPanelProps;
     $slots: {
         '': VNode[];
     }
 }
+
+export default ScrollPanel;

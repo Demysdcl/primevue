@@ -1,14 +1,18 @@
 <template>
     <div class="layout-wrapper" :class="containerClass">
-        <a class="layout-news" href="https://www.primefaces.org/store" target="_blank" tabindex="-1" v-if="newsActive">
+        <div class="layout-news" v-if="newsActive">
             <div class="layout-news-container">
-                <img class="layouts-news-text-image" alt="easter" src="./assets/images/topbar-easter-2020-text.png">
-                <img class="layouts-news-mockup-image" alt="easter" src="./assets/images/topbar-easter-2020-ultima.png">
-                <a href="#" class="layout-news-close" @click="hideNews">
+                <a href="https://www.primefaces.org/store" target="_blank">
+                    <img class="layouts-news-mockup-image" src="./assets/images/topbar-primesale-2021.png">
+                </a>
+                <a href="https://www.primefaces.org/store" target="_blank" tabindex="-1" style="text-decoration: none" class="layout-news-button">
+                    LEARN MORE
+                </a>
+                <a tabindex="0" class="layout-news-close" @click="hideNews">
                     <i class="pi pi-times"></i>
                 </a>
             </div>
-        </a>
+        </div>
 
         <app-topbar @menubutton-click="onMenuButtonClick" @change-theme="changeTheme" :theme="theme" />
         <app-menu :active="sidebarActive" />
@@ -31,7 +35,7 @@ import AppTopBar from '@/AppTopBar.vue';
 import AppMenu from '@/AppMenu.vue';
 import AppFooter from '@/AppFooter.vue';
 import AppConfigurator from '@/AppConfigurator.vue';
-import EventBus from '@/EventBus';
+import EventBus from '@/AppEventBus';
 
 export default {
     data() {
@@ -45,6 +49,9 @@ export default {
         if (this.isOutdatedIE()) {
             this.$toast.add({severity: 'warn', summary: 'Limited Functionality', detail: 'Although PrimeVue supports IE11, ThemeSwitcher in this application cannot be not fully supported by your browser. Please use a modern browser for the best experience of the showcase.'});
         }
+
+        this.newsActive = this.newsActive && sessionStorage.getItem('primevue-news-hidden') == null;
+        this.initTheme();
     },
     watch: {
         $route: {
@@ -64,6 +71,22 @@ export default {
         }
     },
     methods: {
+        initTheme() {
+            let appTheme;
+            const queryString = window.location.search;
+            if (queryString)
+                appTheme = new URLSearchParams(queryString.substring(1)).get('theme');
+            else
+                appTheme = localStorage.getItem('theme');
+
+            if (appTheme) {
+                let darkTheme = this.isDarkTheme(appTheme);
+                this.changeTheme({
+                    theme: appTheme,
+                    dark: darkTheme
+                });
+            }
+        },
         onMenuButtonClick() {
             if (this.sidebarActive) {
                 this.sidebarActive = false;
@@ -80,6 +103,7 @@ export default {
         },
         hideNews() {
             this.newsActive = false;
+            sessionStorage.setItem('primevue-news-hidden', 'true');
         },
         changeTheme(event) {
             let themeElement = document.getElementById('theme-link');
@@ -88,12 +112,14 @@ export default {
 
             this.activeMenuIndex = null;
 
-            EventBus.$emit('change-theme', event);
+            EventBus.emit('change-theme', event);
             this.$appState.darkTheme = event.dark;
 
             if (event.theme.startsWith('md')) {
-                this.$primevue.ripple = true;
+                this.$primevue.config.ripple = true;
             }
+
+            localStorage.setItem('theme', this.theme);
         },
         addClass(element, className) {
             if (!this.hasClass(element, className)) {
@@ -122,6 +148,9 @@ export default {
             }
 
             return false;
+        },
+        isDarkTheme(theme) {
+            return theme.indexOf('dark') !== -1 || theme.indexOf('vela') !== -1 || theme.indexOf('arya') !== -1 || theme.indexOf('luna') !== -1;
         }
     },
     computed: {
@@ -129,7 +158,7 @@ export default {
             return [{
                 'layout-news-active': this.newsActive,
                 'p-input-filled': this.$appState.inputStyle === 'filled',
-                'p-ripple-disabled': this.$primevue.ripple === false
+                'p-ripple-disabled': this.$primevue.config.ripple === false
             }];
         }
     },

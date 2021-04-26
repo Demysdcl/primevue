@@ -5,6 +5,7 @@
                 <h1>Combo Chart</h1>
                 <p>Different chart types can be combined in the same graph.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -19,23 +20,25 @@
 
 <script>
 import ComboChartDoc from './ComboChartDoc';
-import EventBus from '@/EventBus';
+import EventBus from '@/AppEventBus';
 
 export default {
-     mounted() {
-        EventBus.$on('change-theme', event => {
+    themeChangeListener: null,
+    mounted() {
+        this.themeChangeListener = (event) => {
             if (event.dark)
                 this.applyDarkTheme();
             else
                 this.applyLightTheme();
-        });
+        };
+        EventBus.on('change-theme', this.themeChangeListener);
 
         if (this.isDarkTheme()) {
             this.applyDarkTheme();
         }
     },
-    beforeDestroy() {
-        EventBus.$off('change-theme');
+    beforeUnmount() {
+        EventBus.off('change-theme', this.themeChangeListener);
     },
     data() {
         return {

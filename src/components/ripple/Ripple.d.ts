@@ -1,3 +1,5 @@
-import Directive from 'vue';
+import { ObjectDirective } from 'vue';
 
-export declare interface Ripple extends Directive {}
+declare const Ripple: ObjectDirective;
+
+export default Ripple;

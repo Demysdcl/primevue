@@ -1,4 +1,4 @@
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 
 export interface PageState {
     first: number,
@@ -7,7 +7,7 @@ export interface PageState {
     pageCount: number
 }
 
-export declare class Paginator extends Vue {
+interface PaginatorProps {
     totalRecords?: number;
     rows?: number;
     first?: number;
@@ -16,9 +16,15 @@ export declare class Paginator extends Vue {
     template?: string;
     currentPageReportTemplate?: any;
     alwaysShow?: boolean;
+}
+
+declare class Paginator {
+    $props: PaginatorProps;
     $emit(eventName: 'page', event: PageState): this;
     $slots: {
         left: VNode[];
         right: VNode[];
     }
 }
+
+export default Paginator;

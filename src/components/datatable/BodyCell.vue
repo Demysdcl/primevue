@@ -1,20 +1,21 @@
 <template>
-    <td :style="column.bodyStyle" :class="containerClass" @click="onClick" @keydown="onKeyDown">
-        <ColumnSlot :data="rowData" :column="column" :index="index" type="body" v-if="column.$scopedSlots.body && !d_editing" />
-        <ColumnSlot :data="rowData" :column="column" :index="index" type="editor" v-else-if="column.$scopedSlots.editor && d_editing" />
-        <template v-else-if="column.selectionMode">
-            <DTRadioButton :value="rowData" :checked="selected" @change="toggleRowWithRadio" v-if="column.selectionMode === 'single'" />
-            <DTCheckbox :value="rowData" :checked="selected" @change="toggleRowWithCheckbox" v-else-if="column.selectionMode ==='multiple'" />
+    <td :style="containerStyle" :class="containerClass" @click="onClick" @keydown="onKeyDown" role="cell">
+        <span v-if="responsiveLayout === 'stack'" class="p-column-title">{{columnProp('header')}}</span>
+        <component :is="column.children.body" :data="rowData" :column="column" :index="index" :frozenRow="frozenRow" v-if="column.children && column.children.body && !d_editing" />
+        <component :is="column.children.editor" :data="rowData" :column="column" :index="index" :frozenRow="frozenRow" v-else-if="column.children && column.children.editor && d_editing" />
+        <template v-else-if="columnProp('selectionMode')">
+            <DTRadioButton :value="rowData" :checked="selected" @change="toggleRowWithRadio" v-if="column.props.selectionMode === 'single'" />
+            <DTCheckbox :value="rowData" :checked="selected" @change="toggleRowWithCheckbox" v-else-if="column.props.selectionMode ==='multiple'" />
         </template>
-        <template v-else-if="column.rowReorder">
-            <i :class="['p-datatable-reorderablerow-handle', column.rowReorderIcon]"></i>
+        <template v-else-if="columnProp('rowReorder')">
+            <i :class="['p-datatable-reorderablerow-handle', (columnProp('rowReorderIcon') || 'pi pi-bars')]"></i>
         </template>
-        <template v-else-if="column.expander">
+        <template v-else-if="columnProp('expander')">
             <button class="p-row-toggler p-link" @click="toggleRow" type="button" v-ripple>
                 <span :class="rowTogglerIcon"></span>
             </button>
         </template>
-        <template v-else-if="editMode === 'row' && column.rowEditor">
+        <template v-else-if="editMode === 'row' && columnProp('rowEditor')">
             <button class="p-row-editor-init p-link" v-if="!d_editing" @click="onRowEditInit" type="button" v-ripple>
                 <span class="p-row-editor-init-icon pi pi-fw pi-pencil"></span>
             </button>
@@ -30,14 +31,15 @@
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
-import ObjectUtils from '../utils/ObjectUtils';
-import ColumnSlot from './ColumnSlot.vue';
-import RowRadioButton from './RowRadioButton';
+import {DomHandler,ObjectUtils} from 'primevue/utils';
+import OverlayEventBus from 'primevue/overlayeventbus';
+import RowRadioButton from './RowRadioButton.vue';
 import RowCheckbox from './RowCheckbox.vue';
-import Ripple from '../ripple/Ripple';
+import Ripple from 'primevue/ripple';
 
 export default {
+    emits: ['cell-edit-init', 'cell-edit-complete', 'cell-edit-cancel', 'row-edit-init', 'row-edit-save', 'row-edit-cancel',
+            'row-toggle', 'radio-change', 'checkbox-change'],
     props: {
         rowData: {
             type: Object,
@@ -46,6 +48,10 @@ export default {
         column: {
             type: Object,
             default: null
+        },
+        frozenRow: {
+            type: Boolean,
+            default: false
         },
         index: {
             type: Number,
@@ -66,12 +72,19 @@ export default {
         editMode: {
             type: String,
             default: null
+        },
+        responsiveLayout: {
+            type: String,
+            default: 'stack'
         }
     },
     documentEditListener: null,
+    selfClick: false,
+    overlayEventListener: null,
     data() {
         return {
-            d_editing: this.editing
+            d_editing: this.editing,
+            styleObject: {}
         }
     },
     watch: {
@@ -80,18 +93,27 @@ export default {
         }
     },
     mounted() {
-        this.children = this.$children;
+        if (this.columnProp('frozen')) {
+            this.updateStickyPosition();
+        }
     },
     updated() {
-        let query = this.editMode === 'row' ? '[autofocus]' : 'input';
-        let focusable = DomHandler.findSingle(this.$el, query);
-        if (focusable && document.activeElement != focusable) {
-            focusable.focus();
+        if (this.columnProp('frozen')) {
+            this.updateStickyPosition();
+        }
+    },
+    beforeUnmount() {
+        if (this.overlayEventListener) {
+            OverlayEventBus.off('overlay-click', this.overlayEventListener);
+            this.overlayEventListener = null;
         }
     },
     methods: {
+        columnProp(prop) {
+            return this.column.props ? ((this.column.type.props[prop].type === Boolean && this.column.props[prop] === '') ? true : this.column.props[prop]) : null;
+        },
         resolveFieldData() {
-            return ObjectUtils.resolveFieldData(this.rowData, this.column.field);
+            return ObjectUtils.resolveFieldData(this.rowData, this.columnProp('field'));
         },
         toggleRow(event) {
             this.$emit('row-toggle', {
@@ -106,14 +128,15 @@ export default {
             this.$emit('checkbox-change', event);
         },
         isEditable() {
-            return this.column.$scopedSlots.editor != null;
+            return this.column.children && this.column.children.editor != null;
         },
         bindDocumentEditListener() {
             if (!this.documentEditListener) {
                 this.documentEditListener = (event) => {
-                    if (this.isOutsideClicked(event)) {
+                    if (!this.selfClick) {
                         this.completeEdit(event, 'outside');
                     }
+                    this.selfClick = false;
                 };
 
                 document.addEventListener('click', this.documentEditListener);
@@ -123,27 +146,38 @@ export default {
             if (this.documentEditListener) {
                 document.removeEventListener('click', this.documentEditListener);
                 this.documentEditListener = null;
+                this.selfClick = false;
             }
         },
         switchCellToViewMode() {
             this.d_editing = false;
             this.unbindDocumentEditListener();
-        },
-        isOutsideClicked(event) {
-            return !this.$el.contains(event.target) && !this.$el.isSameNode(event.target);
+            OverlayEventBus.off('overlay-click', this.overlayEventListener);
+            this.overlayEventListener = null;
         },
         onClick(event) {
-            if (this.editMode === 'cell' && this.isEditable() && !this.d_editing) {
-                this.d_editing = true;
-                this.bindDocumentEditListener();
-                this.$emit('cell-edit-init', {originalEvent: event, data: this.rowData, field: this.column.field, index: this.index});
+            if (this.editMode === 'cell' && this.isEditable()) {
+                this.selfClick = true;
+
+                if (!this.d_editing) {
+                    this.d_editing = true;
+                    this.bindDocumentEditListener();
+                    this.$emit('cell-edit-init', {originalEvent: event, data: this.rowData, field: this.columnProp('field'), index: this.index});
+
+                    this.overlayEventListener = (e) => {
+                        if (this.$el && this.$el.contains(e.target)) {
+                            this.selfClick = true;
+                        }
+                    }
+                    OverlayEventBus.on('overlay-click', this.overlayEventListener);
+                }
             }
         },
         completeEdit(event, type) {
             let completeEvent = {
                 originalEvent: event,
                 data: this.rowData,
-                field: this.column.field,
+                field: this.columnProp('field'),
                 index: this.index,
                 type: type,
                 defaultPrevented: false,
@@ -167,7 +201,7 @@ export default {
 
                     case 27:
                         this.switchCellToViewMode();
-                        this.$emit('cell-edit-cancel', {originalEvent: event, data: this.rowData, field: this.column.field, index: this.index});
+                        this.$emit('cell-edit-cancel', {originalEvent: event, data: this.rowData, field: this.columnProp('field'), index: this.index});
                     break;
 
                     case 9:
@@ -256,26 +290,56 @@ export default {
             return (DomHandler.find(this.$el, '.p-invalid').length === 0);
         },
         onRowEditInit(event) {
-            this.$emit('row-edit-init', {originalEvent: event, data: this.rowData, field: this.column.field, index: this.index});
+            this.$emit('row-edit-init', {originalEvent: event, data: this.rowData, field: this.columnProp('field'), index: this.index});
         },
         onRowEditSave(event) {
-            this.$emit('row-edit-save', {originalEvent: event, data: this.rowData, field: this.column.field, index: this.index});
+            this.$emit('row-edit-save', {originalEvent: event, data: this.rowData, field: this.columnProp('field'), index: this.index});
         },
         onRowEditCancel(event) {
-            this.$emit('row-edit-cancel', {originalEvent: event, data: this.rowData, field: this.column.field, index: this.index});
+            this.$emit('row-edit-cancel', {originalEvent: event, data: this.rowData, field: this.columnProp('field'), index: this.index});
+        },
+        updateStickyPosition() {
+            if (this.columnProp('frozen')) {
+                let align = this.columnProp('alignFrozen');
+                if (align === 'right') {
+                    let right = 0;
+                    let next = this.$el.nextElementSibling;
+                    if (next) {
+                        right = DomHandler.getOuterWidth(next) + parseFloat(next.style.left);
+                    }
+                    this.styleObject.right = right + 'px';
+                }
+                else {
+                    let left = 0;
+                    let prev = this.$el.previousElementSibling;
+                    if (prev) {
+                        left = DomHandler.getOuterWidth(prev) + parseFloat(prev.style.left);
+                    }
+                    this.styleObject.left = left + 'px';
+                }
+            }
         }
     },
     computed: {
         containerClass() {
-            return [this.column.bodyClass, {
-                'p-selection-column': this.column.selectionMode != null,
+            return [this.columnProp('bodyClass'), this.columnProp('class'), {
+                'p-selection-column': this.columnProp('selectionMode') != null,
                 'p-editable-column': this.isEditable(),
-                'p-cell-editing': this.d_editing
+                'p-cell-editing': this.d_editing,
+                'p-frozen-column': this.columnProp('frozen')
             }];
+        },
+        containerStyle() {
+            let bodyStyle = this.columnProp('bodyStyle');
+            let columnStyle = this.columnProp('style');
+
+            return this.columnProp('frozen') ? [columnStyle, bodyStyle, this.styleObject]: [columnStyle, bodyStyle];
+        },
+        eventBusKey() {
+            return this.columnProp('field') + '_' + this.index;
         }
     },
     components: {
-        'ColumnSlot': ColumnSlot,
         'DTRadioButton': RowRadioButton,
         'DTCheckbox': RowCheckbox
     },

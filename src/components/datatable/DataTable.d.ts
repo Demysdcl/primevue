@@ -1,6 +1,6 @@
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 
-export declare class DataTable extends Vue {
+interface DataTableProps {
     value?: any[];
     dataKey?: string;
     rows?: number;
@@ -16,7 +16,7 @@ export declare class DataTable extends Vue {
     lazy?: boolean;
     loading?: boolean;
     loadingIcon?: string;
-    sortField?: string;
+    sortField?: string | ((item: any) => any);
     sortOrder?: number;
     defaultSortOrder?: number;
     multiSortMeta?: any[];
@@ -26,7 +26,7 @@ export declare class DataTable extends Vue {
         [s: string]: any;
     };
     filterLocale?: string;
-    selection?: any[]|any;
+    selection?: any[] | any;
     selectionMode?: string;
     compareSelectionBy?: string;
     metaKeySelection?: boolean;
@@ -43,7 +43,7 @@ export declare class DataTable extends Vue {
     expandedRowIcon?: string;
     collapsedRowIcon?: string;
     rowGroupMode?: string;
-    groupRowsBy?: string[]|string;
+    groupRowsBy?: string[] | string;
     expandableRowGroups?: boolean;
     expandedRowGroups?: any[];
     stateStorage?: string;
@@ -54,10 +54,15 @@ export declare class DataTable extends Vue {
     scrollable?: boolean;
     scrollHeight?: string;
     frozenValue?: any[];
-    frozenWidth?: string;
-    virtualScroll?: boolean;
-    virtualRowHeight?: string;
-    virtualScrollDelay?: number;
+    responsiveLayout?: string;
+    breakpoing?: string;
+    showGridlines?: boolean;
+    stripedRows?: boolean;
+}
+
+declare class DataTable {
+    $props: DataTableProps;
+
     $emit(eventName: 'page', event: Event): this;
     $emit(eventName: 'sort', event: Event): this;
     $emit(eventName: 'filter', event: Event): this;
@@ -78,11 +83,14 @@ export declare class DataTable extends Vue {
     $emit(eventName: 'row-edit-init', event: Event): this;
     $emit(eventName: 'row-edit-save', event: Event): this;
     $emit(eventName: 'row-edit-cancel', event: Event): this;
+
     $slots: {
         header: VNode[];
         paginatorLeft: VNode[];
         paginatorRight: VNode[];
         empty: VNode[];
         footer: VNode[];
-    }
+    };
 }
+
+export default DataTable;

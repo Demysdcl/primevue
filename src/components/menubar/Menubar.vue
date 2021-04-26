@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import MenubarSub from './MenubarSub';
-import DomHandler from '../utils/DomHandler';
+import MenubarSub from './MenubarSub.vue';
+import {ZIndexUtils} from 'primevue/utils';
 
 export default {
     props: {
@@ -30,14 +30,24 @@ export default {
             mobileActive: false
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.mobileActive = false;
         this.unbindOutsideClickListener();
+        if (this.$refs.rootmenu && this.$refs.rootmenu.$el) {
+            ZIndexUtils.clear(this.$refs.rootmenu.$el);
+        }
     },
     methods: {
         toggle(event) {
-            this.mobileActive = !this.mobileActive;
-            this.$refs.rootmenu.$el.style.zIndex = String(DomHandler.generateZIndex());
+            if (this.mobileActive) {
+                this.mobileActive = false;
+                ZIndexUtils.clear(this.$refs.rootmenu.$el);
+            }
+            else {
+                this.mobileActive = true;
+                ZIndexUtils.set('menu', this.$refs.rootmenu.$el, this.$primevue.config.zIndex.menu);
+            }
+            
             this.bindOutsideClickListener();
             event.preventDefault();
         },

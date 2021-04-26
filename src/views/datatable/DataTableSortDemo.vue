@@ -5,17 +5,18 @@
 				<h1>DataTable <span>Sort</span></h1>
 				<p>Enabling sortable property on a column is enough to make a column sortable. Multiple column sorting is enabled using sortMode property and used with metaKey.</p>
 			</div>
+            <AppDemoActions />
 		</div>
 
 		<div class="content-section implementation">
             <div class="card">
                 <h5>Single Column</h5>
-                <DataTable :value="products">
-                    <Column field="code" header="Code" sortable></Column>
-                    <Column field="name" header="Name" sortable></Column>
-                    <Column field="category" header="Category" sortable></Column>
-                    <Column field="quantity" header="Quantity" sortable></Column>
-                    <Column field="price" header="Price" sortable>
+                <DataTable :value="products" responsiveLayout="scroll">
+                    <Column field="code" header="Code" :sortable="true"></Column>
+                    <Column field="name" header="Name" :sortable="true"></Column>
+                    <Column field="category" header="Category" :sortable="true"></Column>
+                    <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                    <Column field="price" header="Price" :sortable="true">
                         <template #body="slotProps">
                             {{formatCurrency(slotProps.data.price)}}
                         </template>
@@ -26,12 +27,12 @@
             <div class="card">
                 <h5>Multiple Columns</h5>
                 <p>Use metakey to add a column to the sort selection.</p>
-                <DataTable :value="products" sortMode="multiple">
-                    <Column field="code" header="Code" sortable></Column>
-                    <Column field="name" header="Name" sortable></Column>
-                    <Column field="category" header="Category" sortable></Column>
-                    <Column field="quantity" header="Quantity" sortable></Column>
-                    <Column field="price" header="Price" sortable>
+                <DataTable :value="products" sortMode="multiple" responsiveLayout="scroll">
+                    <Column field="code" header="Code" :sortable="true"></Column>
+                    <Column field="name" header="Name" :sortable="true"></Column>
+                    <Column field="category" header="Category" :sortable="true"></Column>
+                    <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                    <Column field="price" header="Price" :sortable="true">
                         <template #body="slotProps">
                             {{formatCurrency(slotProps.data.price)}}
                         </template>
@@ -41,12 +42,12 @@
 
             <div class="card">
                 <h5>Presort</h5>
-                <DataTable :value="products" sortField="category" :sortOrder="-1">
-                    <Column field="code" header="Code" sortable></Column>
-                    <Column field="name" header="Name" sortable></Column>
-                    <Column field="category" header="Category" sortable></Column>
-                    <Column field="quantity" header="Quantity" sortable></Column>
-                    <Column field="price" header="Price" sortable>
+                <DataTable :value="products" sortField="category" :sortOrder="-1" responsiveLayout="scroll">
+                    <Column field="code" header="Code" :sortable="true"></Column>
+                    <Column field="name" header="Name" :sortable="true"></Column>
+                    <Column field="category" header="Category" :sortable="true"></Column>
+                    <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                    <Column field="price" header="Price" :sortable="true">
                         <template #body="slotProps">
                             {{formatCurrency(slotProps.data.price)}}
                         </template>
@@ -56,12 +57,12 @@
 
             <div class="card">
                 <h5>Removable Sort</h5>
-                <DataTable :value="products" removableSort>
-                    <Column field="code" header="Code" sortable></Column>
-                    <Column field="name" header="Name" sortable></Column>
-                    <Column field="category" header="Category" sortable></Column>
-                    <Column field="quantity" header="Quantity" sortable></Column>
-                    <Column field="price" header="Price" sortable>
+                <DataTable :value="products" removableSort responsiveLayout="scroll">
+                    <Column field="code" header="Code" :sortable="true"></Column>
+                    <Column field="name" header="Name" :sortable="true"></Column>
+                    <Column field="category" header="Category" :sortable="true"></Column>
+                    <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                    <Column field="price" header="Price" :sortable="true">
                         <template #body="slotProps">
                             {{formatCurrency(slotProps.data.price)}}
                         </template>
@@ -70,76 +71,88 @@
             </div>
 		</div>
 
-        <div class="content-section documentation">
-            <TabView>
-                <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;div class="card"&gt;
-    &lt;h5&gt;Single Column&lt;/h5&gt;
-    &lt;DataTable :value="products"&gt;
-        &lt;Column field="code" header="Code" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="name" header="Name" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="category" header="Category" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="quantity" header="Quantity" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="price" header="Price" sortable&gt;
-            &lt;template #body="slotProps"&gt;
-                {{formatCurrency(slotProps.data.price)}}
-            &lt;/template&gt;
-        &lt;/Column&gt;
-    &lt;/DataTable&gt;
-&lt;/div&gt;
+        <AppDoc name="DataTableSortDemo" :sources="sources" :service="['ProductService']" :data="['products-small']" github="datatable/DataTableSortDemo.vue" />
 
-&lt;div class="card"&gt;
-    &lt;h5&gt;Multiple Columns&lt;/h5&gt;
-    &lt;p&gt;Use metakey to add a column to the sort selection.&lt;/p&gt;
-    &lt;DataTable :value="products" sortMode="multiple"&gt;
-        &lt;Column field="code" header="Code" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="name" header="Name" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="category" header="Category" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="quantity" header="Quantity" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="price" header="Price" sortable&gt;
-            &lt;template #body="slotProps"&gt;
-                {{formatCurrency(slotProps.data.price)}}
-            &lt;/template&gt;
-        &lt;/Column&gt;
-    &lt;/DataTable&gt;
-&lt;/div&gt;
-
-&lt;div class="card"&gt;
-    &lt;h5&gt;Presort&lt;/h5&gt;
-    &lt;DataTable :value="products" sortField="category" :sortOrder="-1"&gt;
-        &lt;Column field="code" header="Code" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="name" header="Name" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="category" header="Category" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="quantity" header="Quantity" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="price" header="Price" sortable&gt;
-            &lt;template #body="slotProps"&gt;
-                {{formatCurrency(slotProps.data.price)}}
-            &lt;/template&gt;
-        &lt;/Column&gt;
-    &lt;/DataTable&gt;
-&lt;/div&gt;
-
-&lt;div class="card"&gt;
-    &lt;h5&gt;Removable Sort&lt;/h5&gt;
-    &lt;DataTable :value="products" removableSort&gt;
-        &lt;Column field="code" header="Code" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="name" header="Name" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="category" header="Category" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="quantity" header="Quantity" sortable&gt;&lt;/Column&gt;
-        &lt;Column field="price" header="Price" sortable&gt;
-            &lt;template #body="slotProps"&gt;
-                {{formatCurrency(slotProps.data.price)}}
-            &lt;/template&gt;
-        &lt;/Column&gt;
-    &lt;/DataTable&gt;
-&lt;/div&gt;
+	</div>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
+<script>
 import ProductService from '../../service/ProductService';
+
+export default {
+    data() {
+        return {
+            products: null,
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+	<div>
+        <div class="card">
+            <h5>Single Column</h5>
+            <DataTable :value="products" responsiveLayout="scroll">
+                <Column field="code" header="Code" :sortable="true"></Column>
+                <Column field="name" header="Name" :sortable="true"></Column>
+                <Column field="category" header="Category" :sortable="true"></Column>
+                <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                <Column field="price" header="Price" :sortable="true">
+                    <template #body="slotProps">
+                        {{formatCurrency(slotProps.data.price)}}
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
+
+        <div class="card">
+            <h5>Multiple Columns</h5>
+            <DataTable :value="products" sortMode="multiple" responsiveLayout="scroll">
+                <Column field="code" header="Code" :sortable="true"></Column>
+                <Column field="name" header="Name" :sortable="true"></Column>
+                <Column field="category" header="Category" :sortable="true"></Column>
+                <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                <Column field="price" header="Price" :sortable="true">
+                    <template #body="slotProps">
+                        {{formatCurrency(slotProps.data.price)}}
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
+
+        <div class="card">
+            <h5>Presort</h5>
+            <DataTable :value="products" sortField="category" :sortOrder="-1" responsiveLayout="scroll">
+                <Column field="code" header="Code" :sortable="true"></Column>
+                <Column field="name" header="Name" :sortable="true"></Column>
+                <Column field="category" header="Category" :sortable="true"></Column>
+                <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                <Column field="price" header="Price" :sortable="true">
+                    <template #body="slotProps">
+                        {{formatCurrency(slotProps.data.price)}}
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
+
+        <div class="card">
+            <h5>Removable Sort</h5>
+            <DataTable :value="products" removableSort responsiveLayout="scroll">
+                <Column field="code" header="Code" :sortable="true"></Column>
+                <Column field="name" header="Name" :sortable="true"></Column>
+                <Column field="category" header="Category" :sortable="true"></Column>
+                <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                <Column field="price" header="Price" :sortable="true">
+                    <template #body="slotProps">
+                        {{formatCurrency(slotProps.data.price)}}
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
+    </div>
+</template>
+
+<script>
+import ProductService from './service/ProductService';
 
 export default {
     data() {
@@ -160,20 +173,100 @@ export default {
         }
     }
 }
-</CodeHighlight>
-                </TabPanel>
-            </TabView>
+<\\/script>                   
+`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+	<div>
+        <div class="card">
+            <h5>Single Column</h5>
+            <DataTable :value="products" responsiveLayout="scroll">
+                <Column field="code" header="Code" :sortable="true"></Column>
+                <Column field="name" header="Name" :sortable="true"></Column>
+                <Column field="category" header="Category" :sortable="true"></Column>
+                <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                <Column field="price" header="Price" :sortable="true">
+                    <template #body="slotProps">
+                        {{formatCurrency(slotProps.data.price)}}
+                    </template>
+                </Column>
+            </DataTable>
         </div>
-	</div>
+
+        <div class="card">
+            <h5>Multiple Columns</h5>
+            <DataTable :value="products" sortMode="multiple" responsiveLayout="scroll">
+                <Column field="code" header="Code" :sortable="true"></Column>
+                <Column field="name" header="Name" :sortable="true"></Column>
+                <Column field="category" header="Category" :sortable="true"></Column>
+                <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                <Column field="price" header="Price" :sortable="true">
+                    <template #body="slotProps">
+                        {{formatCurrency(slotProps.data.price)}}
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
+
+        <div class="card">
+            <h5>Presort</h5>
+            <DataTable :value="products" sortField="category" :sortOrder="-1" responsiveLayout="scroll">
+                <Column field="code" header="Code" :sortable="true"></Column>
+                <Column field="name" header="Name" :sortable="true"></Column>
+                <Column field="category" header="Category" :sortable="true"></Column>
+                <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                <Column field="price" header="Price" :sortable="true">
+                    <template #body="slotProps">
+                        {{formatCurrency(slotProps.data.price)}}
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
+
+        <div class="card">
+            <h5>Removable Sort</h5>
+            <DataTable :value="products" removableSort responsiveLayout="scroll">
+                <Column field="code" header="Code" :sortable="true"></Column>
+                <Column field="name" header="Name" :sortable="true"></Column>
+                <Column field="category" header="Category" :sortable="true"></Column>
+                <Column field="quantity" header="Quantity" :sortable="true"></Column>
+                <Column field="price" header="Price" :sortable="true">
+                    <template #body="slotProps">
+                        {{formatCurrency(slotProps.data.price)}}
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
+    </div>
 </template>
 
 <script>
-import ProductService from '../../service/ProductService';
+import { ref, onMounted } from 'vue';
+import ProductService from './service/ProductService';
 
 export default {
-    data() {
-        return {
-            products: null
+    setup() {
+        onMounted(() => {
+            productService.value.getProductsSmall().then(data => products.value = data);
+        })
+
+        const products = ref();
+        const productService = ref(new ProductService());
+        
+        const formatCurrency = (value) => {
+            return value.toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+        };
+
+        return { products, formatCurrency }
+    }
+}
+<\\/script>                   
+`
+                }
+            }
         }
     },
     productService: null,

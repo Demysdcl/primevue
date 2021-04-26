@@ -1,6 +1,10 @@
-import Vue from 'vue';
-
-export declare class MegaMenu extends Vue {
+interface MegaMenuProps {
     model?: any[];
     orientation?: string;
 }
+
+declare class MegaMenu {
+    $props: MegaMenuProps;
+}
+
+export default MegaMenu;

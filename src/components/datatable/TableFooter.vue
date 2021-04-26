@@ -1,26 +1,22 @@
 <template>
-    <tfoot class="p-datatable-tfoot" v-if="hasFooter">
-        <tr v-if="!columnGroup">
-            <td v-for="(col,i) of columns" :key="col.columnKey||col.field||i" :style="col.footerStyle" :class="col.footerClass"
-                :colspan="col.colspan" :rowspan="col.rowspan">
-                <DTColumnSlot :column="col" type="footer" v-if="col.$scopedSlots.footer" />
-                {{col.footer}}
-            </td>
+    <tfoot class="p-datatable-tfoot" v-if="hasFooter" role="rowgroup">
+        <tr v-if="!columnGroup" role="row">
+            <template v-for="(col,i) of columns" :key="columnProp(col,'columnKey')||columnProp(col,'field')||i" >
+                <DTFooterCell :column="col" />
+            </template>
         </tr>
         <template v-else>
-            <tr v-for="(row,i) of columnGroup.rows" :key="i">
-                <td v-for="(col,i) of row.columns" :key="col.columnKey||col.field||i" :style="col.footerStyle" :class="col.footerClass"
-                    :colspan="col.colspan" :rowspan="col.rowspan">
-                    <DTColumnSlot :column="col" type="footer" v-if="col.$scopedSlots.footer" />
-                    {{col.footer}}
-                </td>
+            <tr v-for="(row,i) of columnGroup.children.default()" :key="i" role="row">
+                <template v-for="(col,j) of row.children.default()" :key="columnProp(col,'columnKey')||columnProp(col,'field')||j">
+                    <DTFooterCell :column="col" />
+                </template>
             </tr>
         </template>
     </tfoot>
 </template>
 
 <script>
-import ColumnSlot from './ColumnSlot.vue';
+import FooterCell from './FooterCell.vue';
 
 export default {
     props: {
@@ -33,6 +29,11 @@ export default {
             default: null
         },
     },
+    methods: {
+        columnProp(col, prop) {
+            return col.props ? ((col.type.props[prop].type === Boolean && col.props[prop] === '') ? true : col.props[prop]) : null;
+        }
+    },
     computed: {
         hasFooter() {
             let hasFooter = false;
@@ -40,9 +41,9 @@ export default {
             if (this.columnGroup) {
                 hasFooter = true;
             }
-            else {
+            else if (this.columns) {
                 for (let col of this.columns) {
-                    if (col.footer || col.$scopedSlots.footer) {
+                    if (this.columnProp(col, 'footer') || (col.children && col.children.footer)) {
                         hasFooter = true;
                         break;
                     }
@@ -53,7 +54,7 @@ export default {
         }
     },
     components: {
-        'DTColumnSlot': ColumnSlot
+        'DTFooterCell': FooterCell
     }
 }
 </script>

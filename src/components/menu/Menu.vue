@@ -1,28 +1,32 @@
 <template>
-    <transition name="p-connected-overlay" @enter="onEnter" @leave="onLeave">
-        <div ref="container" :class="containerClass" v-if="popup ? overlayVisible : true">
-            <ul class="p-menu-list p-reset" role="menu">
-                <template v-for="(item, i) of model">
-                    <template v-if="item.items && visible(item) && !item.separator">
-                        <li class="p-submenu-header" :key="item.label+i" v-if="item.items">{{item.label}}</li>
-                        <template v-for="(child, j) of item.items">
-                            <Menuitem v-if="visible(child) && !child.separator" :key="child.label + i + j" :item="child" @click="itemClick" />
-                            <li v-else-if="visible(child) && child.separator" class="p-menu-separator" :style="child.style" :key="'separator' + i + j" role="separator"></li>
+    <Teleport :to="appendTo" :disabled="!popup">
+        <transition name="p-connected-overlay" @enter="onEnter" @leave="onLeave" @after-leave="onAfterLeave">
+            <div :ref="containerRef" :class="containerClass" v-if="popup ? overlayVisible : true" v-bind="$attrs" @click="onOverlayClick">
+                <ul class="p-menu-list p-reset" role="menu">
+                    <template v-for="(item, i) of model" :key="item.label + i.toString()">
+                        <template v-if="item.items && visible(item) && !item.separator">
+                            <li class="p-submenu-header" v-if="item.items">{{item.label}}</li>
+                            <template v-for="(child, j) of item.items" :key="child.label + i + j">
+                                <Menuitem v-if="visible(child) && !child.separator" :item="child" @click="itemClick" />
+                                <li v-else-if="visible(child) && child.separator" :class="['p-menu-separator', child.class]" :style="child.style" :key="'separator' + i + j" role="separator"></li>
+                            </template>
                         </template>
+                        <li v-else-if="visible(item) && item.separator" :class="['p-menu-separator', item.class]" :style="item.style" :key="'separator' + i.toString()" role="separator"></li>
+                        <Menuitem v-else :key="item.label + i.toString()" :item="item" @click="itemClick" />
                     </template>
-                    <li v-else-if="visible(item) && item.separator" class="p-menu-separator" :style="item.style" :key="'separator' + i" role="separator"></li>
-                    <Menuitem v-else :key="item.label+i" :item="item" @click="itemClick" />
-                </template>
-            </ul>
-        </div>
-    </transition>
+                </ul>
+            </div>
+        </transition>
+    </Teleport>
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
-import Menuitem from './Menuitem';
+import {ConnectedOverlayScrollHandler,DomHandler,ZIndexUtils} from 'primevue/utils';
+import OverlayEventBus from 'primevue/overlayeventbus';
+import Menuitem from './Menuitem.vue';
 
 export default {
+    inheritAttrs: false,
     props: {
         popup: {
             type: Boolean,
@@ -34,7 +38,7 @@ export default {
         },
         appendTo: {
             type: String,
-            default: null
+            default: 'body'
         },
         autoZIndex: {
             type: Boolean,
@@ -52,13 +56,23 @@ export default {
     },
     target: null,
     outsideClickListener: null,
+    scrollHandler: null,
     resizeListener: null,
-    relativeAlign: false,
-    beforeDestroy() {
-        this.restoreAppend();
+    container: null,
+    beforeUnmount() {
         this.unbindResizeListener();
         this.unbindOutsideClickListener();
+
+        if (this.scrollHandler) {
+            this.scrollHandler.destroy();
+            this.scrollHandler = null;
+        }
         this.target = null;
+        
+        if (this.container && this.autoZIndex) {
+            ZIndexUtils.clear(this.container);
+        }
+        this.container = null;
     },
     methods: {
         itemClick(event) {
@@ -69,8 +83,12 @@ export default {
 
             if (item.command) {
                 item.command(event);
-                event.originalEvent.preventDefault();
             }
+
+            if (item.to && event.navigate) {
+                event.navigate(event.originalEvent);
+            }
+
             this.hide();
         },
         toggle(event) {
@@ -81,39 +99,40 @@ export default {
         },
         show(event) {
             this.overlayVisible = true;
-            this.relativeAlign = event.relativeAlign;
             this.target = event.currentTarget;
         },
         hide() {
             this.overlayVisible = false;
-            this.target = false;
-            this.relativeAlign = false;
+            this.target = null;
         },
-        onEnter() {
-            this.appendContainer();
+        onEnter(el) {
             this.alignOverlay();
             this.bindOutsideClickListener();
             this.bindResizeListener();
+            this.bindScrollListener();
 
             if (this.autoZIndex) {
-                this.$refs.container.style.zIndex = String(this.baseZIndex + DomHandler.generateZIndex());
+                ZIndexUtils.set('menu', el, this.baseZIndex + this.$primevue.config.zIndex.menu);
             }
         },
         onLeave() {
             this.unbindOutsideClickListener();
             this.unbindResizeListener();
+            this.unbindScrollListener();
+        },
+        onAfterLeave(el) {
+            if (this.autoZIndex) {
+                ZIndexUtils.clear(el);
+            }
         },
         alignOverlay() {
-            if (this.relativeAlign)
-                DomHandler.relativePosition(this.$refs.container, this.target);
-            else
-                DomHandler.absolutePosition(this.$refs.container, this.target);
-
+            DomHandler.absolutePosition(this.container, this.target);
+            this.container.style.minWidth = DomHandler.getOuterWidth(this.target) + 'px';
         },
         bindOutsideClickListener() {
             if (!this.outsideClickListener) {
                 this.outsideClickListener = (event) => {
-                    if (this.overlayVisible && this.$refs.container && !this.$refs.container.contains(event.target) && !this.isTargetClicked(event)) {
+                    if (this.overlayVisible && this.container && !this.container.contains(event.target) && !this.isTargetClicked(event)) {
                         this.hide();
                     }
                 };
@@ -124,6 +143,22 @@ export default {
             if (this.outsideClickListener) {
                 document.removeEventListener('click', this.outsideClickListener);
                 this.outsideClickListener = null;
+            }
+        },
+        bindScrollListener() {
+            if (!this.scrollHandler) {
+                this.scrollHandler = new ConnectedOverlayScrollHandler(this.target, () => {
+                    if (this.overlayVisible) {
+                        this.hide();
+                    }
+                });
+            }
+
+            this.scrollHandler.bindScrollListener();
+        },
+        unbindScrollListener() {
+            if (this.scrollHandler) {
+                this.scrollHandler.unbindScrollListener();
             }
         },
         bindResizeListener() {
@@ -145,30 +180,17 @@ export default {
         isTargetClicked() {
             return this.target && (this.target === event.target || this.target.contains(event.target));
         },
-        appendContainer() {
-            if (this.appendTo) {
-                if (this.appendTo === 'body')
-                    document.body.appendChild(this.$refs.container);
-                else
-                    document.getElementById(this.appendTo).appendChild(this.$refs.container);
-            }
-        },
-        restoreAppend() {
-            if (this.$refs.container && this.appendTo) {
-                if (this.appendTo === 'body')
-                    document.body.removeChild(this.$refs.container);
-                else
-                    document.getElementById(this.appendTo).removeChild(this.$refs.container);
-            }
-        },
-        beforeDestroy() {
-            this.restoreAppend();
-            this.unbindResizeListener();
-            this.unbindOutsideClickListener();
-            this.target = null;
-        },
         visible(item) {
             return (typeof item.visible === 'function' ? item.visible() : item.visible !== false);
+        },
+        containerRef(el) {
+            this.container = el;
+        },
+        onOverlayClick(event) {
+            OverlayEventBus.emit('overlay-click', {
+                originalEvent: event,
+                target: this.target
+            });
         }
     },
     computed: {

@@ -24,10 +24,11 @@
 </template>
 
 <script>
-import UniqueComponentId from '../utils/UniqueComponentId';
-import Ripple from '../ripple/Ripple';
+import {UniqueComponentId} from 'primevue/utils';
+import Ripple from 'primevue/ripple';
 
 export default {
+    emits: ['update:collapsed', 'toggle'],
     props: {
         legend: String,
         toggleable: Boolean,
@@ -36,6 +37,11 @@ export default {
     data() {
         return {
            d_collapsed: this.collapsed
+        }
+    },
+    watch: {
+        collapsed(newValue) {
+            this.d_collapsed = newValue;
         }
     },
     methods: {

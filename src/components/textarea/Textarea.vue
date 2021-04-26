@@ -1,14 +1,14 @@
 <template>
-    <textarea :class="['p-inputtextarea p-inputtext p-component', {'p-filled': filled, 'p-inputtextarea-resizable ': autoResize}]" v-on="listeners" :value="value"></textarea>
+    <textarea :class="['p-inputtextarea p-inputtext p-component', {'p-filled': filled, 'p-inputtextarea-resizable ': autoResize}]" v-bind="$attrs" :value="modelValue" @input="onInput"></textarea>
 </template>
 
 <script>
 export default {
+    emits: ['update:modelValue'],
     props: {
-        value: null,
+        modelValue: null,
         autoResize: Boolean
     },
-    cachedScrollHeight: null,
     mounted() {
         if (this.$el.offsetParent && this.autoResize) {
             this.resize();
@@ -21,42 +21,29 @@ export default {
     },
     methods: {
         resize() {
-            if (!this.cachedScrollHeight) {
-                this.cachedScrollHeight = this.$el.scrollHeight;
+            const style = window.getComputedStyle(this.$el);
+            this.$el.style.height = 'auto';
+            this.$el.style.height = `calc(${style.borderTopWidth} + ${style.borderBottomWidth} + ${this.$el.scrollHeight}px)`;
+            
+            if (parseFloat(this.$el.style.height) >= parseFloat(this.$el.style.maxHeight)) {
+                this.$el.style.overflowY = "scroll";
+                this.$el.style.height = this.$el.style.maxHeight;
+            }
+            else {
                 this.$el.style.overflow = "hidden";
             }
-
-            if (this.cachedScrollHeight !== this.$el.scrollHeight) {
-                this.$el.style.height = ''
-                this.$el.style.height = this.$el.scrollHeight + 'px';
-
-                if (parseFloat(this.$el.style.height) >= parseFloat(this.$el.style.maxHeight)) {
-                    this.$el.style.overflowY = "scroll";
-                    this.$el.style.height = this.$el.style.maxHeight;
-                }
-                else {
-                    this.$el.style.overflow = "hidden";
-                }
-
-                this.cachedScrollHeight = this.$el.scrollHeight;
+        },
+        onInput(event) {
+             if (this.autoResize) {
+                this.resize();
             }
+
+            this.$emit('update:modelValue', event.target.value);
         }
     },
     computed: {
-        listeners() {
-            return {
-                ...this.$listeners,
-                input: event => {
-                    if (this.autoResize) {
-                        this.resize();
-                    }
-
-                    this.$emit('input', event.target.value);
-                }
-            };
-        },
         filled() {
-            return (this.value != null && this.value.toString().length > 0)
+            return (this.modelValue != null && this.modelValue.toString().length > 0)
         }
     }
 }

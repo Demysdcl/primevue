@@ -1,5 +1,9 @@
-import Vue from 'vue';
-
-export declare class ColumnGroup extends Vue {
+interface ColumnGroupProps {
     type?: string;
 }
+
+declare class ColumnGroup {
+    $props: ColumnGroupProps;
+}
+
+export default ColumnGroup;

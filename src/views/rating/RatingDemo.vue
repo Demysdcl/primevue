@@ -5,6 +5,7 @@
                 <h1>Rating</h1>
                 <p>Rating component is a star based selection input.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -16,10 +17,10 @@
                 <Rating v-model="val2" :cancel="false" />
 
                 <h5>ReadOnly</h5>
-                <Rating :value="5" :readonly="true" :stars="10" :cancel="false" />
+                <Rating :modelValue="5" :readonly="true" :stars="10" :cancel="false" />
 
                 <h5>Disabled</h5>
-                <Rating :value="8" :disabled="true" :stars="10" />
+                <Rating :modelValue="8" :disabled="true" :stars="10" />
             </div>
         </div>
 

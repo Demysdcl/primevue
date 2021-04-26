@@ -5,6 +5,7 @@
                 <h1>Pie Chart</h1>
                 <p>A pie chart is a circular statistical graphic, which is divided into slices to illustrate numerical proportion.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -19,19 +20,21 @@
 
 <script>
 import PieChartDoc from './PieChartDoc';
-import EventBus from '@/EventBus';
+import EventBus from '@/AppEventBus';
 
 export default {
+    themeChangeListener: null,
     mounted() {
-        EventBus.$on('change-theme', event => {
+        this.themeChangeListener = (event) => {
             if (event.dark)
                 this.chartOptions = this.getDarkTheme();
             else
                 this.chartOptions = this.getLightTheme();
-        });
+        }
+        EventBus.on('change-theme', this.themeChangeListener );
     },
-    beforeDestroy() {
-        EventBus.$off('change-theme');
+    beforeUnmount() {
+        EventBus.off('change-theme', this.themeChangeListener);
     },
     data() {
         return {

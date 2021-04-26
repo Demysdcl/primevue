@@ -1,43 +1,47 @@
 <template>
-    <div ref="mask" :class="maskClass" v-if="maskVisible" @click="onMaskClick">
-        <transition name="p-dialog" @before-enter="onBeforeEnter" @enter="onEnter" @before-leave="onBeforeLeave" @leave="onLeave" @after-leave="onAfterLeave" @appear="onAppear">
-            <div ref="dialog" :class="dialogClass" :style="dialogStyle" v-if="visible" v-bind="$attrs" v-on="listeners" role="dialog" :aria-labelledby="ariaLabelledById" :aria-modal="modal" @click.stop>
-                <div class="p-dialog-header" v-if="showHeader">
-                    <slot name="header">
-                        <span :id="ariaLabelledById" class="p-dialog-title" v-if="header" >{{header}}</span>
-                    </slot>
-                    <div class="p-dialog-header-icons">
-                        <button class="p-dialog-header-icon p-dialog-header-maximize p-link" @click="maximize" v-if="maximizable" type="button" tabindex="-1" v-ripple>
-                            <span :class="maximizeIconClass"></span>
-                        </button>
-                        <button class="p-dialog-header-icon p-dialog-header-close p-link" @click="close" v-if="closable" :aria-label="ariaCloseLabel" type="button" tabindex="-1" v-ripple>
-                            <span class="p-dialog-header-close-icon pi pi-times"></span>
-                        </button>
+    <Teleport to="body">
+        <div :ref="maskRef" :class="maskClass" v-if="containerVisible" @click="onMaskClick">
+            <transition name="p-dialog" @before-enter="onBeforeEnter" @enter="onEnter" @before-leave="onBeforeLeave" @leave="onLeave" @after-leave="onAfterLeave" appear>
+                <div :ref="containerRef" :class="dialogClass" v-if="visible" v-bind="$attrs" role="dialog" :aria-labelledby="ariaLabelledById" :aria-modal="modal">
+                    <div class="p-dialog-header" v-if="showHeader">
+                        <slot name="header">
+                            <span :id="ariaLabelledById" class="p-dialog-title" v-if="header">{{header}}</span>
+                        </slot>
+                        <div class="p-dialog-header-icons">
+                            <button class="p-dialog-header-icon p-dialog-header-maximize p-link" @click="maximize" v-if="maximizable" type="button" tabindex="-1" v-ripple>
+                                <span :class="maximizeIconClass"></span>
+                            </button>
+                            <button class="p-dialog-header-icon p-dialog-header-close p-link" @click="close" v-if="closable" :aria-label="ariaCloseLabel" type="button" tabindex="-1" v-ripple>
+                                <span class="p-dialog-header-close-icon pi pi-times"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div :class="contentStyleClass" :style="contentStyle">
+                        <slot></slot>
+                    </div>
+                    <div class="p-dialog-footer" v-if="footer || $slots.footer">
+                        <slot name="footer">{{footer}}</slot>
                     </div>
                 </div>
-                <div class="p-dialog-content" :style="contentStyle">
-                    <slot></slot>
-                </div>
-                <div class="p-dialog-footer" v-if="footer || $slots.footer">
-                    <slot name="footer">{{footer}}</slot>
-                </div>
-            </div>
-        </transition>
-    </div>
+            </transition>
+        </div>
+    </Teleport>
 </template>
+
 <script>
-import UniqueComponentId from '../utils/UniqueComponentId';
-import DomHandler from '../utils/DomHandler';
-import Ripple from '../ripple/Ripple';
+import {UniqueComponentId,DomHandler,ZIndexUtils} from 'primevue/utils';
+import Ripple from 'primevue/ripple';
 
 export default {
     inheritAttrs: false,
+    emits: ['update:visible','show','hide','maximize','unmaximize'],
     props: {
         header: null,
         footer: null,
         visible: Boolean,
         modal: Boolean,
         contentStyle: null,
+        contentClass: String,
         rtl: Boolean,
         maximizable: Boolean,
         dismissableMask: Boolean,
@@ -68,33 +72,42 @@ export default {
         position: {
             type: String,
             default: 'center'
+        },
+        breakpoints: {
+            type: Object,
+            default: null
         }
     },
     data() {
         return {
-            dialogClasses: null,
-            dialogStyles: null,
-            maskVisible: this.visible,
+            containerVisible: this.visible,
             maximized: false
         }
     },
     documentKeydownListener: null,
+    container: null,
+    mask: null,
+    styleElement: null,
     updated() {
-        this.removeStylesFromMask();
-
-        if (this.visible && !this.maskVisible) {
-            this.maskVisible = true;
+        if (this.visible) {
+            this.containerVisible = this.visible;
         }
+    },
+    beforeUnmount() {
+        this.unbindDocumentState();
+        this.destroyStyle();
+        
+        this.mask = null;
 
-        if (this.modal && this.$refs.mask && !DomHandler.hasClass(this.$refs.mask, 'p-component-overlay')) {
-            DomHandler.addClass(this.$refs.mask, 'p-component-overlay');
+        if (this.container && this.autoZIndex) {
+            ZIndexUtils.clear(this.container);
         }
+        this.container = null;
     },
     mounted() {
-        this.removeStylesFromMask();
-    },
-    beforeDestroy() {
-        this.disableDocumentSettings();
+        if (this.breakpoints) {
+            this.createStyle();
+        }
     },
     methods: {
         close() {
@@ -102,44 +115,51 @@ export default {
         },
         onBeforeEnter(el) {
             if (this.autoZIndex) {
-                el.style.zIndex = String(this.baseZIndex + DomHandler.generateZIndex());
+                ZIndexUtils.set('modal', el, this.baseZIndex + this.$primevue.config.zIndex.modal);
             }
+            
+            el.setAttribute(this.attributeSelector, '');
         },
         onEnter() {
-            this.$refs.mask.style.zIndex = String(parseInt(this.$refs.dialog.style.zIndex, 10) - 1);
+            this.mask.style.zIndex = String(parseInt(this.container.style.zIndex, 10) - 1);
 
             this.$emit('show');
             this.focus();
             this.enableDocumentSettings();
         },
         onBeforeLeave() {
-            DomHandler.addClass(this.$refs.mask, 'p-dialog-mask-leave');
+            DomHandler.addClass(this.mask, 'p-dialog-mask-leave');
         },
         onLeave() {
             this.$emit('hide');
         },
-        onAfterLeave() {
-            this.maskVisible = false;
-            this.disableDocumentSettings();
-        },
-        onAppear() {
-            if (this.visible) {
-                this.onEnter();
+        onAfterLeave(el) {
+            if (this.autoZIndex) {
+                ZIndexUtils.clear(el);
             }
+            this.containerVisible = false;
+            this.unbindDocumentState();
         },
-        onMaskClick() {
-            if (this.modal && this.closable && this.dismissableMask) {
+        onMaskClick(event) {
+            if (this.dismissableMask && this.closable && this.modal && this.mask === event.target) {
                 this.close();
             }
         },
         focus() {
-            let focusTarget = this.$refs.dialog.querySelector('[autofocus]');
+            let focusTarget = this.container.querySelector('[autofocus]');
             if (focusTarget) {
                 focusTarget.focus();
             }
         },
-        maximize() {
-            this.maximized = !this.maximized;
+        maximize(event) {
+            if (this.maximized) {
+                this.maximized = false;
+                this.$emit('unmaximize', event);
+            }
+            else {
+                this.maximized = true;
+                this.$emit('maximize', event);
+            }
 
             if (!this.modal) {
                 if (this.maximized)
@@ -157,7 +177,7 @@ export default {
                 DomHandler.addClass(document.body, 'p-overflow-hidden');
             }
         },
-        disableDocumentSettings() {
+        unbindDocumentState() {
             if (this.modal) {
                 DomHandler.removeClass(document.body, 'p-overflow-hidden');
                 this.unbindDocumentKeydownListener();
@@ -169,7 +189,7 @@ export default {
         onKeyDown(event) {
             if (event.which === 9) {
                 event.preventDefault();
-                let focusableElements = DomHandler.getFocusableElements(this.$refs.dialog);
+                let focusableElements = DomHandler.getFocusableElements(this.container);
                 if (focusableElements && focusableElements.length > 0) {
                     if (!document.activeElement) {
                         focusableElements[0].focus();
@@ -212,36 +232,48 @@ export default {
 
             return pos ? `p-dialog-${pos}` : '';
         },
-        removeStylesFromMask() {
-            if (this.$refs.mask) {
-                this.dialogStyles = this.$vnode.data.style;
-                if (this.dialogStyles) {
-                    Object.keys(this.dialogStyles).forEach((key) => {
-                        this.$refs.mask.style[key] = '';
-                    });
-                }
+        containerRef(el) {
+            this.container = el;
+        },
+        maskRef(el) {
+            this.mask = el;
+        },
+        createStyle() {
+			if (!this.styleElement) {
+				this.styleElement = document.createElement('style');
+				this.styleElement.type = 'text/css';
+				document.head.appendChild(this.styleElement);
 
-                this.dialogClasses = this.$vnode.data.class || this.$vnode.data.staticClass;
-                if (this.dialogClasses) {
-                    this.$refs.mask.classList = 'p-dialog-mask' + (this.modal && ' p-component-overlay ') + this.getPositionClass();
+                let innerHTML = '';
+                for (let breakpoint in this.breakpoints) {
+                    innerHTML += `
+                        @media screen and (max-width: ${breakpoint}) {
+                            .p-dialog[${this.attributeSelector}] {
+                                width: ${this.breakpoints[breakpoint]} !important;
+                            }
+                        }
+                    `
                 }
+                
+                this.styleElement.innerHTML = innerHTML;
+			}
+		},
+        destroyStyle() {
+            if (this.styleElement) {
+                document.head.removeChild(this.styleElement);
+                this.styleElement = null;
             }
         }
     },
     computed: {
-        listeners() {
-            return {
-                ...this.$listeners
-            };
-        },
         maskClass() {
-            return ['p-dialog-mask', this.getPositionClass()];
+            return ['p-dialog-mask', {'p-component-overlay': this.modal}, this.getPositionClass()];
         },
         dialogClass() {
             return ['p-dialog p-component', {
                 'p-dialog-rtl': this.rtl,
                 'p-dialog-maximized': this.maximizable && this.maximized
-            }, this.dialogClasses];
+            }];
         },
         maximizeIconClass() {
             return ['p-dialog-header-maximize-icon pi', {
@@ -249,14 +281,17 @@ export default {
                 'pi-window-minimize': this.maximized
             }];
         },
-        dialogStyle() {
-            return this.dialogStyles;
-        },
         ariaId() {
             return UniqueComponentId();
         },
         ariaLabelledById() {
             return this.header != null ? this.ariaId + '_header' : null;
+        },
+        attributeSelector() {
+            return UniqueComponentId();
+        },
+        contentStyleClass() {
+            return ['p-dialog-content', this.contentClass];
         }
     },
     directives: {
@@ -299,10 +334,11 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-shrink: 0;
 }
 
-.p-dialog-title {
-    list-style: 1;
+.p-dialog-footer {
+    flex-shrink: 0;
 }
 
 .p-dialog .p-dialog-header-icons {
@@ -331,7 +367,7 @@ export default {
 .p-dialog-leave-active {
     transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
-.p-dialog-enter,
+.p-dialog-enter-from,
 .p-dialog-leave-to {
     opacity: 0;
     transform: scale(0.7);
@@ -371,27 +407,27 @@ export default {
 .p-dialog-bottomright .p-dialog-leave-active {
     transition: all .3s ease-out;
 }
-.p-dialog-top .p-dialog-enter,
+.p-dialog-top .p-dialog-enter-from,
 .p-dialog-top .p-dialog-leave-to {
     transform: translate3d(0px, -100%, 0px);
 }
-.p-dialog-bottom .p-dialog-enter,
+.p-dialog-bottom .p-dialog-enter-from,
 .p-dialog-bottom .p-dialog-leave-to {
     transform: translate3d(0px, 100%, 0px);
 }
-.p-dialog-left .p-dialog-enter,
+.p-dialog-left .p-dialog-enter-from,
 .p-dialog-left .p-dialog-leave-to,
-.p-dialog-topleft .p-dialog-enter,
+.p-dialog-topleft .p-dialog-enter-from,
 .p-dialog-topleft .p-dialog-leave-to,
-.p-dialog-bottomleft .p-dialog-enter,
+.p-dialog-bottomleft .p-dialog-enter-from,
 .p-dialog-bottomleft .p-dialog-leave-to {
     transform: translate3d(-100%, 0px, 0px);
 }
-.p-dialog-right .p-dialog-enter,
+.p-dialog-right .p-dialog-enter-from,
 .p-dialog-right .p-dialog-leave-to,
-.p-dialog-topright .p-dialog-enter,
+.p-dialog-topright .p-dialog-enter-from,
 .p-dialog-topright .p-dialog-leave-to,
-.p-dialog-bottomright .p-dialog-enter,
+.p-dialog-bottomright .p-dialog-enter-from,
 .p-dialog-bottomright .p-dialog-leave-to {
     transform: translate3d(100%, 0px, 0px);
 }
@@ -437,5 +473,10 @@ export default {
 .p-dialog-bottomright {
     justify-content: flex-end;
     align-items: flex-end;
+}
+
+.p-confirm-dialog .p-dialog-content {
+    display: flex;
+    align-items: center;
 }
 </style>

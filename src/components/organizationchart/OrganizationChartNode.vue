@@ -4,7 +4,7 @@
             <tr v-if="node">
                 <td :colspan="colspan">
                     <div :class="nodeContentClass" @click="onNodeClick">
-                        <OrganizationChartNodeTemplate :node="node" :template="templates[node.type]||templates['default']" />
+                        <component :is="templates[node.type]||templates['default']" :node="node" />
                         <a v-if="toggleable" tabindex="0" class="p-node-toggler" @click="toggleNode" @keydown.enter="toggleNode">
                             <i class="p-node-toggler-icon pi" :class="{'pi-chevron-down': expanded, 'pi-chevron-up': !expanded}"></i>
                         </a>
@@ -23,9 +23,9 @@
                     </td>
                 </template>
                 <template v-if="node.children && node.children.length > 1">
-                    <template v-for="(child,i) of node.children">
-                        <td :key="child.key + '_left'" class="p-organizationchart-line-left" :class="{'p-organizationchart-line-top': !(i === 0)}">&nbsp;</td>
-                        <td :key="child.key + '_right'" class="p-organizationchart-line-right" :class="{'p-organizationchart-line-top': !(i === (node.children.length - 1))}">&nbsp;</td>
+                    <template v-for="(child,i) of node.children" :key="child.key">
+                        <td class="p-organizationchart-line-left" :class="{'p-organizationchart-line-top': !(i === 0)}">&nbsp;</td>
+                        <td class="p-organizationchart-line-right" :class="{'p-organizationchart-line-top': !(i === (node.children.length - 1))}">&nbsp;</td>
                     </template>
                 </template>
             </tr>
@@ -40,29 +40,10 @@
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
-
-const OrganizationChartNodeTemplate = {
-    functional: true,
-    props: {
-        node: {
-            type: null,
-            default: null
-        },
-        template: {
-            type: null,
-            default: null
-        }
-    },
-    render(createElement, context) {
-        const content = context.props.template({
-            'node': context.props.node
-        });
-        return [content];
-    }
-};
+import {DomHandler} from 'primevue/utils';
 
 export default {
+    emits: ['node-click', 'node-toggle'],
     name: 'sub-node',
     props: {
         node: {
@@ -137,9 +118,6 @@ export default {
         toggleable() {
             return this.collapsible && this.node.collapsible !== false && !this.leaf;
         }
-    },
-    components: {
-        'OrganizationChartNodeTemplate': OrganizationChartNodeTemplate
     }
 }
 </script>

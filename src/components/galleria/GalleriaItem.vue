@@ -5,13 +5,13 @@
             <span class="p-galleria-item-prev-icon pi pi-chevron-left"></span>
         </button>
         <div class="p-galleria-item">
-            <GalleriaItemSlot type="item" :item="activeItem" :templates="templates" />
+            <component :is="templates.item" :item="activeItem" v-if="templates.item" />
         </div>
         <button v-if="showItemNavigators" type="button" :class="navForwardClass" @click="navForward($event)" :disabled="isNavForwardDisabled()" v-ripple>
             <span class="p-galleria-item-next-icon pi pi-chevron-right"></span>
         </button>
         <div class="p-galleria-caption" v-if="templates['caption']">
-            <GalleriaItemSlot type="caption" :item="activeItem" :templates="templates" />
+            <component :is="templates.caption" :item="activeItem" v-if="templates.caption" />
         </div>
     </div>
     <ul v-if="showIndicators" class="p-galleria-indicators p-reset">
@@ -19,17 +19,17 @@
             @click="onIndicatorClick(index)" @mouseenter="onIndicatorMouseEnter(index)" @keydown.enter="onIndicatorKeyDown(index)"
             :class="['p-galleria-indicator', {'p-highlight': isIndicatorItemActive(index)}]">
             <button type="button" tabindex="-1" class="p-link" v-if="!templates['indicator']"></button>
-            <GalleriaItemSlot type="indicator" :index="index" :templates="templates" />
+            <component :is="templates.indicator" :index="index" v-if="templates.indicator" />
         </li>
     </ul>
   </div>
 </template>
 
 <script>
-import GalleriaItemSlot from './GalleriaItemSlot';
-import Ripple from '../ripple/Ripple';
+import Ripple from 'primevue/ripple';
 
 export default {
+    emits: ['start-slideshow', 'stop-slideshow', 'update:activeIndex'],
     props: {
         circular: {
             type: Boolean,
@@ -70,7 +70,7 @@ export default {
     },
     mounted() {
         if (this.autoPlay) {
-            this.$emit('startSlideShow');
+            this.$emit('start-slideshow');
         }
     },
     methods: {
@@ -92,7 +92,7 @@ export default {
         },
         stopSlideShow() {
             if (this.slideShowActive && this.stopSlideShow) {
-                this.$emit('stopSlideShow');
+                this.$emit('stop-slideshow');
             }
         },
         navBackward(e) {
@@ -151,9 +151,6 @@ export default {
                 'p-disabled': this.isNavForwardDisabled()
             }];
         }
-    },
-    components: {
-        'GalleriaItemSlot': GalleriaItemSlot
     },
     directives: {
         'ripple': Ripple

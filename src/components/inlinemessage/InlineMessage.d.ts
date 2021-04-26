@@ -1,8 +1,14 @@
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 
-export declare class InlineMessage extends Vue {
+interface InlineMessageProps {
     severity?: string;
+}
+
+declare class InlineMessage {
+    $props: InlineMessageProps;
     $slots: {
         '': VNode[];
     }
 }
+
+export default InlineMessage;

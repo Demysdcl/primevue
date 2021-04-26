@@ -1,16 +1,19 @@
 <template>
-    <transition name="p-contextmenu" @enter="onEnter" @leave="onLeave">
-        <div ref="container" class="p-contextmenu p-component" v-if="visible">
-            <ContextMenuSub :model="model" :root="true" @leaf-click="onLeafClick" />
-        </div>
-    </transition>
+    <Teleport :to="appendTo">
+        <transition name="p-contextmenu" @enter="onEnter" @leave="onLeave" @after-leave="onAfterLeave">
+            <div :ref="containerRef" class="p-contextmenu p-component" v-if="visible" v-bind="$attrs">
+                <ContextMenuSub :model="model" :root="true" @leaf-click="onLeafClick" />
+            </div>
+        </transition>
+    </Teleport>
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
-import ContextMenuSub from './ContextMenuSub';
+import {DomHandler,ZIndexUtils} from 'primevue/utils';
+import ContextMenuSub from './ContextMenuSub.vue';
 
 export default {
+    inheritAttrs: false,
     props: {
 		model: {
             type: Array,
@@ -18,7 +21,7 @@ export default {
         },
         appendTo: {
             type: String,
-            default: null
+            default: 'body'
         },
         autoZIndex: {
             type: Boolean,
@@ -39,16 +42,21 @@ export default {
     documentContextMenuListener: null,
     pageX: null,
     pageY: null,
+    container: null,
     data() {
         return {
             visible: false
         };
     },
-    beforeDestroy() {
-        this.restoreAppend();
+    beforeUnmount() {
         this.unbindResizeListener();
         this.unbindOutsideClickListener();
         this.unbindDocumentContextMenuListener();
+
+        if (this.container && this.autoZIndex) {
+            ZIndexUtils.clear(this.container);
+        }
+        this.container = null;
     },
     mounted() {
         if (this.global) {
@@ -88,25 +96,29 @@ export default {
         hide() {
             this.visible = false;
         },
-        onEnter() {
-            this.appendContainer();
+        onEnter(el) {
             this.position();
             this.bindOutsideClickListener();
             this.bindResizeListener();
 
             if (this.autoZIndex) {
-                this.$refs.container.style.zIndex = String(this.baseZIndex + DomHandler.generateZIndex());
+                ZIndexUtils.set('menu', el, this.baseZIndex + this.$primevue.config.zIndex.menu);
             }
         },
         onLeave() {
             this.unbindOutsideClickListener();
             this.unbindResizeListener();
         },
+        onAfterLeave(el) {
+            if (this.autoZIndex) {
+                ZIndexUtils.clear(el);
+            }
+        },
         position() {
             let left = this.pageX + 1;
             let top = this.pageY + 1;
-            let width = this.$refs.container.offsetParent ? this.$refs.container.offsetWidth : DomHandler.getHiddenElementOuterWidth(this.$refs.container);
-            let height = this.$refs.container.offsetParent ? this.$refs.container.offsetHeight : DomHandler.getHiddenElementOuterHeight(this.$refs.container);
+            let width = this.container.offsetParent ? this.container.offsetWidth : DomHandler.getHiddenElementOuterWidth(this.container);
+            let height = this.container.offsetParent ? this.container.offsetHeight : DomHandler.getHiddenElementOuterHeight(this.container);
             let viewport = DomHandler.getViewport();
 
             //flip
@@ -129,13 +141,13 @@ export default {
                 top = document.body.scrollTop;
             }
 
-            this.$refs.container.style.left = left + 'px';
-            this.$refs.container.style.top = top + 'px';
+            this.container.style.left = left + 'px';
+            this.container.style.top = top + 'px';
         },
         bindOutsideClickListener() {
             if (!this.outsideClickListener) {
                 this.outsideClickListener = (event) => {
-                    if (this.visible && this.$refs.container && !this.$refs.container.contains(event.target)) {
+                    if (this.visible && this.container && !this.container.contains(event.target) && !event.ctrlKey) {
                         this.hide();
                     }
                 };
@@ -164,22 +176,6 @@ export default {
                 this.resizeListener = null;
             }
         },
-        appendContainer() {
-            if (this.appendTo) {
-                if (this.appendTo === 'body')
-                    document.body.appendChild(this.$refs.container);
-                else
-                    document.getElementById(this.appendTo).appendChild(this.$refs.container);
-            }
-        },
-        restoreAppend() {
-            if (this.$refs.container && this.appendTo) {
-                if (this.appendTo === 'body')
-                    document.body.removeChild(this.$refs.container);
-                else
-                    document.getElementById(this.appendTo).removeChild(this.$refs.container);
-            }
-        },
         bindDocumentContextMenuListener() {
             if (!this.documentContextMenuListener) {
                 this.documentContextMenuListener = (event) => {
@@ -194,6 +190,9 @@ export default {
                 document.removeEventListener('contextmenu', this.documentContextMenuListener);
                 this.documentContextMenuListener = null;
             }
+        },
+        containerRef(el) {
+            this.container = el;
         }
     },
     components: {
@@ -240,7 +239,7 @@ export default {
     margin-left: auto;
 }
 
-.p-contextmenu-enter {
+.p-contextmenu-enter-from {
     opacity: 0;
 }
 

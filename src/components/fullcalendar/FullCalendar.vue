@@ -34,7 +34,7 @@ export default {
             this.initialize();
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         if (this.calendar) {
             this.calendar.destroy();
             this.calendar = null;
@@ -42,7 +42,7 @@ export default {
     },
     methods: {
         initialize() {
-            let defaultConfig = {theme: false};
+            let defaultConfig = {themeSystem: 'standard'};
             let config = this.options ? {...this.options, ...defaultConfig} : defaultConfig;
             this.calendar = new Calendar(this.$el, config);
             this.calendar.render();

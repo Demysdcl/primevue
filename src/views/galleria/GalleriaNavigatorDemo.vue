@@ -10,7 +10,7 @@
         <div class="content-section implementation">
             <div class="card">
                 <h5>Item Navigators and Thumbnails</h5>
-                <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" style="max-width: 640px"
+                <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" containerStyle="max-width: 640px"
                     :showItemNavigators="true">
                     <template #item="slotProps">
                         <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block;" />
@@ -23,7 +23,7 @@
 
             <div class="card">
                 <h5>Item Navigators without Thumbnails</h5>
-                <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" style="max-width: 640px"
+                <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" containerStyle="max-width: 640px"
                     :showItemNavigators="true" :showThumbnails="false">
                     <template #item="slotProps">
                         <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block;" />
@@ -36,7 +36,7 @@
 
             <div class="card">
                 <h5>Item Navigators on Hover</h5>
-                <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" style="max-width: 640px;"
+                <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" containerStyle="max-width: 640px"
                     :showItemNavigators="true" :showItemNavigatorsOnHover="true">
                     <template #item="slotProps">
                         <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block;" />
@@ -49,7 +49,7 @@
 
             <div class="card">
                 <h5>Item Navigators and Indicators</h5>
-                <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" style="max-width: 640px;"
+                <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" containerStyle="max-width: 640px"
                     :showItemNavigators="true" :showThumbnails="false" :showItemNavigatorsOnHover="true" :showIndicators="true">
                     <template #item="slotProps">
                         <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block;" />
@@ -64,10 +64,9 @@
         <div class="content-section documentation">
             <TabView>
                 <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
+<pre v-code><code><template v-pre>
 &lt;h3&gt;Item Navigators and Thumbnails&lt;/h3&gt;
-&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" style="max-width: 640px"
+&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" containerStyle="max-width: 640px"
     :showItemNavigators="true"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block;" /&gt;
@@ -78,7 +77,7 @@
 &lt;/Galleria&gt;
 
 &lt;h3&gt;Item Navigators without Thumbnails&lt;/h3&gt;
-&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" style="max-width: 640px"
+&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" containerStyle="max-width: 640px"
     :showItemNavigators="true" :showThumbnails="false"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block;" /&gt;
@@ -89,7 +88,7 @@
 &lt;/Galleria&gt;
 
 &lt;h3&gt;Item Navigators on Hover&lt;/h3&gt;
-&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" style="max-width: 640px;"
+&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" containerStyle="max-width: 640px"
     :showItemNavigators="true" :showItemNavigatorsOnHover="true"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block;" /&gt;
@@ -100,7 +99,7 @@
 &lt;/Galleria&gt;
 
 &lt;h3&gt;Item Navigators and Indicators&lt;/h3&gt;
-&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" style="max-width: 640px;"
+&lt;Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" containerStyle="max-width: 640px"
     :showItemNavigators="true" :showThumbnails="false" :showItemNavigatorsOnHover="true" :showIndicators="true"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block;" /&gt;
@@ -110,9 +109,9 @@
     &lt;/template&gt;
 &lt;/Galleria&gt;
 </template>
-</CodeHighlight>
+</code></pre>
 
-<CodeHighlight lang="javascript">
+<pre v-code.script><code>
 import PhotoService from '../../service/PhotoService';
 
 export default {
@@ -143,7 +142,8 @@ export default {
 		this.galleriaService.getImages().then(data => this.images = data);
     }
 }
-</CodeHighlight>
+
+</code></pre>
                 </TabPanel>
             </TabView>
         </div>

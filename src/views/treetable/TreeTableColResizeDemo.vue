@@ -6,12 +6,13 @@
 				<p>Columns can be resized using drag drop by setting the resizableColumns to true. There are two resize modes; "fit" and "expand". Fit is the default one and the overall table width does not change when a column is resized.
                     In "expand" mode, table width also changes along with the column width.</p>
 			</div>
+            <AppDemoActions />
 		</div>
 
         <div class="content-section implementation">
             <div class="card">
                 <h5>Fit Mode</h5>
-                <TreeTable :value="nodes" :resizableColumns="true" columnResizeMode="fit">
+                <TreeTable :value="nodes" :resizableColumns="true" columnResizeMode="fit" showGridlines>
                     <Column field="name" header="Name" :expander="true"></Column>
                     <Column field="size" header="Size"></Column>
                     <Column field="type" header="Type"></Column>
@@ -20,7 +21,7 @@
 
             <div class="card">
                 <h5>Expand Mode</h5>
-                <TreeTable :value="nodes" :resizableColumns="true" columnResizeMode="expand">
+                <TreeTable :value="nodes" :resizableColumns="true" columnResizeMode="expand" showGridlines>
                     <Column field="name" header="Name" :expander="true"></Column>
                     <Column field="size" header="Size"></Column>
                     <Column field="type" header="Type"></Column>
@@ -28,29 +29,46 @@
             </div>
         </div>
 
-        <div class="content-section documentation">
-            <TabView>
-                <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;h3&gt;Fit Mode&lt;/h3&gt;
-&lt;TreeTable :value="nodes" :resizableColumns="true" columnResizeMode="fit"&gt;
-    &lt;Column field="name" header="Name" :expander="true"&gt;&lt;/Column&gt;
-    &lt;Column field="size" header="Size"&gt;&lt;/Column&gt;
-    &lt;Column field="type" header="Type"&gt;&lt;/Column&gt;
-&lt;/TreeTable&gt;
-
-&lt;h3&gt;Expand Mode&lt;/h3&gt;
-&lt;TreeTable :value="nodes" :resizableColumns="true" columnResizeMode="expand"&gt;
-    &lt;Column field="name" header="Name" :expander="true"&gt;&lt;/Column&gt;
-    &lt;Column field="size" header="Size"&gt;&lt;/Column&gt;
-    &lt;Column field="type" header="Type"&gt;&lt;/Column&gt;
-&lt;/TreeTable&gt;
+        <AppDoc name="TreeTableColResizeDemo" :sources="sources" :service="['NodeService']" :data="['treetablenodes']" github="treetable/TreeTableColResizeDemo.vue" />
+                
+    </div>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
+<script>
 import NodeService from '../../service/NodeService';
+
+export default {
+    data() {
+        return {
+            nodes: null,
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+    <div>
+        <div class="card">
+            <h5>Fit Mode</h5>
+            <TreeTable :value="nodes" :resizableColumns="true" columnResizeMode="fit" showGridlines>
+                <Column field="name" header="Name" :expander="true"></Column>
+                <Column field="size" header="Size"></Column>
+                <Column field="type" header="Type"></Column>
+            </TreeTable>
+        </div>
+
+        <div class="card">
+            <h5>Expand Mode</h5>
+            <TreeTable :value="nodes" :resizableColumns="true" columnResizeMode="expand" showGridlines>
+                <Column field="name" header="Name" :expander="true"></Column>
+                <Column field="size" header="Size"></Column>
+                <Column field="type" header="Type"></Column>
+            </TreeTable>
+        </div>
+    </div>                    
+</template>
+
+<script>
+import NodeService from './service/NodeService';
 
 export default {
     data() {
@@ -66,21 +84,54 @@ export default {
         this.nodeService.getTreeTableNodes().then(data => this.nodes = data);
     }
 }
-</CodeHighlight>
-
-                </TabPanel>
-            </TabView>
+<\\/script>
+`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+    <div>
+        <div class="card">
+            <h5>Fit Mode</h5>
+            <TreeTable :value="nodes" :resizableColumns="true" columnResizeMode="fit" showGridlines>
+                <Column field="name" header="Name" :expander="true"></Column>
+                <Column field="size" header="Size"></Column>
+                <Column field="type" header="Type"></Column>
+            </TreeTable>
         </div>
-    </div>
+
+        <div class="card">
+            <h5>Expand Mode</h5>
+            <TreeTable :value="nodes" :resizableColumns="true" columnResizeMode="expand" showGridlines>
+                <Column field="name" header="Name" :expander="true"></Column>
+                <Column field="size" header="Size"></Column>
+                <Column field="type" header="Type"></Column>
+            </TreeTable>
+        </div>
+    </div>                    
 </template>
 
 <script>
-import NodeService from '../../service/NodeService';
+import { ref, onMounted } from 'vue';
+import NodeService from './service/NodeService';
 
 export default {
-    data() {
-        return {
-            nodes: null
+    setup() {
+        onMounted(() => {
+            nodeService.value.getTreeTableNodes().then(data => nodes.value = data);
+        })
+
+        const nodes = ref(null);
+        const nodeService = ref(new NodeService());
+
+        return { nodes, nodeService }
+    }
+}
+<\\/script>
+`
+                }
+            }
         }
     },
     nodeService: null,

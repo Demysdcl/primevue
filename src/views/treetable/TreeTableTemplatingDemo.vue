@@ -5,6 +5,7 @@
                 <h1>TreeTable <span>Templating</span></h1>
                 <p>Custom content at header, body and footer sections are supported via templating.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -16,11 +17,11 @@
                     <Column field="name" header="Name" :expander="true"></Column>
                     <Column field="size" header="Size"></Column>
                     <Column field="type" header="Type"></Column>
-                    <Column headerStyle="width: 8em" bodyStyle="text-align: center">
+                    <Column headerStyle="width: 8em" headerClass="p-text-center" bodyClass="p-text-center">
                         <template #header>
                             <Button type="button" icon="pi pi-cog"></Button>
                         </template>
-                        <template #body="slotProps">
+                        <template #body>
                             <Button type="button" icon="pi pi-search" class="p-button-success" style="margin-right: .5em"></Button>
                             <Button type="button" icon="pi pi-pencil" class="p-button-warning"></Button>
                         </template>
@@ -34,38 +35,51 @@
             </div>
         </div>
 
-        <div class="content-section documentation">
-            <TabView>
-                <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;TreeTable :value="nodes"&gt;
-    &lt;template #header&gt;
-        FileSystem
-    &lt;/template&gt;
-    &lt;Column field="name" header="Name" :expander="true"&gt;&lt;/Column&gt;
-    &lt;Column field="size" header="Size"&gt;&lt;/Column&gt;
-    &lt;Column field="type" header="Type"&gt;&lt;/Column&gt;
-    &lt;Column headerStyle="width: 8em" bodyStyle="text-align: center"&gt;
-        &lt;template #header&gt;
-            &lt;Button type="button" icon="pi pi-cog"&gt;&lt;/Button&gt;
-        &lt;/template&gt;
-        &lt;template #body="slotProps"&gt;
-            &lt;Button type="button" icon="pi pi-search" class="p-button-success" style="margin-right: .5em"&gt;&lt;/Button&gt;
-            &lt;Button type="button" icon="pi pi-pencil" class="p-button-warning"&gt;&lt;/Button&gt;
-        &lt;/template&gt;
-    &lt;/Column&gt;
-    &lt;template #footer&gt;
-        &lt;div style="text-align:left"&gt;
-            &lt;Button icon="pi pi-refresh" /&gt;
-        &lt;/div&gt;
-    &lt;/template&gt;
-&lt;/TreeTable&gt;
+        <AppDoc name="TreeTableTemplatingDemo" :sources="sources" :service="['NodeService']" :data="['treetablenodes']" github="treetable/TreeTableTemplatingDemo.vue" />
+            
+    </div>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
+<script>
 import NodeService from '../../service/NodeService';
+
+export default {
+    data() {
+        return {
+            nodes: null,
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+    <div>
+        <TreeTable :value="nodes">
+            <template #header>
+                FileSystem
+            </template>
+            <Column field="name" header="Name" :expander="true"></Column>
+            <Column field="size" header="Size"></Column>
+            <Column field="type" header="Type"></Column>
+            <Column headerStyle="width: 8em" headerClass="p-text-center" bodyClass="p-text-center">
+                <template #header>
+                    <Button type="button" icon="pi pi-cog"></Button>
+                </template>
+                <template #body>
+                    <Button type="button" icon="pi pi-search" class="p-button-success" style="margin-right: .5em"></Button>
+                    <Button type="button" icon="pi pi-pencil" class="p-button-warning"></Button>
+                </template>
+            </Column>
+            <template #footer>
+                <div style="text-align:left">
+                    <Button icon="pi pi-refresh" />
+                </div>
+            </template>
+        </TreeTable>
+    </div>                  
+</template>
+
+<script>
+import NodeService from './service/NodeService';
 
 export default {
     data() {
@@ -81,20 +95,59 @@ export default {
         this.nodeService.getTreeTableNodes().then(data => this.nodes = data);
     }
 }
-</CodeHighlight>
-                </TabPanel>
-            </TabView>
-        </div>
-    </div>
+<\\/script>
+`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+    <div>
+        <TreeTable :value="nodes">
+            <template #header>
+                FileSystem
+            </template>
+            <Column field="name" header="Name" :expander="true"></Column>
+            <Column field="size" header="Size"></Column>
+            <Column field="type" header="Type"></Column>
+            <Column headerStyle="width: 8em" headerClass="p-text-center" bodyClass="p-text-center">
+                <template #header>
+                    <Button type="button" icon="pi pi-cog"></Button>
+                </template>
+                <template #body>
+                    <Button type="button" icon="pi pi-search" class="p-button-success" style="margin-right: .5em"></Button>
+                    <Button type="button" icon="pi pi-pencil" class="p-button-warning"></Button>
+                </template>
+            </Column>
+            <template #footer>
+                <div style="text-align:left">
+                    <Button icon="pi pi-refresh" />
+                </div>
+            </template>
+        </TreeTable>
+    </div>                  
 </template>
 
 <script>
-import NodeService from '../../service/NodeService';
+import { ref, onMounted } from 'vue';
+import NodeService from './service/NodeService';
 
 export default {
-    data() {
-        return {
-            nodes: null
+    setup() {
+        onMounted(() => {
+            nodeService.value.getTreeTableNodes().then(data => nodes.value = data);
+        })
+
+        const nodes = ref();
+        const nodeService = ref(new NodeService());
+
+        return { nodes, nodeService }
+    }
+}
+<\\/script>
+`
+                }
+            }
         }
     },
     nodeService: null,

@@ -1,8 +1,13 @@
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 
-export declare class Toolbar extends Vue {
+interface ToolbarProps {}
+
+declare class Toolbar {
+    $props: ToolbarProps;
     $slots: {
         left: VNode[];
         right: VNode[];
     }
 }
+
+export default Toolbar;

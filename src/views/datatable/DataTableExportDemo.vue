@@ -5,11 +5,12 @@
 				<h1>DataTable <span>Export</span></h1>
 				<p>DataTable can export its data to CSV format.</p>
 			</div>
+            <AppDemoActions />
 		</div>
 
 		<div class="content-section implementation">
             <div class="card">
-                <DataTable :value="products" ref="dt">
+                <DataTable :value="products" ref="dt" responsiveLayout="scroll">
                     <template #header>
                         <div style="text-align: left">
                             <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
@@ -22,28 +23,40 @@
                 </DataTable>
             </div>
 		</div>
-
-        <div class="content-section documentation">
-            <TabView>
-                <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;DataTable :value="products" ref="dt"&gt;
-    &lt;template #header&gt;
-        &lt;div style="text-align: left"&gt;
-            &lt;Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" /&gt;
-        &lt;/div&gt;
-    &lt;/template&gt;
-    &lt;Column field="code" header="Code"&gt;&lt;/Column&gt;
-    &lt;Column field="name" header="Name"&gt;&lt;/Column&gt;
-    &lt;Column field="category" header="Category"&gt;&lt;/Column&gt;
-    &lt;Column field="quantity" header="Quantity"&gt;&lt;/Column&gt;
-&lt;/DataTable&gt;
+        
+        <AppDoc name="DataTableExportDemo" :sources="sources" :service="['ProductService']" :data="['products-small']" github="datatable/DataTableExportDemo.vue" />
+	</div>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
+<script>
 import ProductService from '../../service/ProductService';
+
+export default {
+    data() {
+        return {
+            products: null,
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+    <div>
+        <DataTable :value="products" ref="dt" responsiveLayout="scroll">
+            <template #header>
+                <div style="text-align: left">
+                    <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
+                </div>
+            </template>
+            <Column field="code" header="Code"></Column>
+            <Column field="name" header="Name"></Column>
+            <Column field="category" header="Category"></Column>
+            <Column field="quantity" header="Quantity"></Column>
+        </DataTable>
+    </div>
+</template>
+
+<script>
+import ProductService from './service/ProductService';
 
 export default {
     data() {
@@ -64,20 +77,52 @@ export default {
         }
     }
 }
-</CodeHighlight>
-                </TabPanel>
-            </TabView>
-        </div>
-	</div>
+<\\/script>
+`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+    <div>
+        <DataTable :value="products" ref="dt" responsiveLayout="scroll">
+            <template #header>
+                <div style="text-align: left">
+                    <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
+                </div>
+            </template>
+            <Column field="code" header="Code"></Column>
+            <Column field="name" header="Name"></Column>
+            <Column field="category" header="Category"></Column>
+            <Column field="quantity" header="Quantity"></Column>
+        </DataTable>
+    </div>
 </template>
 
 <script>
-import ProductService from '../../service/ProductService';
+import { ref, onMounted } from 'vue';
+import ProductService from './service/ProductService';
 
 export default {
-    data() {
-        return {
-            products: null
+    setup() {
+        onMounted(() => {
+            productService.value.getProductsSmall().then(data => products.value = data);
+        })
+
+        const dt = ref();
+        const products = ref();
+        const productService = ref(new ProductService());
+        const exportCSV = () => {
+            dt.value.exportCSV();
+        };
+
+        return { dt, products, exportCSV }
+    }
+}
+<\\/script>
+`
+                }
+            }
         }
     },
     productService: null,

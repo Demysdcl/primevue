@@ -1,9 +1,7 @@
 <template>
     <div class="p-checkbox p-component" @click="onClick">
-        <div class="p-hidden-accessible">
-           <input ref="input" type="checkbox" :checked="checked" @focus="onFocus($event)" @blur="onBlur($event)" :disabled="disabled">
-        </div>
-        <div ref="box" :class="['p-checkbox-box p-component', {'p-highlight': checked, 'p-disabled': $attrs.disabled, 'p-focus': focused}]" role="checkbox" :aria-checked="checked">
+        <div ref="box" :class="['p-checkbox-box p-component', {'p-highlight': checked, 'p-disabled': $attrs.disabled, 'p-focus': focused}]" 
+            role="checkbox" :aria-checked="checked" :tabindex="$attrs.disabled ? null : '0'" @keydown.space.prevent="onClick" @focus="onFocus($event)" @blur="onBlur($event)">
             <span :class="['p-checkbox-icon', {'pi pi-check': checked}]"></span>
         </div>
     </div>
@@ -12,9 +10,9 @@
 <script>
 export default {
     inheritAttrs: false,
+    emits: ['change'],
     props: {
 		value: null,
-        disabled: null,
         checked: null
     },
     data() {
@@ -24,13 +22,12 @@ export default {
     },
     methods: {
         onClick(event) {
-            if (!this.disabled) {
+            if (!this.$attrs.disabled) {
+                this.focused = true;
                 this.$emit('change', {
                     originalEvent: event,
                     data: this.value
                 });
-
-                this.$refs.input.focus();
             }
         },
         onFocus() {

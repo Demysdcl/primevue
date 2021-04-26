@@ -1,21 +1,25 @@
 <template>
-    <transition name="p-overlaypanel" @enter="onEnter" @leave="onLeave">
-        <div class="p-overlaypanel p-component" v-if="visible" ref="container">
-            <div class="p-overlaypanel-content">
-                <slot></slot>
+    <Teleport :to="appendTo">
+        <transition name="p-overlaypanel" @enter="onEnter" @leave="onLeave" @after-leave="onAfterLeave">
+            <div class="p-overlaypanel p-component" v-if="visible" :ref="containerRef" v-bind="$attrs" @click="onOverlayClick">
+                <div class="p-overlaypanel-content" @click="onContentClick">
+                    <slot></slot>
+                </div>
+                <button class="p-overlaypanel-close p-link" @click="hide" v-if="showCloseIcon" :aria-label="ariaCloseLabel" type="button" v-ripple>
+                    <span class="p-overlaypanel-close-icon pi pi-times"></span>
+                </button>
             </div>
-            <button class="p-overlaypanel-close p-link" @click="hide" v-if="showCloseIcon" :aria-label="ariaCloseLabel" type="button" v-ripple>
-                <span class="p-overlaypanel-close-icon pi pi-times"></span>
-            </button>
-        </div>
-    </transition>
+        </transition>
+    </Teleport>
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
-import Ripple from '../ripple/Ripple';
+import {UniqueComponentId,DomHandler,ConnectedOverlayScrollHandler,ZIndexUtils} from 'primevue/utils';
+import OverlayEventBus from 'primevue/overlayeventbus';
+import Ripple from 'primevue/ripple';
 
 export default {
+    inheritAttrs: false,
     props: {
 		dismissable: {
 			type: Boolean,
@@ -27,7 +31,7 @@ export default {
 		},
         appendTo: {
 			type: String,
-			default: null
+			default: 'body'
 		},
         baseZIndex: {
             type: Number,
@@ -40,6 +44,10 @@ export default {
         ariaCloseLabel: {
             type: String,
             default: 'close'
+        },
+        breakpoints: {
+            type: Object,
+            default: null
         }
     },
     data() {
@@ -47,16 +55,42 @@ export default {
             visible: false
         }
     },
+    selfClick: false,
     target: null,
     outsideClickListener: null,
+    scrollHandler: null,
     resizeListener: null,
-    beforeDestroy() {
-        this.restoreAppend();
-        this.unbindResizeListener();
+    container: null,
+    styleElement: null,
+    overlayEventListener: null,
+    beforeUnmount() {
         if (this.dismissable) {
             this.unbindOutsideClickListener();
         }
+
+        if (this.scrollHandler) {
+            this.scrollHandler.destroy();
+            this.scrollHandler = null;
+        }
+        this.destroyStyle();
+        this.unbindResizeListener();
         this.target = null;
+
+        if (this.container && this.autoZIndex) {
+            ZIndexUtils.clear(this.container);
+        }
+
+        if (this.overlayEventListener) {
+            OverlayEventBus.off('overlay-click', this.overlayEventListener);
+            this.overlayEventListener = null;
+        }
+
+        this.container = null;
+    },
+    mounted() {
+        if (this.breakpoints) {
+            this.createStyle();
+        }
     },
     methods: {
         toggle(event) {
@@ -72,36 +106,66 @@ export default {
         hide() {
             this.visible = false;
         },
-        onEnter() {
-            this.appendContainer();
+        onContentClick() {
+            this.selfClick = true;
+        },
+        onEnter(el) {
+            this.container.setAttribute(this.attributeSelector, '');
             this.alignOverlay();
             if (this.dismissable) {
                 this.bindOutsideClickListener();
             }
 
+            this.bindScrollListener();
             this.bindResizeListener();
 
             if (this.autoZIndex) {
-                this.$refs.container.style.zIndex = String(this.baseZIndex + DomHandler.generateZIndex());
+                ZIndexUtils.set('overlay', el, this.baseZIndex + this.$primevue.config.zIndex.overlay);
             }
+
+            this.overlayEventListener = (e) => {
+                if (this.container.contains(e.target)) {
+                    this.selfClick = true;
+                }
+            };
+
+            OverlayEventBus.on('overlay-click', this.overlayEventListener);
         },
         onLeave() {
             this.unbindOutsideClickListener();
+            this.unbindScrollListener();
             this.unbindResizeListener();
+            OverlayEventBus.off('overlay-click', this.overlayEventListener);
+            this.overlayEventListener = null;
+        },
+        onAfterLeave(el) {
+            if (this.autoZIndex) {
+                ZIndexUtils.clear(el);
+            }
         },
         alignOverlay() {
-            DomHandler.absolutePosition(this.$refs.container, this.target);
+            DomHandler.absolutePosition(this.container, this.target);
 
-            if (DomHandler.getOffset(this.$refs.container).top < DomHandler.getOffset(this.target).top) {
-                DomHandler.addClass(this.$refs.container, 'p-overlaypanel-flipped');
+            const containerOffset = DomHandler.getOffset(this.container);
+            const targetOffset = DomHandler.getOffset(this.target);
+            let arrowLeft = 0;
+
+            if (containerOffset.left < targetOffset.left) {
+                arrowLeft = targetOffset.left - containerOffset.left;
+            }
+            this.container.style.setProperty('--overlayArrowLeft', `${arrowLeft}px`);
+
+            if (containerOffset.top < targetOffset.top) {
+                DomHandler.addClass(this.container, 'p-overlaypanel-flipped');
             }
         },
         bindOutsideClickListener() {
             if (!this.outsideClickListener) {
                 this.outsideClickListener = (event) => {
-                    if (this.visible && this.$refs.container && !this.$refs.container.contains(event.target) && !this.isTargetClicked(event)) {
+                    if (this.visible && !this.selfClick && !this.isTargetClicked(event)) {
                         this.visible = false;
                     }
+                    this.selfClick = false;
                 };
                 document.addEventListener('click', this.outsideClickListener);
             }
@@ -110,6 +174,23 @@ export default {
             if (this.outsideClickListener) {
                 document.removeEventListener('click', this.outsideClickListener);
                 this.outsideClickListener = null;
+                this.selfClick = false;
+            }
+        },
+        bindScrollListener() {
+            if (!this.scrollHandler) {
+                this.scrollHandler = new ConnectedOverlayScrollHandler(this.target, () => {
+                    if (this.visible) {
+                        this.visible = false;
+                    }
+                });
+            }
+
+            this.scrollHandler.bindScrollListener();
+        },
+        unbindScrollListener() {
+            if (this.scrollHandler) {
+                this.scrollHandler.unbindScrollListener();
             }
         },
         bindResizeListener() {
@@ -128,24 +209,48 @@ export default {
                 this.resizeListener = null;
             }
         },
-        isTargetClicked() {
+        isTargetClicked(event) {
             return this.target && (this.target === event.target || this.target.contains(event.target));
         },
-        appendContainer() {
-            if (this.appendTo) {
-                if (this.appendTo === 'body')
-                    document.body.appendChild(this.$refs.container);
-                else
-                    document.getElementById(this.appendTo).appendChild(this.$refs.container);
+        containerRef(el) {
+            this.container = el;
+        },
+        createStyle() {
+			if (!this.styleElement) {
+				this.styleElement = document.createElement('style');
+				this.styleElement.type = 'text/css';
+				document.head.appendChild(this.styleElement);
+
+                let innerHTML = '';
+                for (let breakpoint in this.breakpoints) {
+                    innerHTML += `
+                        @media screen and (max-width: ${breakpoint}) {
+                            .p-overlaypanel[${this.attributeSelector}] {
+                                width: ${this.breakpoints[breakpoint]} !important;
+                            }
+                        }
+                    `
+                }
+                
+                this.styleElement.innerHTML = innerHTML;
+			}
+		},
+        destroyStyle() {
+            if (this.styleElement) {
+                document.head.removeChild(this.styleElement);
+                this.styleElement = null;
             }
         },
-        restoreAppend() {
-            if (this.$refs.container && this.appendTo) {
-                if (this.appendTo === 'body')
-                    document.body.removeChild(this.$refs.container);
-                else
-                    document.getElementById(this.appendTo).removeChild(this.$refs.container);
-            }
+        onOverlayClick(event) {
+            OverlayEventBus.emit('overlay-click', {
+                originalEvent: event,
+                target: this.target
+            });
+        }
+    },
+    computed: {
+        attributeSelector() {
+            return UniqueComponentId();
         }
     },
     directives: {
@@ -174,7 +279,7 @@ export default {
 }
 
 /* Animation */
-.p-overlaypanel-enter {
+.p-overlaypanel-enter-from {
     opacity: 0;
     transform: scaleY(0.8);
 }
@@ -193,7 +298,7 @@ export default {
 
 .p-overlaypanel:after, .p-overlaypanel:before {
 	bottom: 100%;
-	left: 1.25rem;
+	left: calc(var(--overlayArrowLeft, 0) + 1.25rem);
 	content: " ";
 	height: 0;
 	width: 0;

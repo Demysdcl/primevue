@@ -6,12 +6,13 @@
 				<p>Columns can be resized using drag drop by setting the resizableColumns to true. There are two resize modes; "fit" and "expand". Fit is the default one and the overall table width does not change when a column is resized.
                     In "expand" mode, table width also changes along with the column width.</p>
 			</div>
+            <AppDemoActions />
 		</div>
 
 		<div class="content-section implementation">
             <div class="card">
                 <h5>Fit Mode</h5>
-                <DataTable :value="products" :resizableColumns="true" columnResizeMode="fit">
+                <DataTable :value="products" :resizableColumns="true" columnResizeMode="fit" showGridlines responsiveLayout="scroll">
                     <Column field="code" header="Code"></Column>
                     <Column field="name" header="Name"></Column>
                     <Column field="category" header="Category"></Column>
@@ -21,7 +22,7 @@
 
             <div class="card">
                 <h5>Expand Mode</h5>
-                <DataTable :value="products" :resizableColumns="true" columnResizeMode="expand">
+                <DataTable :value="products" :resizableColumns="true" columnResizeMode="expand" showGridlines responsiveLayout="scroll">
                     <Column field="code" header="Code"></Column>
                     <Column field="name" header="Name"></Column>
                     <Column field="category" header="Category"></Column>
@@ -30,36 +31,52 @@
             </div>
 		</div>
 
-        <div class="content-section documentation">
-            <TabView>
-                <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;h3&gt;Fit Mode&lt;/h3&gt;
-&lt;DataTable :value="products" :resizableColumns="true" columnResizeMode="fit"&gt;
-    &lt;Column field="code" header="Code"&gt;&lt;/Column&gt;
-    &lt;Column field="name" header="Name"&gt;&lt;/Column&gt;
-    &lt;Column field="category" header="Category"&gt;&lt;/Column&gt;
-    &lt;Column field="quantity" header="Quantity"&gt;&lt;/Column&gt;
-&lt;/DataTable&gt;
-
-&lt;h3&gt;Expand Mode&lt;/h3&gt;
-&lt;DataTable :value="products" :resizableColumns="true" columnResizeMode="expand"&gt;
-    &lt;Column field="code" header="Code"&gt;&lt;/Column&gt;
-    &lt;Column field="name" header="Name"&gt;&lt;/Column&gt;
-    &lt;Column field="category" header="Category"&gt;&lt;/Column&gt;
-    &lt;Column field="quantity" header="Quantity"&gt;&lt;/Column&gt;
-&lt;/DataTable&gt;
+        <AppDoc name="DataTableColResizeDemo" :sources="sources" :service="['ProductService']" :data="['products-small']" github="datatable/DataTableColResizeDemo.vue" />
+	</div>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
+<script>
 import ProductService from '../../service/ProductService';
 
 export default {
     data() {
         return {
-            products: null
+            products: null,
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+    <div>
+        <div class="card">
+            <h5>Fit Mode</h5>
+            <DataTable :value="products" :resizableColumns="true" columnResizeMode="fit" showGridlines responsiveLayout="scroll">
+                <Column field="code" header="Code"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column field="category" header="Category"></Column>
+                <Column field="quantity" header="Quantity"></Column>
+            </DataTable>
+        </div>
+
+        <div class="card">
+            <h5>Expand Mode</h5>
+            <DataTable :value="products" :resizableColumns="true" columnResizeMode="expand" showGridlines responsiveLayout="scroll">
+                <Column field="code" header="Code"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column field="category" header="Category"></Column>
+                <Column field="quantity" header="Quantity"></Column>
+            </DataTable>
+        </div>    
+    </div>
+</template>
+
+<script>
+import ProductService from './service/ProductService';
+
+export default {
+    data() {
+        return {
+            products: null,
         }
     },
     productService: null,
@@ -70,20 +87,56 @@ export default {
         this.productService.getProductsSmall().then(data => this.products = data);
     }
 }
-</CodeHighlight>
-                </TabPanel>
-            </TabView>
+<\\/script>
+`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+    <div>
+        <div class="card">
+            <h5>Fit Mode</h5>
+            <DataTable :value="products" :resizableColumns="true" columnResizeMode="fit" showGridlines responsiveLayout="scroll">
+                <Column field="code" header="Code"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column field="category" header="Category"></Column>
+                <Column field="quantity" header="Quantity"></Column>
+            </DataTable>
         </div>
-	</div>
+
+        <div class="card">
+            <h5>Expand Mode</h5>
+            <DataTable :value="products" :resizableColumns="true" columnResizeMode="expand" showGridlines responsiveLayout="scroll">
+                <Column field="code" header="Code"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column field="category" header="Category"></Column>
+                <Column field="quantity" header="Quantity"></Column>
+            </DataTable>
+        </div>    
+    </div>
 </template>
 
 <script>
-import ProductService from '../../service/ProductService';
+import { ref, onMounted } from 'vue';
+import ProductService from './service/ProductService';
 
 export default {
-    data() {
-        return {
-            products: null
+    setup() {
+        onMounted(() => {
+            productService.value.getProductsSmall().then(data => products.value = data);
+        })
+
+        const products = ref();
+        const productService = ref(new ProductService());
+
+        return { products, productService }
+    }
+}
+<\\/script>
+`
+                }
+            }
         }
     },
     productService: null,

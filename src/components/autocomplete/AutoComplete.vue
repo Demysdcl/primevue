@@ -1,52 +1,68 @@
 <template>
-    <span :class="containerClass" aria-haspopup="listbox" :aria-owns="listId" :aria-expanded="overlayVisible">
-        <input ref="input" :class="inputClass" v-bind="$attrs" v-on="listeners" :value="inputValue" type="text" autoComplete="off" v-if="!multiple"
-            role="searchbox" aria-autocomplete="list" :aria-controls="listId" :aria-labelledby="ariaLabelledBy">
+    <span ref="container" :class="containerClass" aria-haspopup="listbox" :aria-owns="listId" :aria-expanded="overlayVisible" :style="style">
+        <input ref="input" :class="inputFieldClass" :style="inputStyle" v-bind="$attrs" :value="inputValue" @input="onInput" @focus="onFocus" @blur="onBlur" @keydown="onKeyDown" @change="onChange" 
+            type="text" autoComplete="off" v-if="!multiple" role="searchbox" aria-autocomplete="list" :aria-controls="listId">
         <ul ref="multiContainer" :class="multiContainerClass" v-if="multiple" @click="onMultiContainerClick">
-            <li v-for="(item, i) of value" :key="i" class="p-autocomplete-token">
+            <li v-for="(item, i) of modelValue" :key="i" class="p-autocomplete-token">
                 <span class="p-autocomplete-token-label">{{getItemContent(item)}}</span>
                 <span class="p-autocomplete-token-icon pi pi-times-circle" @click="removeItem($event, i)"></span>
             </li>
             <li class="p-autocomplete-input-token">
-                <input ref="input" type="text" autoComplete="off" v-bind="$attrs" v-on="listeners"
-                role="searchbox" aria-autocomplete="list" :aria-controls="listId" :aria-labelledby="ariaLabelledBy">
+                <input ref="input" type="text" autoComplete="off" v-bind="$attrs" @input="onInput" @focus="onFocus" @blur="onBlur" @keydown="onKeyDown"  @change="onChange" 
+                    role="searchbox" aria-autocomplete="list" :aria-controls="listId">
             </li>
         </ul>
         <i class="p-autocomplete-loader pi pi-spinner pi-spin" v-if="searching"></i>
         <Button ref="dropdownButton" type="button" icon="pi pi-chevron-down" class="p-autocomplete-dropdown" :disabled="$attrs.disabled" @click="onDropdownClick" v-if="dropdown"/>
-        <transition name="p-connected-overlay" @enter="onOverlayEnter" @leave="onOverlayLeave">
-            <div ref="overlay" class="p-autocomplete-panel p-component" :style="{'max-height': scrollHeight}" v-if="overlayVisible">
-                <ul :id="listId" class="p-autocomplete-items" role="listbox">
-                    <li v-for="(item, i) of suggestions" class="p-autocomplete-item" :key="i" @click="selectItem($event, item)" role="option" v-ripple>
-                        <slot name="item" :item="item" :index="i">
-                            {{getItemContent(item)}}
-                        </slot>
-                    </li>
-                </ul>
-            </div>
-        </transition>
+        <Teleport :to="appendTarget" :disabled="appendDisabled">
+            <transition name="p-connected-overlay" @enter="onOverlayEnter" @leave="onOverlayLeave" @after-leave="onOverlayAfterLeave">
+                <div :ref="overlayRef" :class="panelStyleClass" :style="{'max-height': scrollHeight}" v-if="overlayVisible" @click="onOverlayClick">
+                    <slot name="header" :value="modelValue" :suggestions="suggestions"></slot>
+                    <ul :id="listId" class="p-autocomplete-items" role="listbox">
+                        <template v-if="!optionGroupLabel">
+                            <li v-for="(item, i) of suggestions" class="p-autocomplete-item" :key="i" @click="selectItem($event, item)" role="option" v-ripple>
+                                <slot name="item" :item="item" :index="i">{{getItemContent(item)}}</slot>
+                            </li>
+                        </template>
+                        <template v-else>
+                            <template v-for="(optionGroup, i) of suggestions" :key="getOptionGroupRenderKey(optionGroup)">
+                                <li  class="p-autocomplete-item-group">
+                                    <slot name="optiongroup" :item="optionGroup" :index="i">{{getOptionGroupLabel(optionGroup)}}</slot>
+                                </li>
+                                <li v-for="(item, j) of getOptionGroupChildren(optionGroup)" class="p-autocomplete-item" :key="j" @click="selectItem($event, item)" role="option" v-ripple :data-group="i" :data-index="j">
+                                    <slot name="item" :item="item" :index="j">{{getItemContent(item)}}</slot>
+                                </li>
+                            </template>
+                        </template>
+                    </ul>
+                    <slot name="footer" :value="modelValue" :suggestions="suggestions"></slot>
+                </div>
+            </transition>
+        </Teleport>
     </span>
 </template>
 
 <script>
-import ObjectUtils from '../utils/ObjectUtils';
-import DomHandler from '../utils/DomHandler';
-import Button from '../button/Button';
-import UniqueComponentId from '../utils/UniqueComponentId';
-import Ripple from '../ripple/Ripple';
+import {ConnectedOverlayScrollHandler,UniqueComponentId,ObjectUtils,DomHandler,ZIndexUtils} from 'primevue/utils';
+import OverlayEventBus from 'primevue/overlayeventbus';
+import Button from 'primevue/button';
+import Ripple from 'primevue/ripple';
 
 export default {
     inheritAttrs: false,
+    emits: ['update:modelValue', 'item-select', 'item-unselect', 'dropdown-click', 'clear', 'complete'],
     props: {
-        value: null,
+        modelValue: null,
         suggestions: {
             type: Array,
             default: null
         },
         field: {
-            type: String,
+            type: [String,Function],
             default: null
         },
+        optionGroupLabel: null,
+        optionGroupChildren: null,
         scrollHeight: {
             type: String,
             default: '200px'
@@ -71,29 +87,37 @@ export default {
             type: Number,
             default: 300
         },
-        ariaLabelledBy: {
-            type: String,
-            default: null
-        },
         appendTo: {
             type: String,
-            default: null
-        }
+            default: 'body'
+        },
+        forceSelection: {
+            type: Boolean,
+            default: false
+        },
+        inputClass: null,
+        inputStyle: null,
+        class: null,
+        style: null,
+        panelClass: null
     },
     timeout: null,
     outsideClickListener: null,
+    resizeListener: null,
+    scrollHandler: null,
+    overlay: null,
     data() {
         return {
             searching: false,
             focused: false,
             overlayVisible: false,
-            inputTextValue: null
+            inputTextValue: null,
+            highlightItem: null
         };
     },
     watch: {
         suggestions() {
             if (this.searching) {
-
                 if (this.suggestions && this.suggestions.length)
                     this.showOverlay();
                 else
@@ -103,39 +127,105 @@ export default {
             }
         }
     },
-    beforeDestroy() {
-        this.restoreAppend();
+    beforeUnmount() {
         this.unbindOutsideClickListener();
+        this.unbindResizeListener();
+
+        if (this.scrollHandler) {
+            this.scrollHandler.destroy();
+            this.scrollHandler = null;
+        }
+
+        if (this.overlay) {
+            ZIndexUtils.clear(this.overlay);
+            this.overlay = null;
+        }
+    },
+    updated() {
+        if (this.overlayVisible) {
+            this.alignOverlay();
+        }
     },
     methods: {
-        onOverlayEnter() {
-            this.$refs.overlay.style.zIndex = String(DomHandler.generateZIndex());
-            this.appendContainer();
+        getOptionGroupRenderKey(optionGroup) {
+            return ObjectUtils.resolveFieldData(optionGroup, this.optionGroupLabel);
+        },
+        getOptionGroupLabel(optionGroup) {
+            return ObjectUtils.resolveFieldData(optionGroup, this.optionGroupLabel);
+        },
+        getOptionGroupChildren(optionGroup) {
+            return ObjectUtils.resolveFieldData(optionGroup, this.optionGroupChildren);
+        },
+        onOverlayEnter(el) {
+            ZIndexUtils.set('overlay', el, this.$primevue.config.zIndex.overlay);
             this.alignOverlay();
             this.bindOutsideClickListener();
+            this.bindScrollListener();
+            this.bindResizeListener();
         },
         onOverlayLeave() {
             this.unbindOutsideClickListener();
+            this.unbindScrollListener();
+            this.unbindResizeListener();
+            this.overlay = null;
+        },
+        onOverlayAfterLeave(el) {
+            ZIndexUtils.clear(el);
         },
         alignOverlay() {
             let target = this.multiple ? this.$refs.multiContainer : this.$refs.input;
-            if (this.appendTo)
-                DomHandler.absolutePosition(this.$refs.overlay, target);
-            else
-                DomHandler.relativePosition(this.$refs.overlay, target);
+            if (this.appendDisabled) {
+                DomHandler.relativePosition(this.overlay, target);
+            }
+            else {
+                this.overlay.style.minWidth = DomHandler.getOuterWidth(target) + 'px';
+                DomHandler.absolutePosition(this.overlay, target);
+            }                
         },
         bindOutsideClickListener() {
             if (!this.outsideClickListener) {
                 this.outsideClickListener = (event) => {
-                    if (this.overlayVisible && this.$refs.overlay && this.isOutsideClicked(event)) {
+                    if (this.overlayVisible && this.overlay && this.isOutsideClicked(event)) {
                         this.hideOverlay();
                     }
                 };
                 document.addEventListener('click', this.outsideClickListener);
             }
         },
+        bindScrollListener() {
+            if (!this.scrollHandler) {
+                this.scrollHandler = new ConnectedOverlayScrollHandler(this.$refs.container, () => {
+                    if (this.overlayVisible) {
+                        this.hideOverlay();
+                    }
+                });
+            }
+
+            this.scrollHandler.bindScrollListener();
+        },
+        unbindScrollListener() {
+            if (this.scrollHandler) {
+                this.scrollHandler.unbindScrollListener();
+            }
+        },
+        bindResizeListener() {
+            if (!this.resizeListener) {
+                this.resizeListener = () => {
+                    if (this.overlayVisible) {
+                        this.hideOverlay();
+                    }
+                };
+                window.addEventListener('resize', this.resizeListener);
+            }
+        },
+        unbindResizeListener() {
+            if (this.resizeListener) {
+                window.removeEventListener('resize', this.resizeListener);
+                this.resizeListener = null;
+            }
+        },
         isOutsideClicked(event) {
-            return !this.$refs.overlay.contains(event.target) && !this.isInputClicked(event) && !this.isDropdownClicked(event);
+            return !this.overlay.contains(event.target) && !this.isInputClicked(event) && !this.isDropdownClicked(event);
         },
         isInputClicked(event) {
             if (this.multiple)
@@ -158,12 +248,12 @@ export default {
                 this.inputTextValue = '';
 
                 if (!this.isSelected(item)) {
-                    let newValue = this.value ? [...this.value, item] : [item];
-                    this.$emit('input', newValue);
+                    let newValue = this.modelValue ? [...this.modelValue, item] : [item];
+                    this.$emit('update:modelValue', newValue);
                 }
             }
             else {
-                this.$emit('input', item);
+                this.$emit('update:modelValue', item);
             }
 
             this.$emit('item-select', {
@@ -178,9 +268,9 @@ export default {
             this.focus();
         },
         removeItem(event, index) {
-            let removedValue = this.value[index];
-            let newValue = this.value.filter((val, i) => (index !== i));
-            this.$emit('input', newValue);
+            let removedValue = this.modelValue[index];
+            let newValue = this.modelValue.filter((val, i) => (index !== i));
+            this.$emit('update:modelValue', newValue);
             this.$emit('item-unselect', {
                 originalEvent: event,
                 value: removedValue
@@ -238,7 +328,7 @@ export default {
 
             let query = event.target.value;
             if (!this.multiple) {
-                this.$emit('input', query);
+                this.$emit('update:modelValue', query);
             }
 
             if (query.length === 0) {
@@ -256,31 +346,36 @@ export default {
                 }
             }
         },
-        onFocus(event) {
+        onFocus() {
             this.focused = true;
-            this.$emit('focus', event);
         },
-        onBlur(event) {
+        onBlur() {
             this.focused = false;
-            this.$emit('blur', event);
         },
         onKeyDown(event) {
             if (this.overlayVisible) {
-                let highlightItem = DomHandler.findSingle(this.$refs.overlay, 'li.p-highlight');
+                let highlightItem = DomHandler.findSingle(this.overlay, 'li.p-highlight');
 
                 switch(event.which) {
                     //down
                     case 40:
                         if (highlightItem) {
-                            let nextElement = highlightItem.nextElementSibling;
+                            let nextElement = this.findNextItem(highlightItem);
                             if (nextElement) {
                                 DomHandler.addClass(nextElement, 'p-highlight');
                                 DomHandler.removeClass(highlightItem, 'p-highlight');
-                                DomHandler.scrollInView(this.$refs.overlay, nextElement);
+                                DomHandler.scrollInView(this.overlay, nextElement);
                             }
                         }
                         else {
-                            DomHandler.addClass(this.$refs.overlay.firstChild.firstChild, 'p-highlight');
+                            highlightItem = this.overlay.firstElementChild.firstElementChild;
+                            if (DomHandler.hasClass(highlightItem, 'p-autocomplete-item-group')) {
+                                highlightItem = this.findNextItem(highlightItem);
+                            }
+
+                            if (highlightItem) {
+                                DomHandler.addClass(highlightItem, 'p-highlight');
+                            }
                         }
 
                         event.preventDefault();
@@ -289,21 +384,21 @@ export default {
                     //up
                     case 38:
                         if (highlightItem) {
-                            let previousElement = highlightItem.previousElementSibling;
+                            let previousElement = this.findPrevItem(highlightItem);
                             if (previousElement) {
                                 DomHandler.addClass(previousElement, 'p-highlight');
                                 DomHandler.removeClass(highlightItem, 'p-highlight');
-                                DomHandler.scrollInView(this.$refs.overlay, previousElement);
+                                DomHandler.scrollInView(this.overlay, previousElement);
                             }
                         }
 
                         event.preventDefault();
                     break;
 
-                    //enter,tab
+                    //enter
                     case 13:
                         if (highlightItem) {
-                            this.selectItem(event, this.suggestions[DomHandler.index(highlightItem)]);
+                            this.selectHighlightItem(event, highlightItem);
                             this.hideOverlay();
                         }
 
@@ -319,7 +414,7 @@ export default {
                     //tab
                     case 9:
                         if (highlightItem) {
-                            this.selectItem(event, this.suggestions[DomHandler.index(highlightItem)]);
+                            this.selectHighlightItem(event, highlightItem);
                         }
 
                         this.hideOverlay();
@@ -334,11 +429,11 @@ export default {
                 switch(event.which) {
                     //backspace
                     case 8:
-                        if (this.value && this.value.length && !this.$refs.input.value) {
-                            let removedValue = this.value[this.value.length - 1];
-                            let newValue = this.value.slice(0, -1);
+                        if (this.modelValue && this.modelValue.length && !this.$refs.input.value) {
+                            let removedValue = this.modelValue[this.modelValue.length - 1];
+                            let newValue = this.modelValue.slice(0, -1);
 
-                            this.$emit('input', newValue);
+                            this.$emit('update:modelValue', newValue);
                             this.$emit('item-unselect', {
                                 originalEvent: event,
                                 value: removedValue
@@ -351,11 +446,60 @@ export default {
                 }
             }
         },
+        selectHighlightItem(event, item) {
+            if (this.optionGroupLabel) {
+                let optionGroup = this.suggestions[item.dataset.group];
+                this.selectItem(event, this.getOptionGroupChildren(optionGroup)[item.dataset.index]);
+            }
+            else {
+                this.selectItem(event, this.suggestions[DomHandler.index(item)]);
+            }
+        },
+        findNextItem(item) {
+            let nextItem = item.nextElementSibling;
+
+            if (nextItem)
+                return DomHandler.hasClass(nextItem, 'p-autocomplete-item-group') ? this.findNextItem(nextItem) : nextItem;
+            else
+                return null;
+        },
+        findPrevItem(item) {
+            let prevItem = item.previousElementSibling;
+
+            if (prevItem)
+                return DomHandler.hasClass(prevItem, 'p-autocomplete-item-group') ? this.findPrevItem(prevItem) : prevItem;
+            else
+                return null;
+        },
+        onChange(event) {
+            if (this.forceSelection) {
+                let valid = false;
+                let inputValue = event.target.value.trim();
+                
+                if (this.suggestions)  {
+                    for (let item of this.suggestions) {
+                        let itemValue = this.field ? ObjectUtils.resolveFieldData(item, this.field) : item;
+                        if (itemValue && inputValue === itemValue.trim()) {
+                            valid = true;
+                            this.selectItem(event, item);
+                            break;
+                        }
+                    }
+                }
+
+                if (!valid) {
+                    this.$refs.input.value = '';
+                    this.inputTextValue = '';
+                    this.$emit('clear');
+                    this.$emit('update:modelValue', null);
+                }
+            }
+        },
         isSelected(val) {
             let selected = false;
-            if (this.value && this.value.length) {
-                for (let i = 0; i < this.value.length; i++) {
-                    if (ObjectUtils.equals(this.value[i], val)) {
+            if (this.modelValue && this.modelValue.length) {
+                for (let i = 0; i < this.modelValue.length; i++) {
+                    if (ObjectUtils.equals(this.modelValue[i], val)) {
                         selected = true;
                         break;
                     }
@@ -364,43 +508,27 @@ export default {
 
             return selected;
         },
-        appendContainer() {
-            if (this.appendTo) {
-                if (this.appendTo === 'body')
-                    document.body.appendChild(this.$refs.overlay);
-                else
-                    document.getElementById(this.appendTo).appendChild(this.$refs.overlay);
-            }
+        overlayRef(el) {
+            this.overlay = el;
         },
-        restoreAppend() {
-            if (this.$refs.overlay && this.appendTo) {
-                if (this.appendTo === 'body')
-                    document.body.removeChild(this.$refs.overlay);
-                else
-                    document.getElementById(this.appendTo).removeChild(this.$refs.overlay);
-            }
+        onOverlayClick(event) {
+            OverlayEventBus.emit('overlay-click', {
+                originalEvent: event,
+                target: this.$el
+            });
         }
     },
     computed: {
-        listeners() {
-            return {
-                ...this.$listeners,
-                input: this.onInput,
-                focus: this.onFocus,
-                blur: this.onBlur,
-                keydown: this.onKeyDown
-            };
-        },
         containerClass() {
-            return ['p-autocomplete p-component', {
+            return ['p-autocomplete p-component p-inputwrapper', this.class, {
                 'p-autocomplete-dd': this.dropdown,
                 'p-autocomplete-multiple': this.multiple,
-                'p-inputwrapper-filled': ((this.value) || (this.inputTextValue && this.inputTextValue.length)),
+                'p-inputwrapper-filled': ((this.modelValue) || (this.inputTextValue && this.inputTextValue.length)),
                 'p-inputwrapper-focus': this.focused
             }];
         },
-        inputClass() {
-            return ['p-autocomplete-input p-inputtext p-component', {
+        inputFieldClass() {
+            return ['p-autocomplete-input p-inputtext p-component', this.inputClass, {
                 'p-autocomplete-dd-input': this.dropdown,
                 'p-disabled': this.$attrs.disabled
             }];
@@ -411,14 +539,17 @@ export default {
                 'p-focus': this.focused
             }];
         },
+        panelStyleClass() {
+            return ['p-autocomplete-panel p-component', this.panelClass];
+        },
         inputValue() {
-            if (this.value) {
-                if (this.field) {
-                    const resolvedFieldData = ObjectUtils.resolveFieldData(this.value, this.field);
-                    return resolvedFieldData != null ? resolvedFieldData : this.value;
+            if (this.modelValue) {
+                if (this.field && typeof this.modelValue === 'object') {
+                    const resolvedFieldData = ObjectUtils.resolveFieldData(this.modelValue, this.field);
+                    return resolvedFieldData != null ? resolvedFieldData : this.modelValue;
                 }
                 else
-                    return this.value;
+                    return this.modelValue;
             }
             else {
                 return '';
@@ -426,6 +557,12 @@ export default {
         },
         listId() {
             return UniqueComponentId() + '_list';
+        },
+        appendDisabled() {
+            return this.appendTo === 'self';
+        },
+        appendTarget() {
+            return this.appendDisabled ? null : this.appendTo;
         }
     },
     components: {
@@ -495,6 +632,7 @@ export default {
     overflow: hidden;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .p-autocomplete-token {

@@ -1,11 +1,17 @@
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 
-export declare class AccordionTab extends Vue {
+interface AccordionTabProps {
     header?: string;
     active?: boolean;
     disabled?: boolean;
+}
+
+declare class AccordionTab {
+    $props: AccordionTabProps;
     $slot: {
         '': VNode[];
         header: VNode[];
     }
 }
+
+export default AccordionTab;

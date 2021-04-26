@@ -1,24 +1,33 @@
-import Vue from 'vue';
-
-export declare class Column extends Vue {
+interface ColumnProps {
     columnKey?: any;
     field?: string;
-    sortField?: string;
+    sortField?: string | ((item: any) => any);
     filterField?: string;
+    dataType?: string;
     sortable?: boolean;
     header?: any;
     footer?: any;
+    style?: object;
+    class?: string;
     headerStyle?: object;
     headerClass?: string;
     bodyStyle?: object;
     bodyClass?: string;
     footerStyle?: object;
     footerClass?: string;
+    showFilterMenu?: boolean;
+    showFilterOperator?: boolean;
+    showClearButton?: boolean;
+    showApplyButton?: boolean;
+    showFilterMatchModes?: boolean;
+    showAddButton?: boolean;
+    filterMatchModeOptions?: any[];
+    maxConstraints?: number;
+    excludeGlobalFilter?: boolean;
     filterHeaderStyle?: object;
     filterHeaderClass?: string;
-    filterMatchMode?: string;
-    filterFunction?: Function;
-    excludeGlobalFilter?: boolean;
+    filterMenuStyle?: object;
+    filterMenuClass?: string;
     selectionMode?: string;
     expander?: boolean;
     colspan?: number;
@@ -28,4 +37,13 @@ export declare class Column extends Vue {
     reorderableColumn?: boolean;
     rowEditor?: boolean;
     frozen?: boolean;
+    alignFrozen?: string;
+    exportable?: boolean;
+    filterMatchMode?: string;
 }
+
+declare class Column {
+    $props: ColumnProps;
+}
+
+export default Column;

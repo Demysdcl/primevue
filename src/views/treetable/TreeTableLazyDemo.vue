@@ -6,6 +6,7 @@
                 <p>Lazy mode is handy to deal with large datasets, instead of loading the entire data, small chunks of data is loaded by invoking corresponding callbacks everytime paging or sorting. In addition,
                     children of a node can be loaded on demand at onNodeExpand event as well. Sample belows imitates lazy paging by using an in memory list..</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -19,21 +20,34 @@
             </div>
         </div>
 
-        <div class="content-section documentation">
-            <TabView>
-                <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
-&lt;TreeTable :value="nodes" :lazy="true" :paginator="true" :rows="rows" :loading="loading"
-    @node-expand="onExpand" @page="onPage" :totalRecords="totalRecords"&gt;
-    &lt;Column field="name" header="Name" :expander="true"&gt;&lt;/Column&gt;
-    &lt;Column field="size" header="Size"&gt;&lt;/Column&gt;
-    &lt;Column field="type" header="Type"&gt;&lt;/Column&gt;
-&lt;/TreeTable&gt;
+        <AppDoc name="TreeTableLazyDemo" :sources="sources" :service="['NodeService']" :data="['treetablenodes']" github="treetable/TreeTableLazyDemo.vue" />
+    </div>
 </template>
-</CodeHighlight>
 
-<CodeHighlight lang="javascript">
+<script>
+export default {
+    data() {
+        return {
+            nodes: null,
+            rows: 10,
+            loading: false,
+            totalRecords: 0,
+            sources: {
+                'options-api': {
+                    tabName: 'Options API Source',
+                    content: `
+<template>
+    <div>
+        <TreeTable :value="nodes" :lazy="true" :paginator="true" :rows="rows" :loading="loading"
+            @nodeExpand="onExpand" @page="onPage" :totalRecords="totalRecords">
+            <Column field="name" header="Name" :expander="true"></Column>
+            <Column field="size" header="Size"></Column>
+            <Column field="type" header="Type"></Column>
+        </TreeTable>
+    </div>                   
+</template>
+
+<script>
 export default {
     data() {
         return {
@@ -102,7 +116,7 @@ export default {
         loadNodes(first, rows) {
             let nodes = [];
 
-            for(let i = 0; i &lt; rows; i++) {
+            for(let i = 0; i < rows; i++) {
                 let node = {
                     key: (first + i),
                     data: {
@@ -120,22 +134,115 @@ export default {
         }
     }
 }
-</CodeHighlight>
-
-                </TabPanel>
-            </TabView>
-        </div>
-    </div>
+<\\/script>
+`
+                },
+                'composition-api': {
+                    tabName: 'Composition API Source',
+                    content: `
+<template>
+    <div>
+        <TreeTable :value="nodes" :lazy="true" :paginator="true" :rows="rows" :loading="loading"
+            @nodeExpand="onExpand" @page="onPage" :totalRecords="totalRecords">
+            <Column field="name" header="Name" :expander="true"></Column>
+            <Column field="size" header="Size"></Column>
+            <Column field="type" header="Type"></Column>
+        </TreeTable>
+    </div>                   
 </template>
 
 <script>
+import { ref, onMounted } from 'vue';
+
 export default {
-    data() {
-        return {
-            nodes: null,
-            rows: 10,
-            loading: false,
-            totalRecords: 0
+    setup() {
+        onMounted(() => {
+            loading.value = true;
+
+            setTimeout(() => {
+                loading.value = false;
+                nodes.value = loadNodes(0, rows.value);
+                totalRecords.value = 1000;
+            }, 1000);
+        })
+        const nodes = ref();
+        const rows = ref(10);
+        const loading = ref(false);
+        const totalRecords = ref(0);
+        const onExpand = (node) => {
+            if (!node.children) {
+                loading.value = true;
+
+                setTimeout(() => {
+                    let lazyNode = {...node};
+
+                    lazyNode.children = [
+                        {
+                            data: {
+                                name: lazyNode.data.name + ' - 0',
+                                size: Math.floor(Math.random() * 1000) + 1 + 'kb',
+                                type: 'File'
+                            },
+                        },
+                        {
+                            data: {
+                                name: lazyNode.data.name + ' - 1',
+                                size: Math.floor(Math.random() * 1000) + 1 + 'kb',
+                                type: 'File'
+                            }
+                        }
+                    ];
+
+                    let newNodes = nodes.value.map(n => {
+                        if (n.key === node.key) {
+                            n = lazyNode;
+                        }
+
+                        return n;
+                    });
+
+                    loading.value = false;
+                    nodes.value = newNodes;
+                }, 250);
+            }
+        };
+        const onPage = (event) => {
+            loading.value = true;
+
+            //imitate delay of a backend call
+            setTimeout(() => {
+                loading.value = false;
+                nodes.value = loadNodes(event.first, rows.value);
+            }, 1000);
+        };
+        const loadNodes = (first, rows) => {
+            let nodes = [];
+
+            for(let i = 0; i < rows; i++) {
+                let node = {
+                    key: (first + i),
+                    data: {
+                        name: 'Item ' + (first + i),
+                        size: Math.floor(Math.random() * 1000) + 1 + 'kb',
+                        type: 'Type ' + (first + i)
+                    },
+                    leaf: false
+                };
+
+                nodes.push(node);
+            }
+
+            return nodes;
+        }
+
+        return { nodes, rows, loading, totalRecords, onExpand, onPage, loadNodes }
+    }
+    
+}
+<\\/script>
+`
+                }
+            }
         }
     },
     mounted() {

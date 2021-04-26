@@ -5,6 +5,7 @@
                 <h1>Message</h1>
                 <p>Messages is used to display inline messages with various severities.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -17,22 +18,38 @@
 
                 <h5>Dynamic</h5>
                 <Button label="Show" @click="addMessages()" />
-                <Button label="Clear" @click="removeMessages()" class="p-button-secondary"/>
-                <transition-group name="p-messages" tag="div">
-                    <Message v-for="msg of messages" :severity="msg.severity" :key="msg.content">{{msg.content}}</Message>
+                <transition-group name="p-message" tag="div">
+                    <Message v-for="msg of messages" :severity="msg.severity" :key="msg.id">{{msg.content}}</Message>
                 </transition-group>
 
+                <h5>Inline Messages</h5>
+                <p>Message component is used to display inline messages mostly within forms.</p>
+                <div class="p-grid">
+                    <div class="p-col-12 p-md-3">
+                        <InlineMessage severity="info">Message Content</InlineMessage>
+                    </div>
+                    <div class="p-col-12 p-md-3">
+                        <InlineMessage severity="success">Message Content</InlineMessage>
+                    </div>
+                    <div class="p-col-12 p-md-3">
+                        <InlineMessage severity="warn">Message Content</InlineMessage>
+                    </div>
+                    <div class="p-col-12 p-md-3">
+                        <InlineMessage severity="error">Message Content</InlineMessage>
+                    </div>
+                </div>
+
                 <h5>Auto Dismiss</h5>
-                <Message severity="warn" :life="10000" :sticky="false">This message will hide in 10 seconds.</Message>
+                <Message severity="warn" :life="3000" :sticky="false">This message will hide in 3 seconds.</Message>
 
                 <h5>Validation Message</h5>
                 <div class="p-formgroup-inline" style="margin-bottom:.5rem">
-                    <Label for="username" class="p-sr-only">Username</Label>
+                    <label for="username" class="p-sr-only">Username</label>
                     <InputText id="username" placeholder="Username" class="p-invalid" />
                     <InlineMessage>Username is required</InlineMessage>
                 </div>
                 <div class="p-formgroup-inline">
-                    <Label for="email" class="p-sr-only">email</Label>
+                    <label for="email" class="p-sr-only">email</label>
                     <InputText id="email" placeholder="Email" class="p-invalid" />
                     <InlineMessage />
                 </div>
@@ -56,13 +73,10 @@ export default {
     methods: {
         addMessages() {
             this.messages = [
-                {severity: 'info', content: 'Dynamic Info Message'},
-                {severity: 'success', content: 'Dynamic Success Message'},
-                {severity: 'warn', content: 'Dynamic Warning Message'}
+                {severity: 'info', content: 'Dynamic Info Message', id: this.count++},
+                {severity: 'success', content: 'Dynamic Success Message', id: this.count++},
+                {severity: 'warn', content: 'Dynamic Warning Message', id: this.count++}
             ]
-        },
-        removeMessages() {
-            this.messages = null;
         }
     },
     components: {

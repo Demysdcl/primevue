@@ -1,6 +1,4 @@
-import Vue from 'vue';
-
-export declare class FileUpload extends Vue {
+interface FileUploadProps {
     name?: string;
     url?: string;
     mode?: string;
@@ -18,6 +16,12 @@ export declare class FileUpload extends Vue {
     uploadLabel?: string;
     cancelLabel?: string;
     customUpload?: boolean;
+    showUploadButton?: boolean;
+    showCancelButton?: boolean;
+}
+
+declare class FileUpload {
+    $props: FileUploadProps;
     $emit(eventName: 'select', e: { originalEvent: Event, files: any }): this;
     $emit(eventName: 'before-upload', e: { xhr: XMLHttpRequest, formData: any }): this;
     $emit(eventName: 'progress', e: { originalEvent: Event, progress: any }): this;
@@ -26,3 +30,5 @@ export declare class FileUpload extends Vue {
     $emit(eventName: 'before-send', e: { xhr: XMLHttpRequest, formData: any }): this;
     $emit(eventName: 'clear'): this;
 }
+
+export default FileUpload;

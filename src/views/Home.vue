@@ -1,6 +1,7 @@
 <template>
     <div class="home">
         <div :class="introductionClass">
+            <div class="introduction-promo">Now with Vue 3 Support</div>
             <div class="introduction-title">The Ultimate UI Component Library</div>
             <div class="introduction-subtitle">for Vue</div>
 
@@ -17,8 +18,8 @@
                     <div class="feature-card">
                         <img alt="components" src="../assets/images/home/vue-components.png" />
                         <div class="feature-card-detail">
-                            <div class="feature-name">60+ COMPONENTS</div>
-                            <p>The ultimate set of UI Components to assist you with 60+ impressive Vue Components.</p>
+                            <div class="feature-name">80+ COMPONENTS</div>
+                            <p>The ultimate set of UI Components to assist you with 80+ impressive Vue Components.</p>
                         </div>
                     </div>
                 </div>
@@ -97,6 +98,14 @@
             </div>
         </div>
 
+        <div class="video">
+            <h4>Vue.js Global 2020</h4>
+            <p>PrimeVue session from Vue.js Global 2020 Conference where we had a remarkable experience of presenting PrimeVue after Evan You announced Vue 3.</p>
+            <div>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/3YP6Ob0-jkI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
         <div class="whouses">
             <h4>Key Users</h4>
             <p>The creator of PrimeVue is PrimeTek Informatics, the distinguished component library vendor who built popular open source projects such as PrimeFaces, PrimeNG and PrimeReact over the past years.</p>
@@ -121,6 +130,16 @@
             <p>Gorgeous Vue-CLI application templates designed by professional designers and implemented by Vue Experts to help you reach your goals in no time.</p>
 
             <div class="p-grid">
+                <div class="p-col-12 p-md-3">
+                    <a href="https://www.primefaces.org/layouts/ultima-vue">
+                        <img alt="Ultima" src="../assets/images/layouts/ultima-vue.jpg">
+                    </a>
+                </div>
+                <div class="p-col-12 p-md-3">
+                    <a href="https://www.primefaces.org/layouts/diamond-vue">
+                        <img alt="Diamond" src="../assets/images/layouts/diamond-vue.jpg">
+                    </a>
+                </div>
                 <div class="p-col-12 p-md-3">
                     <a href="https://www.primefaces.org/layouts/sapphire-vue">
                         <img alt="Sapphire" src="../assets/images/layouts/sapphire-vue.jpg">
@@ -149,11 +168,6 @@
                 <div class="p-col-12 p-md-3">
                     <a href="https://www.primefaces.org/layouts/roma-vue">
                         <img alt="Roma" src="../assets/images/layouts/roma-vue.jpg">
-                    </a>
-                </div>
-                <div class="p-col-12 p-md-3">
-                    <a href="https://www.primefaces.org/layouts/ultima-vue">
-                        <img alt="Ultima" src="../assets/images/layouts/ultima-vue.jpg">
                     </a>
                 </div>
                 <div class="p-col-12 p-md-3">
@@ -201,7 +215,7 @@
                     </a>
                 </div>
                 <div class="p-col-12 p-md-6">
-                    <img alt="PRO" src="../assets/images/home/icon-pro.svg" />
+                    <img alt="PRO" src="../assets/images/home/asset-pro.png" />
                 </div>
             </div>
         </div>
@@ -209,7 +223,7 @@
 </template>
 
 <script>
-import EventBus from '@/EventBus';
+import EventBus from '@/AppEventBus';
 
 export default {
     data() {
@@ -217,6 +231,7 @@ export default {
             dark: false
         }
     },
+    themeChangeListener: null,
     mounted() {
         let afId = this.$route.query['af_id'];
         if (afId) {
@@ -226,21 +241,21 @@ export default {
             document.cookie = 'primeaffiliateid=' + afId + ';expires=' + expire.toUTCString() + ';path=/; domain:primefaces.org';
         }
 
-        EventBus.$on('change-theme', event => {
+        this.themeChangeListener = (event) => {
             if (event.dark)
                 this.dark = true;
             else
                 this.dark = false;
-        });
+        };
+        EventBus.on('change-theme', this.themeChangeListener);
     },
-    beforeDestroy() {
-        EventBus.$off('change-theme');
+    beforeUnmount() {
+        EventBus.off('change-theme', this.themeChangeListener);
     },
     computed: {
         introductionClass() {
             return ['introduction', {'introduction-dark': this.dark}];
         }
     }
-
 }
 </script>

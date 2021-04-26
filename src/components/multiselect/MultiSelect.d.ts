@@ -1,22 +1,34 @@
-import Vue, {VNode} from 'vue';
+import { VNode } from 'vue';
 
-export declare class MultiSelect extends Vue {
-    value?: any;
+interface MultiSelectProps {
+    modelValue?: any;
     options?: any[];
     optionLabel?: string;
     optionValue?: any;
     optionDisabled?: boolean;
+    optionGroupLabel?: string;
+    optionGroupChildren?: string;
     scrollHeight?: string;
     placeholder?: string;
     disabled?: boolean;
-    filter?: boolean;
     tabindex?: string;
     inputId?: string;
     dataKey?: string;
+    filter?: boolean;
     filterPlaceholder?: string;
     filterLocale?: string;
+    filterMatchMode?: string;
+    filterFields?: string[];
     ariaLabelledBy?: string;
     appendTo?: string;
+    emptyFilterMessage?: string;
+    emptyMessage?: string;
+    display?: string;
+    panelClass?: string;
+}
+
+declare class MultiSelect {
+    $props: MultiSelectProps;
     $emit(eventName: 'input', value: any): this;
     $emit(eventName: 'change', e: {originalEvent: Event, value: any}): this;
     $emit(eventName: 'before-show'): this;
@@ -29,3 +41,5 @@ export declare class MultiSelect extends Vue {
         option: VNode[];
     }
 }
+
+export default MultiSelect;

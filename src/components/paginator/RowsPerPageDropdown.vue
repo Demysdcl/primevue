@@ -1,13 +1,14 @@
 <template>
-	<RPPDropdown :value="rows" :options="rowsOptions" optionLabel="label" optionValue="value"
-        @input="onChange($event)"></RPPDropdown>
+	<RPPDropdown :modelValue="rows" :options="rowsOptions" optionLabel="label" optionValue="value"
+        @update:modelValue="onChange($event)"></RPPDropdown>
 </template>
 
 <script>
-import Dropdown from '../dropdown/Dropdown';
+import Dropdown from 'primevue/dropdown';
 
 export default {
     inheritAttrs: false,
+    emits: ['rows-change'],
     props: {
         options: Array,
         rows: Number

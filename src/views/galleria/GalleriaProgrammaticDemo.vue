@@ -14,7 +14,7 @@
                     <Button icon="pi pi-plus" @click="next" class="p-button-secondary" style="margin-left: .5rem" />
                 </div>
 
-                <Galleria :value="images" :activeIndex.sync="activeIndex" :responsiveOptions="responsiveOptions" :numVisible="5" style="max-width: 640px">
+                <Galleria :value="images" v-model:activeIndex="activeIndex" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 640px">
                     <template #item="slotProps">
                         <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%" />
                     </template>
@@ -28,14 +28,13 @@
         <div class="content-section documentation">
             <TabView>
                 <TabPanel header="Source">
-<CodeHighlight>
-<template v-pre>
+<pre v-code><code><template v-pre>
 &lt;div style="padding: .5rem 0"&gt;
     &lt;Button icon="pi pi-minus" @click="prev" class="p-button-secondary" /&gt;
     &lt;Button icon="pi pi-plus" @click="next" class="p-button-secondary" style="margin-left: .5rem" /&gt;
 &lt;/div&gt;
 
-&lt;Galleria :value="images" :activeIndex.sync="activeIndex" :responsiveOptions="responsiveOptions" :numVisible="5" style="max-width: 640px"&gt;
+&lt;Galleria :value="images" v-model:activeIndex="activeIndex" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 640px"&gt;
     &lt;template #item="slotProps"&gt;
         &lt;img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%" /&gt;
     &lt;/template&gt;
@@ -44,9 +43,9 @@
     &lt;/template&gt;
 &lt;/Galleria&gt;
 </template>
-</CodeHighlight>
+</code></pre>
 
-<CodeHighlight lang="javascript">
+<pre v-code.script><code>
 import PhotoService from '../../service/PhotoService';
 
 export default {
@@ -86,7 +85,8 @@ export default {
         }
     }
 }
-</CodeHighlight>
+
+</code></pre>
                 </TabPanel>
             </TabView>
         </div>

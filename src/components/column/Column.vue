@@ -11,12 +11,16 @@ export default {
             default: null
         },
         sortField: {
-            type: String,
+            type: [String, Function],
             default: null
         },
         filterField: {
             type: String,
             default: null
+        },
+        dataType: {
+            type: String,
+            default: 'text'
         },
         sortable: {
             type: Boolean,
@@ -28,6 +32,14 @@ export default {
         },
         footer: {
             type: null,
+            default: null
+        },
+        style: {
+            type: null,
+            default: null
+        },
+        class: {
+            type: String,
             default: null
         },
         headerStyle: {
@@ -54,25 +66,57 @@ export default {
             type: String,
             default: null
         },
+        showFilterMenu: {
+            type: Boolean,
+            default: true
+        },
+        showFilterOperator: {
+            type: Boolean,
+            default: true
+        },
+        showClearButton: {
+            type: Boolean,
+            default: true
+        },
+        showApplyButton: {
+            type: Boolean,
+            default: true
+        },
+        showFilterMatchModes: {
+            type: Boolean,
+            default: true
+        },
+        showAddButton: {
+            type: Boolean,
+            default: true
+        },
+        filterMatchModeOptions: {
+            type: Array,
+            default: null
+        },
+        maxConstraints: {
+            type: Number,
+            default: 2
+        },
+        excludeGlobalFilter: {
+            type: Boolean,
+            default: false
+        },
         filterHeaderClass: {
             type: String,
             default: null
         },
         filterHeaderStyle: {
             type: null,
-            default: false
-        },
-        filterMatchMode: {
-            type: String,
-            default: 'startsWith'
-        },
-        filterFunction: {
-            type: Function,
             default: null
         },
-        excludeGlobalFilter: {
-            type: Boolean,
-            default: false
+        filterMenuClass: {
+            type: String,
+            default: null
+        },
+        filterMenuStyle: {
+            type: null,
+            default: null
         },
         selectionMode: {
             type: String,
@@ -109,6 +153,18 @@ export default {
         frozen: {
             type: Boolean,
             default: false
+        },
+        alignFrozen: {
+            type: String,
+            default: 'left'
+        },
+        exportable: {
+            type: Boolean,
+            default: true
+        },
+        filterMatchMode: {
+            type: String,
+            default: null
         }
     },
     render() {

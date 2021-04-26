@@ -1,5 +1,9 @@
 <template>
     <div>
+        <div class="content-section introduction">
+            <AppDemoActions />
+        </div>
+
         <div class="content-section implementation flexgrid-demo">
             <h1>Grid System</h1>
             <p>Grid is a lightweight flex based responsive layout utility optimized for mobile phones, tablets and desktops.</p>
@@ -30,7 +34,7 @@
             </div>
 
             <h5>Reverse Direction</h5>
-            <div class="p-grid p-dir-rev">
+            <div class="p-grid p-flex-row-reverse">
                 <div class="p-col">
                     <div class="box">1</div>
                 </div>
@@ -43,7 +47,7 @@
             </div>
 
             <h5>Column Direction</h5>
-            <div class="p-grid p-dir-col">
+            <div class="p-grid p-flex-column">
                 <div class="p-col">
                     <div class="box">1</div>
                 </div>
@@ -56,7 +60,7 @@
             </div>
 
             <h5>Reverse Column Direction</h5>
-            <div class="p-grid p-dir-col-rev">
+            <div class="p-grid p-flex-column-reverse">
                 <div class="p-col">
                     <div class="box">1</div>
                 </div>
@@ -166,7 +170,7 @@
             </div>
 
             <h5>Horizontal Alignment - Start</h5>
-            <div class="p-grid p-justify-start">
+            <div class="p-grid p-jc-start">
                 <div class="p-col-2">
                     <div class="box">2</div>
                 </div>
@@ -179,7 +183,7 @@
             </div>
 
             <h5>Horizontal Alignment - End</h5>
-            <div class="p-grid p-justify-end">
+            <div class="p-grid p-jc-end">
                 <div class="p-col-2">
                     <div class="box">2</div>
                 </div>
@@ -192,7 +196,7 @@
             </div>
 
             <h5>Horizontal Alignment - Center</h5>
-            <div class="p-grid p-justify-center">
+            <div class="p-grid p-jc-center">
                 <div class="p-col-2">
                     <div class="box">2</div>
                 </div>
@@ -205,7 +209,7 @@
             </div>
 
             <h5>Horizontal Alignment - Between</h5>
-            <div class="p-grid p-justify-between">
+            <div class="p-grid p-jc-between">
                 <div class="p-col-2">
                     <div class="box">2</div>
                 </div>
@@ -218,7 +222,7 @@
             </div>
 
             <h5>Horizontal Alignment - Around</h5>
-            <div class="p-grid p-justify-around">
+            <div class="p-grid p-jc-around">
                 <div class="p-col-2">
                     <div class="box">2</div>
                 </div>
@@ -231,7 +235,7 @@
             </div>
 
             <h5>Horizontal Alignment - Even</h5>
-            <div class="p-grid p-justify-even">
+            <div class="p-grid p-jc-evenly">
                 <div class="p-col-2">
                     <div class="box">2</div>
                 </div>
@@ -244,7 +248,7 @@
             </div>
 
             <h5>Vertical Alignment - Start</h5>
-            <div class="p-grid p-align-start vertical-container">
+            <div class="p-grid p-ai-start vertical-container">
                 <div class="p-col">
                     <div class="box">4</div>
                 </div>
@@ -257,7 +261,7 @@
             </div>
 
             <h5>Vertical Alignment - End</h5>
-            <div class="p-grid p-align-end vertical-container">
+            <div class="p-grid p-ai-end vertical-container">
                 <div class="p-col">
                     <div class="box">4</div>
                 </div>
@@ -270,7 +274,7 @@
             </div>
 
             <h5>Vertical Alignment - Center</h5>
-            <div class="p-grid p-align-center vertical-container">
+            <div class="p-grid p-ai-center vertical-container">
                 <div class="p-col">
                     <div class="box">4</div>
                 </div>
@@ -283,7 +287,7 @@
             </div>
 
             <h5>Vertical Alignment - Stretch</h5>
-            <div class="p-grid p-align-stretch vertical-container">
+            <div class="p-grid p-ai-stretch vertical-container">
                 <div class="p-col">
                     <div class="box box-stretched">4</div>
                 </div>
@@ -297,13 +301,13 @@
 
             <h5>Vertical Alignment - Per Column</h5>
             <div class="p-grid vertical-container">
-                <div class="p-col p-col-align-start">
+                <div class="p-col p-as-start">
                     <div class="box">4</div>
                 </div>
-                <div class="p-col p-col-align-center">
+                <div class="p-col p-as-center">
                     <div class="box">4</div>
                 </div>
-                <div class="p-col p-col-align-end">
+                <div class="p-col p-as-end">
                     <div class="box">4</div>
                 </div>
             </div>
@@ -400,7 +404,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .flexgrid-demo {
     .box {
         background-color: var(--surface-e);

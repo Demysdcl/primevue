@@ -1,6 +1,7 @@
 <template>
-    <span :class="containerClass">
-        <INInputText ref="input" class="p-inputnumber-input" :value="formattedValue" v-bind="$attrs" v-on="listeners" :aria-valumin="min" :aria-valuemax="max" />
+    <span :class="containerClass" :style="style">
+        <INInputText ref="input" :class="['p-inputnumber-input', inputClass]" :style="inputStyle" :value="formattedValue" v-bind="$attrs" :aria-valumin="min" :aria-valuemax="max"
+           @input="onUserInput" @keydown="onInputKeyDown" @keypress="onInputKeyPress" @paste="onPaste" @click="onInputClick" @focus="onInputFocus" @blur="onInputBlur"/>
         <span class="p-inputnumber-button-group" v-if="showButtons && buttonLayout === 'stacked'">
             <INButton :class="upButtonClass" :icon="incrementButtonIcon" v-on="upButtonListeners" :disabled="$attrs.disabled" />
             <INButton :class="downButtonClass" :icon="decrementButtonIcon" v-on="downButtonListeners" :disabled="$attrs.disabled" />
@@ -11,13 +12,14 @@
 </template>
 
 <script>
-import InputText from '../inputtext/InputText';
-import Button from '../button/Button';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
 
 export default {
     inheritAttrs: false,
+    emits: ['update:modelValue', 'input'],
     props: {
-        value: {
+        modelValue: {
             type: Number,
             default: null
         },
@@ -100,7 +102,11 @@ export default {
         step: {
             type: Number,
             default: 1
-        }
+        },
+        style: null,
+        class: null,
+        inputStyle: null,
+        inputClass: null
     },
     numberFormat: null,
     _numeral: null,
@@ -111,25 +117,50 @@ export default {
     _suffix: null,
     _prefix: null,
     _index: null,
+    groupChar: '',
     isSpecialChar: null,
+    prefixChar: null,
+    suffixChar: null,
     timer: null,
     data() {
         return {
             focused: false
         }
     },
+    watch: {
+		locale(newValue, oldValue) {
+            this.updateConstructParser(newValue, oldValue);
+        },
+        localeMatcher(newValue, oldValue) {
+            this.updateConstructParser(newValue, oldValue);
+        },
+        mode(newValue, oldValue) {
+            this.updateConstructParser(newValue, oldValue);
+        },
+        currency(newValue, oldValue) {
+            this.updateConstructParser(newValue, oldValue);
+        },
+        currencyDisplay(newValue, oldValue) {
+            this.updateConstructParser(newValue, oldValue);
+        },
+        useGrouping(newValue, oldValue) {
+            this.updateConstructParser(newValue, oldValue);
+        },
+        minFractionDigits(newValue, oldValue) {
+            this.updateConstructParser(newValue, oldValue);
+        },
+        maxFractionDigits(newValue, oldValue) {
+            this.updateConstructParser(newValue, oldValue);
+        },
+        suffix(newValue, oldValue) {
+            this.updateConstructParser(newValue, oldValue);
+        },
+        prefix(newValue, oldValue) {
+            this.updateConstructParser(newValue, oldValue);
+        }
+    },
     created() {
-        this.numberFormat = new Intl.NumberFormat(this.locale, this.getOptions());
-        const numerals = [...new Intl.NumberFormat(this.locale, {useGrouping: false}).format(9876543210)].reverse();
-        const index = new Map(numerals.map((d, i) => [d, i]));
-        this._numeral = new RegExp(`[${numerals.join('')}]`, 'g');
-        this._decimal = this.getDecimalExpression();
-        this._group = this.getGroupingExpression();
-        this._minusSign = this.getMinusSignExpression();
-        this._currency = this.getCurrencyExpression();
-        this._suffix = new RegExp(`[${this.suffix||''}]`, 'g');
-        this._prefix = new RegExp(`[${this.prefix||''}]`, 'g');
-        this._index = d => index.get(d);
+        this.constructParser();
     },
     methods: {
         getOptions() {
@@ -143,13 +174,35 @@ export default {
                 maximumFractionDigits: this.maxFractionDigits
             };
         },
+        constructParser() {
+            this.numberFormat = new Intl.NumberFormat(this.locale, this.getOptions());
+            const numerals = [...new Intl.NumberFormat(this.locale, {useGrouping: false}).format(9876543210)].reverse();
+            const index = new Map(numerals.map((d, i) => [d, i]));
+            this._numeral = new RegExp(`[${numerals.join('')}]`, 'g');
+            this._decimal = this.getDecimalExpression();
+            this._group = this.getGroupingExpression();
+            this._minusSign = this.getMinusSignExpression();
+            this._currency = this.getCurrencyExpression();
+            this._suffix = this.getSuffixExpression();
+            this._prefix = this.getPrefixExpression();
+            this._index = d => index.get(d);
+        },
+        updateConstructParser(newValue, oldValue) {
+            if (newValue !== oldValue) {
+                this.constructParser();
+            }
+        },
+        escapeRegExp(text) {
+            return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+        },
         getDecimalExpression() {
             const formatter = new Intl.NumberFormat(this.locale, {useGrouping: false});
             return new RegExp(`[${formatter.format(1.1).trim().replace(this._numeral, '')}]`, 'g');
         },
         getGroupingExpression() {
             const formatter = new Intl.NumberFormat(this.locale, {useGrouping: true});
-            return new RegExp(`[${formatter.format(1000).trim().replace(this._numeral, '')}]`, 'g');
+            this.groupChar = formatter.format(1000000).trim().replace(this._numeral, '').charAt(0);
+            return new RegExp(`[${this.groupChar}]`, 'g');
         },
         getMinusSignExpression() {
             const formatter = new Intl.NumberFormat(this.locale, {useGrouping: false});
@@ -162,6 +215,29 @@ export default {
             }
 
             return new RegExp(`[]`,'g');
+        },
+        getPrefixExpression() {
+            if (this.prefix) {
+                this.prefixChar = this.prefix;
+            }
+            else {
+                const formatter = new Intl.NumberFormat(this.locale, {style: this.mode, currency: this.currency, currencyDisplay: this.currencyDisplay});
+                this.prefixChar = formatter.format(1).split('1')[0];
+            }
+
+            return new RegExp(`${this.escapeRegExp(this.prefixChar||'')}`, 'g');
+        },
+        getSuffixExpression() {
+            if (this.suffix) {
+                this.suffixChar = this.suffix;
+            }
+            else {
+                const formatter = new Intl.NumberFormat(this.locale, {style: this.mode, currency: this.currency, currencyDisplay: this.currencyDisplay,
+                    minimumFractionDigits: 0, maximumFractionDigits: 0});
+                this.suffixChar = formatter.format(1).split('1')[1];
+            }
+
+            return new RegExp(`${this.escapeRegExp(this.suffixChar||'')}`, 'g');
         },
         formatValue(value) {
             if (value != null) {
@@ -183,18 +259,19 @@ export default {
                     return formattedValue;
                 }
 
-                return value;
+                return value.toString();
             }
 
             return '';
         },
         parseValue(text) {
-            let filteredText = text.trim()
+            let filteredText = text
+                                .replace(this._suffix, '')
+                                .replace(this._prefix, '')
+                                .trim()
                                 .replace(/\s/g, '')
                                 .replace(this._currency, '')
                                 .replace(this._group, '')
-                                .replace(this._suffix, '')
-                                .replace(this._prefix, '')
                                 .replace(this._minusSign, '-')
                                 .replace(this._decimal, '.')
                                 .replace(this._numeral, this._index);
@@ -220,26 +297,38 @@ export default {
             this.spin(event, dir);
         },
         spin(event, dir) {
-            let step = this.step * dir;
-            let currentValue = this.parseValue(this.$refs.input.$el.value) || 0;
-            let newValue = this.validateValue(currentValue + step);
-
-            this.updateInput(newValue, 'spin');
-            this.updateModel(event, newValue);
+            if (this.$refs.input) {
+                let step = this.step * dir;
+                let currentValue = this.parseValue(this.$refs.input.$el.value) || 0;
+                let newValue = this.validateValue(currentValue + step);
+    
+                this.updateInput(newValue, null, 'spin');
+                this.updateModel(event, newValue);
+    
+                this.handleOnInput(event, currentValue, newValue);
+            }
         },
         onUpButtonMouseDown(event) {
-            this.$refs.input.$el.focus();
-            this.repeat(event, null, 1);
-            event.preventDefault();
+            if (!this.$attrs.disabled) {
+                this.$refs.input.$el.focus();
+                this.repeat(event, null, 1);
+                event.preventDefault();
+            }
         },
         onUpButtonMouseUp() {
-            this.clearTimer();
+            if (!this.$attrs.disabled) {
+                this.clearTimer();
+            }
         },
         onUpButtonMouseLeave() {
-            this.clearTimer();
+            if (!this.$attrs.disabled) {
+                this.clearTimer();
+            }
         },
         onUpButtonKeyUp() {
-            this.clearTimer();
+            if (!this.$attrs.disabled) {
+                this.clearTimer();
+            }
         },
         onUpButtonKeyDown(event) {
             if (event.keyCode === 32 || event.keyCode === 13) {
@@ -247,25 +336,33 @@ export default {
             }
         },
         onDownButtonMouseDown(event) {
-            this.$refs.input.$el.focus();
-            this.repeat(event, null, -1);
-            event.preventDefault();
+            if (!this.$attrs.disabled) {
+                this.$refs.input.$el.focus();
+                this.repeat(event, null, -1);
+                event.preventDefault();
+            }
         },
         onDownButtonMouseUp() {
-            this.clearTimer();
+            if (!this.$attrs.disabled) {
+                this.clearTimer();
+            }
         },
         onDownButtonMouseLeave() {
-            this.clearTimer();
+            if (!this.$attrs.disabled) {
+                this.clearTimer();
+            }
         },
         onDownButtonKeyUp() {
-            this.clearTimer();
+            if (!this.$attrs.disabled) {
+                this.clearTimer();
+            }
         },
         onDownButtonKeyDown(event) {
             if (event.keyCode === 32 || event.keyCode === 13) {
                 this.repeat(event, null, -1);
             }
         },
-        onInput() {
+        onUserInput() {
             if (this.isSpecialChar) {
                 this.$refs.input.$el.value = this.lastValue;
             }
@@ -314,6 +411,14 @@ export default {
                     }
                 break;
 
+                //enter
+                case 13:
+                    newValueStr = this.validateValue(this.parseValue(inputValue));
+                    this.$refs.input.$el.value = this.formatValue(newValueStr);
+                    this.$refs.input.$el.setAttribute('aria-valuenow', newValueStr);
+                    this.updateModel(event, newValueStr);
+                break;
+
                 //backspace
                 case 8: {
                     event.preventDefault();
@@ -344,11 +449,11 @@ export default {
                             }
                         }
 
-                        this.updateValue(event, newValueStr, 'delete-single');
+                        this.updateValue(event, newValueStr, null, 'delete-single');
                     }
                     else {
                         newValueStr = this.deleteRange(inputValue, selectionStart, selectionEnd);
-                        this.updateValue(event, newValueStr, 'delete-range');
+                        this.updateValue(event, newValueStr, null, 'delete-range');
                     }
 
                     break;
@@ -384,11 +489,11 @@ export default {
                             }
                         }
 
-                        this.updateValue(event, newValueStr, 'delete-back-single');
+                        this.updateValue(event, newValueStr, null, 'delete-back-single');
                     }
                     else {
                         newValueStr = this.deleteRange(inputValue, selectionStart, selectionEnd);
-                        this.updateValue(event, newValueStr, 'delete-range');
+                        this.updateValue(event, newValueStr, null, 'delete-range');
                     }
                 break;
 
@@ -401,9 +506,10 @@ export default {
             let code = event.which || event.keyCode;
             let char = String.fromCharCode(code);
             const isDecimalSign = this.isDecimalSign(char);
+            const isMinusSign = this.isMinusSign(char);
 
-            if ((48 <= code && code <= 57) || this.isMinusSign(char) || isDecimalSign) {
-                this.insert(event, char, isDecimalSign);
+            if ((48 <= code && code <= 57) || isMinusSign || isDecimalSign) {
+                this.insert(event, char, { isDecimalSign, isMinusSign });
             }
         },
         onPaste(event) {
@@ -415,6 +521,9 @@ export default {
                     this.insert(event, filteredData.toString());
                 }
             }
+        },
+        allowMinusSign() {
+            return this.min === null || this.min < 0;
         },
         isMinusSign(char) {
             if (this._minusSign.test(char)) {
@@ -432,52 +541,77 @@ export default {
 
             return false;
         },
-        insert(event, text, isDecimalSign = false) {
-            let selectionStart = this.$refs.input.$el.selectionStart;
-            let selectionEnd = this.$refs.input.$el.selectionEnd;
+        insert(event, text, sign = { isDecimalSign: false, isMinusSign: false }) {
+            const minusCharIndexOnText = text.search(this._minusSign);
+            this._minusSign.lastIndex = 0;
+            if (!this.allowMinusSign() && minusCharIndexOnText !== -1) {
+                return;
+            }
+
+            const selectionStart = this.$refs.input.$el.selectionStart;
+            const selectionEnd = this.$refs.input.$el.selectionEnd;
             let inputValue = this.$refs.input.$el.value.trim();
             const decimalCharIndex = inputValue.search(this._decimal);
             this._decimal.lastIndex = 0;
+            const minusCharIndex = inputValue.search(this._minusSign);
+            this._minusSign.lastIndex = 0;
             let newValueStr;
 
-            if (isDecimalSign) {
+            if (sign.isMinusSign) {
+                if (selectionStart === 0) {
+                    newValueStr = inputValue;
+                    if (minusCharIndex === -1 || selectionEnd !== 0) {
+                        newValueStr = this.insertText(inputValue, text, 0, selectionEnd);
+                    }
+
+                    this.updateValue(event, newValueStr, text, 'insert');
+                }
+            }
+            else if (sign.isDecimalSign) {
                 if (decimalCharIndex > 0 && selectionStart === decimalCharIndex) {
-                    this.updateValue(event, inputValue, 'insert');
+                    this.updateValue(event, inputValue, text, 'insert');
                 }
                 else if (decimalCharIndex > selectionStart && decimalCharIndex < selectionEnd) {
                     newValueStr = this.insertText(inputValue, text, selectionStart, selectionEnd);
-                    this.updateValue(event, newValueStr, 'insert');
+                    this.updateValue(event, newValueStr, text, 'insert');
                 }
             }
             else {
                 const maxFractionDigits = this.numberFormat.resolvedOptions().maximumFractionDigits;
+                const operation = selectionStart !== selectionEnd ? 'range-insert' : 'insert';
 
                 if (decimalCharIndex > 0 && selectionStart > decimalCharIndex) {
                     if ((selectionStart + text.length - (decimalCharIndex + 1)) <= maxFractionDigits) {
                         newValueStr = inputValue.slice(0, selectionStart) + text + inputValue.slice(selectionStart + text.length);
-                        this.updateValue(event, newValueStr, 'insert');
+                        this.updateValue(event, newValueStr, text, operation);
                     }
                 }
                 else {
                     newValueStr = this.insertText(inputValue, text, selectionStart, selectionEnd);
-                    const operation = selectionStart !== selectionEnd ? 'range-insert' : 'insert';
-                    this.updateValue(event, newValueStr, operation);
+                    this.updateValue(event, newValueStr, text, operation);
                 }
             }
         },
         insertText(value, text, start, end) {
-            let newValueStr;
+            let textSplit = text.split('.');
 
-            if ((end - start) === value.length)
-                newValueStr = text;
-            else if (start === 0)
-                newValueStr = text + value.slice(end);
-            else if (end === value.length)
-                newValueStr = value.slice(0, start) + text;
-            else
-                newValueStr = value.slice(0, start) + text + value.slice(end);
-
-            return newValueStr;
+            if (textSplit.length === 2) {
+                const decimalCharIndex = value.slice(start, end).search(this._decimal);
+                this._decimal.lastIndex = 0;
+                return (decimalCharIndex > 0) ? value.slice(0, start) + this.formatValue(text) + value.slice(end) : (value || this.formatValue(text));
+            }
+            else if ((end - start) === value.length) {
+                return this.formatValue(text);
+            }
+            else if (start === 0) {
+                return text + value.slice(end);
+            }
+            else if (end === value.length) {
+                return value.slice(0, start) + text;
+            }
+            else {
+                return value.slice(0, start) + text + value.slice(end);
+            }
         },
         deleteRange(value, start, end) {
             let newValueStr;
@@ -555,11 +689,33 @@ export default {
             this._group.lastIndex =  0;
             this._minusSign.lastIndex =  0;
         },
-        updateValue(event, valueStr, operation) {
+        updateValue(event, valueStr, insertedValueStr, operation) {
+            let currentValue = this.$refs.input.$el.value;
+            let newValue = null;
+
             if (valueStr != null) {
-                let newValue = this.parseValue(valueStr);
-                this.updateInput(newValue, operation);
+                newValue = this.parseValue(valueStr);
+                this.updateInput(newValue, insertedValueStr, operation);
             }
+
+            this.handleOnInput(event, currentValue, newValue);
+        },
+        handleOnInput(event, currentValue, newValue) {
+            if (this.isValueChanged(currentValue, newValue)) {
+                this.$emit('input', { originalEvent: event, value: newValue });
+            }
+        },
+        isValueChanged(currentValue, newValue) {
+            if (newValue === null && currentValue !== null) {
+                return true;
+            }
+
+            if (newValue != null) {
+                let parsedCurrentValue = (typeof currentValue === 'string') ? this.parseValue(currentValue) : currentValue;
+                return newValue !== parsedCurrentValue;
+            }
+
+            return false;
         },
         validateValue(value) {
             if (this.min != null && value < this.min) {
@@ -570,9 +726,15 @@ export default {
                 return this.max;
             }
 
+            if (value === '-') { // Minus sign
+                return null;
+            }
+
             return value;
         },
-        updateInput(value, operation) {
+        updateInput(value, insertedValueStr, operation) {
+            insertedValueStr = insertedValueStr || '';
+
             let inputValue = this.$refs.input.$el.value;
             let newValue = this.formatValue(value);
             let currentLength = inputValue.length;
@@ -581,29 +743,41 @@ export default {
                 this.$refs.input.$el.value = newValue;
                 this.$refs.input.$el.setSelectionRange(0, 0);
                 this.initCursor();
-                this.$refs.input.$el.setSelectionRange(this.$refs.input.$el.selectionStart + 1, this.$refs.input.$el.selectionStart + 1);
+                const prefixLength = (this.prefixChar || '').length;
+                const selectionEnd = prefixLength + insertedValueStr.length;
+                this.$refs.input.$el.setSelectionRange(selectionEnd, selectionEnd);
             }
             else {
-                let selectionStart = this.$refs.input.$el.selectionEnd;
+                let selectionStart = this.$refs.input.$el.selectionStart;
                 let selectionEnd = this.$refs.input.$el.selectionEnd;
                 this.$refs.input.$el.value = newValue;
                 let newLength = newValue.length;
 
-                if (newLength === currentLength) {
+                if (operation === 'range-insert') {
+                    const startValue = this.parseValue((inputValue || '').slice(0, selectionStart));
+                    const startValueStr = startValue !== null ? startValue.toString() : '';
+                    const startExpr = startValueStr.split('').join(`(${this.groupChar})?`);
+                    const sRegex = new RegExp(startExpr, 'g');
+                    sRegex.test(newValue);
+
+                    const tExpr = insertedValueStr.split('').join(`(${this.groupChar})?`);
+                    const tRegex = new RegExp(tExpr, 'g');
+                    tRegex.test(newValue.slice(sRegex.lastIndex));
+
+                    selectionEnd = sRegex.lastIndex + tRegex.lastIndex;
+                    this.$refs.input.$el.setSelectionRange(selectionEnd, selectionEnd);
+                }
+                else if (newLength === currentLength) {
                     if (operation === 'insert' || operation === 'delete-back-single')
                         this.$refs.input.$el.setSelectionRange(selectionEnd + 1, selectionEnd + 1);
-                    else if (operation === 'range-insert')
-                        this.$refs.input.$el.setSelectionRange(selectionEnd, selectionEnd);
                     else if (operation === 'delete-single')
                         this.$refs.input.$el.setSelectionRange(selectionEnd - 1, selectionEnd - 1);
-                    else if (operation === 'delete-range')
-                        this.$refs.input.$el.setSelectionRange(selectionStart, selectionStart);
-                    else if (operation === 'spin')
-                        this.$refs.input.$el.setSelectionRange(selectionStart, selectionEnd);
+                    else if (operation === 'delete-range' || operation === 'spin')
+                        this.$refs.input.$el.setSelectionRange(selectionEnd, selectionEnd);
                 }
                 else if (operation === 'delete-back-single') {
-                    let prevChar = inputValue.charAt(selectionStart - 1);
-                    let nextChar = inputValue.charAt(selectionStart);
+                    let prevChar = inputValue.charAt(selectionEnd - 1);
+                    let nextChar = inputValue.charAt(selectionEnd);
                     let diff = currentLength - newLength;
                     let isGroupChar = this._group.test(nextChar);
 
@@ -626,21 +800,19 @@ export default {
             this.$refs.input.$el.setAttribute('aria-valuenow', value);
         },
         updateModel(event, value) {
-            this.$emit('input', value);
+            this.$emit('update:modelValue', value);
         },
-        onInputFocus(event) {
+        onInputFocus() {
             this.focused = true;
-            this.$emit('focus', event);
         },
         onInputBlur(event) {
             this.focused = false;
 
-            let newValue = this.validateValue(this.parseValue(this.$refs.input.$el.value));
-            this.$refs.input.$el.value = this.formatValue(newValue);
-            this.$refs.input.$el.setAttribute('aria-valuenow', newValue);
+            let input = event.target;
+            let newValue = this.validateValue(this.parseValue(input.value));
+            input.value = this.formatValue(newValue);
+            input.setAttribute('aria-valuenow', newValue);
             this.updateModel(event, newValue);
-
-            this.$emit('blur', event);
         },
         clearTimer() {
             if (this.timer) {
@@ -650,7 +822,7 @@ export default {
     },
     computed: {
         containerClass() {
-            return ['p-inputnumber p-component', {
+            return ['p-inputnumber p-component p-inputwrapper', this.class, {
                 'p-inputwrapper-filled': this.filled,
                 'p-inputwrapper-focus': this.focused,
                 'p-inputnumber-buttons-stacked': this.showButtons && this.buttonLayout === 'stacked',
@@ -665,19 +837,7 @@ export default {
             return ['p-inputnumber-button p-inputnumber-button-down', this.decrementButtonClass];
         },
         filled() {
-            return (this.value != null && this.value.toString().length > 0)
-        },
-        listeners() {
-            return {
-                ...this.$listeners,
-                input: val => this.onInput(val),
-                keydown: event => this.onInputKeyDown(event),
-                keypress: event => this.onInputKeyPress(event),
-                paste: event => this.onPaste(event),
-                click: event => this.onInputClick(event),
-                focus: event => this.onInputFocus(event),
-                blur: event => this.onInputBlur(event)
-            };
+            return (this.modelValue != null && this.modelValue.toString().length > 0)
         },
         upButtonListeners() {
             return {
@@ -698,7 +858,7 @@ export default {
             }
         },
         formattedValue() {
-            return this.formatValue(this.value);
+            return this.formatValue(this.modelValue);
         }
     },
     components: {

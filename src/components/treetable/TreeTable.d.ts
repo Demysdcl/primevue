@@ -1,6 +1,6 @@
-import Vue, {VNode} from 'vue';
+import { VNode } from 'vue';
 
-export declare class TreeTable extends Vue {
+interface TreeTableProps {
     value?: any;
     expandedKeys?: any;
     selectionKeys?: any;
@@ -21,7 +21,7 @@ export declare class TreeTable extends Vue {
     loadingIcon?: string;
     rowHover?: boolean;
     autoLayout?: boolean;
-    sortField?: string;
+    sortField?: string | Function;
     sortOrder?: number;
     defaultSortOrder?: number;
     multiSortMeta?: any[];
@@ -34,6 +34,12 @@ export declare class TreeTable extends Vue {
     filterLocale?: string;
     resizableColumns?: boolean;
     columnResizeMode?: string;
+    indentation?: number;
+    showGridlines?: boolean;
+}
+
+declare class TreeTable {
+    $props: TreeTableProps;
     $emit(eventName: 'page', event: Event): this;
     $emit(eventName: 'sort', event: Event): this;
     $emit(eventName: 'filter', event: Event): this;
@@ -50,3 +56,5 @@ export declare class TreeTable extends Vue {
         footer: VNode[];
     }
 }
+
+export default TreeTable;

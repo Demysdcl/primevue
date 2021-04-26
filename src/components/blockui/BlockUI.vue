@@ -1,13 +1,14 @@
 <template>
-    <div class="p-blockui-container">
+    <div ref="container" class="p-blockui-container">
         <slot></slot>
     </div>
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
+import {DomHandler,ZIndexUtils} from 'primevue/utils';
 
 export default {
+    emits: ['block', 'unblock'],
     props: {
         blocked: {
             type: Boolean,
@@ -50,13 +51,9 @@ export default {
                 document.activeElement.blur();
             }
             else {
-                const target = this.$children ? this.$children[0]: null;
-                if (target) {
-                    this.mask = document.createElement('div');
-                    this.mask.setAttribute('class', 'p-blockui');
-                    target.$el.appendChild(this.mask);
-                    target.$el.style.position = 'relative';
-                }
+                this.mask = document.createElement('div');
+                this.mask.setAttribute('class', 'p-blockui');
+                this.$refs.container.appendChild(this.mask);
             }
 
             if (this.mask) {
@@ -66,7 +63,7 @@ export default {
             }
 
             if (this.autoZIndex) {
-                this.mask.style.zIndex = String(this.baseZIndex + DomHandler.generateZIndex());
+                ZIndexUtils.set('modal', this.mask, this.baseZIndex + this.$primevue.config.zIndex.modal);
             }
 
             this.$emit('block');
@@ -78,12 +75,13 @@ export default {
             });
         },
         removeMask() {
+            ZIndexUtils.clear(this.mask);
              if (this.fullScreen) {
                 document.body.removeChild(this.mask);
                 DomHandler.removeClass(document.body, 'p-overflow-hidden');
             }
             else {
-                this.$children[0].$el.removeChild(this.mask);
+                this.$refs.container.removeChild(this.mask);
             }
 
             this.$emit('unblock');
@@ -93,6 +91,10 @@ export default {
 </script>
 
 <style>
+.p-blockui-container {
+    position: relative;
+}
+
 .p-blockui {
     position: absolute;
     top: 0;

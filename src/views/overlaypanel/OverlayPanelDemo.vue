@@ -5,21 +5,22 @@
                 <h1>OverlayPanel</h1>
                 <p>OverlayPanel is a container component positioned as connected to its target.</p>
             </div>
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
             <div class="card">
                 <Button type="button" icon="pi pi-search" :label="selectedProduct ? selectedProduct.name : 'Select a Product'" @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" />
 
-                <OverlayPanel ref="op" appendTo="body" :showCloseIcon="true" id="overlay_panel" style="width: 450px">
-                    <DataTable :value="products" :selection.sync="selectedProduct" selectionMode="single" :paginator="true" :rows="5" @row-select="onProductSelect">
-                        <Column field="name" header="Name" sortable></Column>
-                        <Column header="Image">
+                <OverlayPanel ref="op" appendTo="body" :showCloseIcon="true" id="overlay_panel" style="width:450px" :breakpoints="{'960px': '75vw'}">
+                    <DataTable :value="products" v-model:selection="selectedProduct" selectionMode="single" :paginator="true" :rows="5" @row-select="onProductSelect">
+                        <Column field="name" header="Name" sortable style="width: 50%"></Column>
+                        <Column header="Image" style="width: 20%">
                             <template #body="slotProps">
                                 <img :src="'demo/images/product/' + slotProps.data.image" :alt="slotProps.data.image" class="product-image" />
                             </template>
                         </Column>
-                        <Column field="price" header="Price" sortable>
+                        <Column field="price" header="Price" sortable style="width: 30%">
                             <template #body="slotProps">
                                 {{formatCurrency(slotProps.data.price)}}
                             </template>

@@ -20,7 +20,7 @@
                     <AppInputStyleSwitch />
 
                     <h4>Ripple Effect</h4>
-                    <InputSwitch :value="rippleActive" @input="onRippleChange"  />
+                    <InputSwitch :modelValue="rippleActive" @update:modelValue="onRippleChange"  />
 
                     <h4>Free Themes</h4>
                     <p>Built-in component themes created by the <a href="https://www.primefaces.org/designer/primevue">PrimeVue Theme Designer</a>.</p>
@@ -109,6 +109,16 @@
                         </div>
                     </div>
 
+                    <h5>Fluent UI</h5>
+                    <div class="p-grid free-themes">
+                         <div class="p-col-3">
+                            <button class="p-link" type="button" @click="changeTheme($event, 'fluent-light')">
+                                <img src="demo/images/themes/fluent-light.png" alt="Fluent Light"/>
+                            </button>
+                            <span>Fluent Light</span>
+                        </div>
+                    </div>
+
                     <h5>PrimeOne Design</h5>
                     <div class="p-grid free-themes">
                         <div class="p-col-3">
@@ -185,7 +195,48 @@
                         </div>
                     </div>
 
-                    <h5>Legacy</h5>
+                    <h4>Premium Themes</h4>
+                    <p>Premium themes are only available exclusively for <a href="https://www.primefaces.org/designer/primevue">PrimeVue Theme Designer</a> subscribers and therefore not included in PrimeVue core.</p>
+                    <div class="p-grid free-themes">
+                        <div class="p-col-3">
+                            <button class="p-link" type="button" @click="changeTheme($event, 'soho-light')">
+                                <img src="demo/images/themes/soho-light.png" alt="Soho Light" />
+                            </button>
+                            <span>Soho Light</span>
+                        </div>
+                        <div class="p-col-3">
+                            <button class="p-link" type="button" @click="changeTheme($event, 'soho-dark', true)">
+                                <img src="demo/images/themes/soho-dark.png" alt="Soho Dark" />
+                            </button>
+                            <span>Soho Dark</span>
+                        </div>
+                        <div class="p-col-3">
+                            <button class="p-link" type="button" @click="changeTheme($event, 'viva-light')">
+                                <img src="demo/images/themes/viva-light.svg" alt="Viva Light" />
+                            </button>
+                            <span>Viva Light</span>
+                        </div>
+                        <div class="p-col-3">
+                            <button class="p-link" type="button" @click="changeTheme($event, 'viva-dark', true)">
+                                <img src="demo/images/themes/viva-dark.svg" alt="Viva Dark" />
+                            </button>
+                            <span>Viva Dark</span>
+                        </div>
+                        <div class="p-col-3">
+                            <button class="p-link" type="button" @click="changeTheme($event, 'mira')">
+                                <img src="demo/images/themes/mira.jpg" alt="Mira" />
+                            </button>
+                            <span>Mira</span>
+                        </div>
+                        <div class="p-col-3">
+                            <button class="p-link" type="button" @click="changeTheme($event, 'nano')">
+                                <img src="demo/images/themes/nano.jpg" alt="Mira" />
+                            </button>
+                            <span>Nano</span>
+                        </div>
+                    </div>
+
+                    <h4>Legacy Free Themes</h4>
                     <div class="p-grid free-themes">
                         <div class="p-col-3">
                             <button class="p-link" type="button" @click="changeTheme($event, 'nova')">
@@ -252,6 +303,11 @@
                             </a>
                         </div>
                         <div class="p-col-12 p-md-6">
+                            <a href="https://www.primefaces.org/layouts/diamond-vue">
+                                <img alt="Diamond" src="./assets/images/layouts/diamond-vue.jpg">
+                            </a>
+                        </div>
+                        <div class="p-col-12 p-md-6">
                             <a href="https://www.primefaces.org/layouts/sapphire-vue">
                                 <img alt="Sapphire" src="./assets/images/layouts/sapphire-vue.jpg">
                             </a>
@@ -294,6 +350,8 @@
 </template>
 
 <script>
+import EventBus from '@/AppEventBus';
+
 export default {
     props: {
         theme: String,
@@ -307,6 +365,7 @@ export default {
         }
     },
     outsideClickListener: null,
+    themeChangeListener: null,
     watch: {
         $route() {
             if (this.active) {
@@ -314,6 +373,21 @@ export default {
                 this.unbindOutsideClickListener();
             }
         }
+    },
+    beforeUnmount() {
+        EventBus.off('change-theme', this.themeChangeListener);
+    },
+    mounted() {
+        this.themeChangeListener = (event) => {
+            if (event.theme === 'nano')
+                this.scale = 12;
+            else
+                this.scale = 14;
+
+            this.applyScale();
+        };
+
+        EventBus.on('change-theme', this.themeChangeListener);
     },
     methods: {
         toggleConfigurator(event) {
@@ -355,14 +429,17 @@ export default {
         },
         decrementScale() {
             this.scale--;
-            document.documentElement.style.fontSize = this.scale + 'px';
+            this.applyScale();
         },
         incrementScale() {
             this.scale++;
+            this.applyScale();
+        },
+        applyScale() {
             document.documentElement.style.fontSize = this.scale + 'px';
         },
         onRippleChange(value) {
-            this.$primevue.ripple = value;
+            this.$primevue.config.ripple = value;
         }
     },
     computed: {
@@ -370,7 +447,7 @@ export default {
             return ['layout-config', {'layout-config-active': this.active}];
         },
         rippleActive() {
-            return this.$primevue.ripple;
+            return this.$primevue.config.ripple;
         }
     }
 }

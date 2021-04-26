@@ -6,7 +6,7 @@
                 <p>Form layout is a CSS utility optimized for creating forms with ease. FormLayout is not included in PrimeVue as it is provided by <a href="https://github.com/primefaces/primeflex">PrimeFlex</a>,
                 a shared grid library between PrimeFaces, PrimeNG, PrimeReact and PrimeVue projects.</p>
             </div>
-            <AppInputStyleSwitch />
+            <AppDemoActions />
         </div>
 
         <div class="content-section implementation">
@@ -157,7 +157,7 @@
                     </div>
                     <div class="p-field p-col-12">
                         <label for="address">Address</label>
-                        <Textarea id="address" type="text" rows="4" />
+                        <Textarea id="address" rows="4" />
                     </div>
                     <div class="p-field p-col-12 p-md-6">
                         <label for="city">City</label>

@@ -1,10 +1,15 @@
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 
-export declare class TabPanel extends Vue {
+interface TabPanelProps {
     header?: any;
-    active?: boolean;
     disabled?: boolean;
+}
+
+declare class TabPanel {
+    $props: TabPanelProps;
     $slots: {
         '': VNode[];
     }
 }
+
+export default TabPanel;

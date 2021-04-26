@@ -1,22 +1,17 @@
 
 @media screen and (max-width: 960px) {
-    .layout-wrapper.layout-news-active {
-        .layout-content {
-            padding-top: 180px;
-        }
-        .layout-sidebar {
-            top: 0;
-            height: 100%;
-        }
-        .layout-news-container {
-            background-image: linear-gradient(180deg, rgba(255,255,255,0.30) 0%, #FFFFFF 100%);
-        }
-        img.layouts-news-mockup-image {
-            display: none;
+    .layout-wrapper {
+        .layout-news {
+            margin-left: 0;
+
+            .layout-news-button {
+                display: none;
+            }
         }
     }
-    
+
     .layout-topbar {
+        margin-left: 0;
         height: 110px;
         flex-wrap: wrap;
         justify-content: space-between;
@@ -27,11 +22,13 @@
         }
 
         .logo {
+            display: block;
+            
             img{
                 width: 150px;
             }
         }
-        
+
         .app-theme {
             margin-left: 0;
             margin-right: 23px;
@@ -48,7 +45,7 @@
                 height: 40px;
                 line-height: 40px;
                 width: 25%;
-                
+
                 > a {
                     padding-bottom: 0;
                     height: 40px;
@@ -66,10 +63,8 @@
     }
 
     .layout-sidebar {
-        top: 0;
-        z-index: 999;
-        height: 100%;
         transform: translateX(-100%);
+        z-index: 999;
 
         &.active {
             transform: translateX(0);
@@ -78,15 +73,29 @@
 
     .layout-content {
         margin-left: 0;
-        padding-top: 110px;
 
         .content-section {
-            &.introduction { 
+            &.introduction {
                 flex-direction: column;
-                
+
                 .app-inputstyleswitch {
                     margin-top: 1.5rem;
                 }
+            }
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+
+            iframe {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
             }
         }
     }
@@ -105,7 +114,7 @@
             transition: background-color .5s;
         }
     }
-    
+
     .home {
         .introduction > div {
             width: 100%;
@@ -121,6 +130,10 @@
 
         .prosupport > div {
             width: 100%;
+        }
+
+        .video iframe {
+            width: 100% !important;
         }
     }
 

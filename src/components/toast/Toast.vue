@@ -1,19 +1,22 @@
 <template>
-    <div ref="container" :class="containerClass">
-        <transition-group name="p-toast-message" tag="div">
-            <ToastMessage v-for="msg of messages" :key="msg.id" :message="msg" @close="remove($event)"/>
-        </transition-group>
-    </div>
+    <Teleport to="body">
+        <div ref="container" :class="containerClass" v-bind="$attrs">
+            <transition-group name="p-toast-message" tag="div">
+                <ToastMessage v-for="msg of messages" :key="msg.id" :message="msg" @close="remove($event)"/>
+            </transition-group>
+        </div>
+    </Teleport>
 </template>
 
 <script>
-import ToastEventBus from './ToastEventBus';
-import ToastMessage from './ToastMessage';
-import DomHandler from '../utils/DomHandler';
+import ToastEventBus from 'primevue/toasteventbus';
+import ToastMessage from './ToastMessage.vue';
+import {ZIndexUtils} from 'primevue/utils';
 
 var messageIdx = 0;
 
 export default {
+    inheritAttrs: false,
     props: {
         group: {
             type: String,
@@ -38,24 +41,22 @@ export default {
         }
     },
     mounted() {
-        ToastEventBus.$on('add', (message) => {
-            if (this.group == message.group) {
-                this.add(message);
-            }
-        });
-        ToastEventBus.$on('remove-group', (group) => {
-            if (this.group === group) {
-                this.messages = [];
-            }
-        });
-        ToastEventBus.$on('remove-all-groups', () => {
-            this.messages = [];
-        });
+        ToastEventBus.on('add', this.onAdd);
+        ToastEventBus.on('remove-group', this.onRemoveGroup);
+        ToastEventBus.on('remove-all-groups', this.onRemoveAllGroups);
 
-        this.updateZIndex();
+        if (this.autoZIndex) {
+            ZIndexUtils.set('modal', this.$refs.container, this.baseZIndex || this.$primevue.config.zIndex.modal);
+        }
     },
-    beforeUpdate() {
-        this.updateZIndex();
+    beforeUnmount() {
+        if (this.$refs.container && this.autoZIndex) {
+            ZIndexUtils.clear(this.$refs.container);
+        }
+
+        ToastEventBus.off('add', this.onAdd);
+        ToastEventBus.off('remove-group', this.onRemoveGroup);
+        ToastEventBus.off('remove-all-groups', this.onRemoveAllGroups);
     },
     methods: {
         add(message) {
@@ -76,10 +77,18 @@ export default {
 
             this.messages.splice(index, 1);
         },
-        updateZIndex() {
-            if (this.autoZIndex) {
-                this.$refs.container.style.zIndex = String(this.baseZIndex + DomHandler.generateZIndex());
+        onAdd(message) {
+            if (this.group == message.group) {
+                this.add(message);
             }
+        },
+        onRemoveGroup(group) {
+            if (this.group === group) {
+                this.messages = [];
+            }
+        },
+        onRemoveAllGroups() {
+            this.messages = [];
         }
     },
     components: {
@@ -160,14 +169,14 @@ export default {
 }
 
 /* Animations */
-.p-toast-message-enter {
+.p-toast-message-enter-from {
     opacity: 0;
     -webkit-transform: translateY(50%);
     -ms-transform: translateY(50%);
     transform: translateY(50%);
 }
 
-.p-toast-message-leave {
+.p-toast-message-leave-from {
     max-height: 1000px;
 }
 

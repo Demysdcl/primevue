@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import DomHandler from '../utils/DomHandler';
+import {DomHandler} from 'primevue/utils';
 
 export default {
     initialized: false,
@@ -35,7 +35,7 @@ export default {
             this.initialize();
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.unbindDocumentResizeListener();
 
         if (this.frame) {
